@@ -394,19 +394,26 @@
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:2, requiredPop:20 },
-    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Полная занятость',    income:3, requiredLevel:2, requiredPop:50 },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:1, requiredPop:20 },
+    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Частичная занятость',    income:3, requiredLevel:2, requiredPop:50 },
+    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Полная занятость',    income:4, requiredLevel:3, requiredPop:70 },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Полная занятость',    income:6, requiredLevel:3, requiredPop:140 }, //???LVL
     // { id:'manager', name:'Менеджер', icon:'👔', description:'Офисная работа', income:6, requiredLevel:5, requiredPop:200 },
 ];
 
 const SCHOOLS_CONFIG = [
     { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:60*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
-    { id:'private', name:'Частная школа', icon:'🏛',  duration:60*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
+    { id:'private', name:'Частная школа', icon:'🏛',  duration:120*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
+    { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:120*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:1, blocksId:''  },
+    { id:'universitet', name:'Университет', icon:'🏛',  duration:300*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:2, blocksId:'institut'  },
+    { id:'institut', name:'Институт', icon:'🏛️',  duration:600*1000, cost:1000, rewardLvl:2, rewardPop:100, requiredLvl:2, blocksId:'universitet'  },
     // { id:'university', name:'Университет', icon:'🎓', duration:5*60*1000, cost:1000, rewardLvl:5, rewardPop:200, requiredLvl:3, blocksId:'' },
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', icon:'🗞️', description:'Небольшой киоск у метро.', price:500, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:0, requiredMoney:500 },
+    { id:'kiosk', name:'Газетный киоск', icon:'🗞️', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:0, requiredMoney:1000 },
+    { id:'shaurma', name:'Киоск с Шаурмой', icon:'🌯', description:'Киоск с шаурмой..', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, requiredMoney:5000 },
+    { id:'apple', name:'Перепродажа техники Apple', icon:'📱', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:2, requiredPop:100, requiredMoney:10000 },
     // { id:'cafe', name:'Кофейня', icon:'☕', description:'Уютная кофейня.', price:3000, incomePerSec:7, sellPercent:0.6, requiredLevel:3, requiredPop:100, requiredMoney:3000 },
 ];
 
@@ -435,7 +442,7 @@ const MAX_OFFLINE_SEC    = 24 * 60 * 60; // макс 24 часа оффлайн�
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
-let money=0, pendingMoney=0, popularity=0, health=100, level=1;
+let money=0, pendingMoney=0, popularity=0, health=100, level=0;
 let currentJob=null, jobHireTime=null;
 let studying=null, studyStart=null, studyTimer=null;
 let completedSchools=new Set(), lockedSchools=new Set(), ownedBusinesses=new Set();
