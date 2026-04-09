@@ -40,6 +40,7 @@
         .page { display:none; position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
         .page.active { display:block; }
 
+        /* HOME */
         .home-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px; min-height:100%; }
         .home-emoji { font-size:64px; }
         .home-title { font-size:24px; font-weight:bold; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.4); margin-bottom:6px; text-align:center; }
@@ -52,6 +53,7 @@
         .home-btn-title { font-size:15px; font-weight:bold; color:#fff; }
         .home-btn-sub { font-size:11px; color:rgba(255,255,255,0.6); margin-top:2px; }
 
+        /* WORK */
         .work-inner { padding:16px; display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:20px; }
         .work-job-badge { width:100%; background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.25); border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(6px); }
         .work-job-icon { font-size:36px; }
@@ -81,9 +83,7 @@
         .mult-chip { flex:1; background:rgba(0,0,0,0.3); border-radius:12px; padding:10px 8px; text-align:center; border:1.5px solid rgba(255,255,255,0.08); }
         .mult-chip-label { font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
         .mult-chip-value { font-size:17px; font-weight:bold; }
-        .mult-base { color:#4cde80; }
-        .mult-bonus { color:#74b9ff; }
-        .mult-total { color:#ffd200; }
+        .mult-base { color:#4cde80; } .mult-bonus { color:#74b9ff; } .mult-total { color:#ffd200; }
         .seniority-card { width:100%; background:rgba(0,0,0,0.22); border:2px solid rgba(116,185,255,0.25); border-radius:16px; padding:13px 15px; }
         .seniority-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
         .seniority-title { font-size:13px; color:rgba(255,255,255,0.65); font-weight:600; }
@@ -93,9 +93,11 @@
         .seniority-footer { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.38); }
         .seniority-footer .hl { color:#74b9ff; font-weight:bold; }
 
+        /* LIST */
         .list-inner { padding:16px; display:flex; flex-direction:column; gap:14px; }
         .page-header { text-align:center; color:#fff; font-size:18px; font-weight:bold; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
 
+        /* JOBS */
         .job-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .job-card.locked-job { background:rgba(0,0,0,0.3); border-color:rgba(255,107,107,0.3); opacity:0.6; }
         .job-card.other-job  { background:rgba(0,0,0,0.25); border-color:rgba(255,200,100,0.25); opacity:0.5; }
@@ -121,6 +123,7 @@
         .notice-badge.locked-notice { background:rgba(255,107,107,0.12); border:1.5px solid #ff6b6b; color:#ff6b6b; }
         .notice-badge.other-notice  { background:rgba(255,200,100,0.12); border:1.5px solid #ffc864; color:#ffc864; }
 
+        /* SCHOOLS */
         .school-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .school-card.active-school    { background:rgba(255,255,255,0.18); border-color:#ffe066; }
         .school-card.completed-school { background:rgba(46,213,115,0.10); border-color:#2ed573; }
@@ -133,8 +136,7 @@
         .school-meta { font-size:12px; color:rgba(255,255,255,0.6); display:flex; flex-direction:column; gap:2px; }
         .school-rewards { display:flex; gap:6px; margin-top:5px; flex-wrap:wrap; }
         .reward-tag { font-size:11px; font-weight:700; background:rgba(0,0,0,0.3); border-radius:5px; padding:2px 7px; }
-        .reward-lvl { color:#a8d880; }
-        .reward-pop { color:#ffe066; }
+        .reward-lvl { color:#a8d880; } .reward-pop { color:#ffe066; }
         .school-price { font-size:13px; font-weight:bold; color:#4cde80; background:rgba(0,0,0,0.3); border-radius:8px; padding:4px 10px; white-space:nowrap; flex-shrink:0; align-self:flex-start; }
         .school-price.free { color:#74b9ff; }
         .school-price.done { color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid #2ed573; }
@@ -149,6 +151,7 @@
         .enroll-btn.free-btn { background:linear-gradient(135deg,#74b9ff,#0984e3); color:#fff; }
         .enroll-btn.paid-btn { background:linear-gradient(135deg,#f7971e,#ffd200); color:#333; }
 
+        /* BIZ */
         .biz-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .biz-card.owned-biz  { background:rgba(255,214,0,0.08); border-color:#ffd200; }
         .biz-card.locked-biz { background:rgba(0,0,0,0.3); border-color:rgba(255,107,107,0.3); opacity:0.6; }
@@ -177,7 +180,7 @@
         .sell-biz-btn { width:100%; padding:10px; border:none; border-radius:10px; font-size:13px; font-weight:bold; cursor:pointer; background:rgba(255,107,107,0.15); border:1.5px solid #ff6b6b; color:#ff6b6b; margin-top:8px; }
         .sell-biz-btn:active { transform:scale(0.97); }
 
-        /* ─── LEADERBOARD ─── */
+        /* LEADERBOARD */
         .lb-inner { padding:16px; display:flex; flex-direction:column; gap:14px; }
         .lb-tabs { display:flex; background:rgba(0,0,0,0.3); border-radius:14px; padding:4px; gap:4px; }
         .lb-tab { flex:1; padding:10px 6px; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; color:rgba(255,255,255,0.5); background:transparent; transition:all 0.2s; }
@@ -195,10 +198,7 @@
         .lb-item.lb-top2 { background:rgba(192,192,192,0.08); border-color:rgba(192,192,192,0.35); }
         .lb-item.lb-top3 { background:rgba(205,127,50,0.08); border-color:rgba(205,127,50,0.35); }
         .lb-rank { font-size:16px; font-weight:900; min-width:32px; text-align:center; }
-        .lb-rank.gold   { color:#ffd700; }
-        .lb-rank.silver { color:#c0c0c0; }
-        .lb-rank.bronze { color:#cd7f32; }
-        .lb-rank.normal { color:rgba(255,255,255,0.4); font-size:13px; }
+        .lb-rank.gold   { color:#ffd700; } .lb-rank.silver { color:#c0c0c0; } .lb-rank.bronze { color:#cd7f32; } .lb-rank.normal { color:rgba(255,255,255,0.4); font-size:13px; }
         .lb-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; color:#fff; flex-shrink:0; border:2px solid rgba(255,255,255,0.15); overflow:hidden; }
         .lb-avatar img { width:100%; height:100%; object-fit:cover; }
         .lb-avatar.me-avatar { border-color:#ffd200; }
@@ -217,9 +217,46 @@
         @keyframes spin { to{transform:rotate(360deg)} }
         .lb-refresh-btn { width:100%; margin-top:8px; padding:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.6); border-radius:10px; font-size:13px; cursor:pointer; }
 
+        /* OFFLINE POPUP */
+        .offline-overlay {
+            position:fixed; inset:0; z-index:99999;
+            background:rgba(0,0,0,0.8);
+            display:flex; align-items:center; justify-content:center;
+            padding:24px;
+        }
+        .offline-box {
+            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+            border:2px solid rgba(76,222,128,0.4);
+            border-radius:24px; padding:32px 24px;
+            text-align:center; max-width:320px; width:100%;
+            box-shadow:0 20px 60px rgba(0,0,0,0.6);
+        }
+        .offline-emoji { font-size:64px; margin-bottom:16px; }
+        .offline-title { font-size:20px; font-weight:bold; color:#fff; margin-bottom:8px; }
+        .offline-time  { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:24px; }
+        .offline-time b { color:#74b9ff; }
+        .offline-earned-box {
+            background:rgba(76,222,128,0.1);
+            border:2px solid rgba(76,222,128,0.3);
+            border-radius:16px; padding:20px; margin-bottom:24px;
+        }
+        .offline-earned-label { font-size:12px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+        .offline-earned-amount { font-size:52px; font-weight:900; color:#4cde80; text-shadow:0 0 20px rgba(76,222,128,0.5); line-height:1; }
+        .offline-earned-sub { font-size:12px; color:rgba(255,255,255,0.3); margin-top:6px; }
+        .offline-claim-btn {
+            width:100%; padding:16px; border:none; border-radius:14px;
+            background:linear-gradient(135deg,#4cde80,#00c472);
+            color:#fff; font-size:18px; font-weight:900; cursor:pointer;
+            box-shadow:0 6px 20px rgba(76,222,128,0.4);
+        }
+        .offline-claim-btn:active { transform:scale(0.97); }
+        .offline-note { font-size:11px; color:rgba(255,255,255,0.2); margin-top:12px; line-height:1.5; }
+
+        /* TOAST */
         .save-toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(46,213,115,0.9); color:#fff; padding:8px 18px; border-radius:20px; font-size:12px; font-weight:600; z-index:9999; pointer-events:none; animation:toastAnim 2s ease forwards; white-space:nowrap; }
         @keyframes toastAnim { 0%{opacity:0;transform:translateX(-50%) translateY(10px)} 15%{opacity:1;transform:translateX(-50%) translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(-6px)} }
 
+        /* NAV */
         .bottom-nav { flex-shrink:0; width:100%; background:linear-gradient(180deg,#1a1a1a 0%,#2c2c2c 100%); border-top:2.5px solid #000; box-shadow:0 -3px 14px rgba(0,0,0,0.7); display:flex; padding:6px 0 10px; }
         .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; padding:6px 0; border-radius:10px; transition:background 0.15s; }
         .nav-btn:active { background:rgba(255,255,255,0.08); }
@@ -269,7 +306,7 @@
                 <button class="home-btn" onclick="switchPage('jobs')"><span class="home-btn-icon">📋</span><div><div class="home-btn-title">Вакансии</div><div class="home-btn-sub">Найди работу</div></div></button>
                 <button class="home-btn locked-btn" id="home-work-btn" onclick="switchPage('work')"><span class="home-btn-icon">💼</span><div><div class="home-btn-title">Моя работа</div><div class="home-btn-sub" id="home-work-sub">⚠️ Нет работы</div></div></button>
                 <button class="home-btn" onclick="switchPage('biz')"><span class="home-btn-icon">🏢</span><div><div class="home-btn-title">Бизнесы</div><div class="home-btn-sub" id="home-biz-sub">Открой своё дело</div></div></button>
-                <button class="home-btn" onclick="switchPage('lb')"><span class="home-btn-icon">🏆</span><div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub" id="home-lb-sub">Соревнуйся с другими</div></div></button>
+                <button class="home-btn" onclick="switchPage('lb')"><span class="home-btn-icon">🏆</span><div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub">Соревнуйся с другими</div></div></button>
             </div>
         </div>
     </div>
@@ -352,24 +389,25 @@
 
 <script>
 /* ══════════════════════════════════════════════
-   ⚙️ КОНФИГ — меняй только здесь
+   ⚙️ КОНФИГ
 ══════════════════════════════════════════════ */
-
-// 🌐 Адрес твоего сервера на Railway
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:1, requiredPop:20 },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:2, requiredPop:20 },
     { id:'courier',  name:'Курьер',    icon:'🚴', description:'Полная занятость',    income:3, requiredLevel:2, requiredPop:50 },
+    // { id:'manager', name:'Менеджер', icon:'👔', description:'Офисная работа', income:6, requiredLevel:5, requiredPop:200 },
 ];
 
 const SCHOOLS_CONFIG = [
     { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:60*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
     { id:'private', name:'Частная школа', icon:'🏛',  duration:60*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
+    // { id:'university', name:'Университет', icon:'🎓', duration:5*60*1000, cost:1000, rewardLvl:5, rewardPop:200, requiredLvl:3, blocksId:'' },
 ];
 
 const BUSINESS_CONFIG = [
     { id:'kiosk', name:'Газетный киоск', icon:'🗞️', description:'Небольшой киоск у метро.', price:500, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:0, requiredMoney:500 },
+    // { id:'cafe', name:'Кофейня', icon:'☕', description:'Уютная кофейня.', price:3000, incomePerSec:7, sellPercent:0.6, requiredLevel:3, requiredPop:100, requiredMoney:3000 },
 ];
 
 /* ══════════════════════════════════════════════
@@ -392,6 +430,7 @@ const MAX_SENIORITY_DAYS = 100;
 const MS_PER_DAY         = 86400000;
 const SAVE_KEY           = 'lifesim_save_v1';
 const AUTOSAVE_SEC       = 30;
+const MAX_OFFLINE_SEC    = 24 * 60 * 60; // макс 24 часа оффлайна
 
 /* ══════════════════════════════════════════════
    STATE
@@ -425,6 +464,10 @@ function formatTime(ms){
     const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
     if(h>0)return h+'ч '+m+'м'; if(m>0)return m+'м '+s+'с'; return s+'с';
 }
+function formatOfflineTime(secs){
+    const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60);
+    if(h>0)return h+'ч '+m+'м'; if(m>0)return m+'м'; return secs+'с';
+}
 function dayWord(n){
     if(n%100>=11&&n%100<=19)return'дней';
     const r=n%10; if(r===1)return'день'; if(r>=2&&r<=4)return'дня'; return'дней';
@@ -451,15 +494,12 @@ async function syncToServer(){
                 updatedAt:Date.now()
             })
         });
-    } catch(e){ console.log('sync fail',e); }
+    } catch(e){}
 }
 
-async function fetchTop(endpoint, body=null){
+async function fetchTop(){
     try {
-        const opts = body
-            ? {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}
-            : {method:'GET'};
-        const res = await fetch(SERVER_URL+endpoint, opts);
+        const res=await fetch(SERVER_URL+'/top');
         return await res.json();
     } catch(e){ return null; }
 }
@@ -469,28 +509,74 @@ async function fetchTop(endpoint, body=null){
 ══════════════════════════════════════════════ */
 function buildSave(){
     return JSON.stringify({
-        money,pendingMoney,popularity,health,level,
-        currentJob,jobHireTime,studying,studyStart,
+        money, pendingMoney, popularity, health, level,
+        currentJob, jobHireTime, studying, studyStart,
         completedSchools:[...completedSchools],
         lockedSchools:   [...lockedSchools],
         ownedBusinesses: [...ownedBusinesses],
-        savedAt:Date.now(),playerName:MY_NAME,playerId:MY_ID
+        savedAt:    Date.now(),
+        playerName: MY_NAME,
+        playerId:   MY_ID
     });
 }
-function applySave(raw){
-    if(!raw)return false;
-    try{
-        const d=JSON.parse(raw);
-        money=d.money||0; pendingMoney=d.pendingMoney||0; popularity=d.popularity||0;
-        health=d.health??100; level=d.level||1;
-        currentJob=d.currentJob||null; jobHireTime=d.jobHireTime||null;
-        studying=d.studying||null; studyStart=d.studyStart||null;
-        completedSchools=new Set(d.completedSchools||[]);
-        lockedSchools   =new Set(d.lockedSchools   ||[]);
-        ownedBusinesses =new Set(d.ownedBusinesses ||[]);
-        return true;
-    }catch(e){return false;}
+
+function calcOfflineEarnings(savedAt){
+    if(!savedAt) return 0;
+    const now        = Date.now();
+    const offlineSec = Math.floor((now - savedAt) / 1000);
+    const cappedSec  = Math.min(offlineSec, MAX_OFFLINE_SEC);
+    if(cappedSec <= 5) return 0; // меньше 5 сек — не считаем
+
+    let earned = 0;
+
+    // От работы
+    if(currentJob){
+        const job = jobById(currentJob);
+        if(job){
+            const days     = jobHireTime ? Math.floor((now - jobHireTime) / MS_PER_DAY) : 0;
+            const mult     = 1 + (Math.min(days, MAX_SENIORITY_DAYS) * 2) / 100;
+            earned        += job.income * mult * cappedSec;
+        }
+    }
+
+    // От бизнесов
+    ownedBusinesses.forEach(id => {
+        const b = bizById(id);
+        if(b) earned += b.incomePerSec * cappedSec;
+    });
+
+    return { earned: Math.floor(earned), secs: cappedSec };
 }
+
+function applySave(raw){
+    if(!raw) return false;
+    try {
+        const d = JSON.parse(raw);
+        money        = d.money        || 0;
+        pendingMoney = d.pendingMoney || 0;
+        popularity   = d.popularity   || 0;
+        health       = d.health       ?? 100;
+        level        = d.level        || 1;
+        currentJob   = d.currentJob   || null;
+        jobHireTime  = d.jobHireTime  || null;
+        studying     = d.studying     || null;
+        studyStart   = d.studyStart   || null;
+        completedSchools = new Set(d.completedSchools || []);
+        lockedSchools    = new Set(d.lockedSchools    || []);
+        ownedBusinesses  = new Set(d.ownedBusinesses  || []);
+
+        // Считаем оффлайн заработок
+        if(d.savedAt){
+            const result = calcOfflineEarnings(d.savedAt);
+            if(result && result.earned > 0){
+                pendingMoney += result.earned;
+                window._offlineResult = result;
+            }
+        }
+        return true;
+    } catch(e){ return false; }
+}
+
 function saveGame(toast=false){
     const data=buildSave();
     if(tg?.CloudStorage){
@@ -498,25 +584,67 @@ function saveGame(toast=false){
             if(err){try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
         });
     } else {try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
-    syncToServer(); // ← отправляем на сервер при каждом сохранении
-    if(toast)showSaveToast();
+    syncToServer();
+    if(toast) showSaveToast();
 }
+
 function loadGame(cb){
     if(tg?.CloudStorage){
         tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
-            if(!err&&val)applySave(val);
-            else{const l=localStorage.getItem(SAVE_KEY);if(l)applySave(l);}
+            if(!err&&val) applySave(val);
+            else { const l=localStorage.getItem(SAVE_KEY); if(l) applySave(l); }
             cb();
         });
-    } else {const l=localStorage.getItem(SAVE_KEY);if(l)applySave(l);cb();}
+    } else {
+        const l=localStorage.getItem(SAVE_KEY);
+        if(l) applySave(l);
+        cb();
+    }
 }
+
 function showSaveToast(){
     const t=document.createElement('div');t.className='save-toast';t.textContent='💾 Прогресс сохранён';
     document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
 }
-setInterval(()=>saveGame(false),AUTOSAVE_SEC*1000);
+
+setInterval(()=>saveGame(false), AUTOSAVE_SEC*1000);
 window.addEventListener('beforeunload',()=>saveGame(false));
-if(tg)tg.onEvent('viewportChanged',()=>saveGame(false));
+if(tg) tg.onEvent('viewportChanged',()=>saveGame(false));
+
+/* ══════════════════════════════════════════════
+   💤 ОФФЛАЙН ПОПАП
+══════════════════════════════════════════════ */
+function showOfflinePopup(earned, secs){
+    const timeStr = formatOfflineTime(secs);
+    const overlay = document.createElement('div');
+    overlay.className = 'offline-overlay';
+    overlay.innerHTML = `
+        <div class="offline-box">
+            <div class="offline-emoji">💤</div>
+            <div class="offline-title">Пока вас не было...</div>
+            <div class="offline-time">Отсутствовали: <b>${timeStr}</b></div>
+            <div class="offline-earned-box">
+                <div class="offline-earned-label">Заработано</div>
+                <div class="offline-earned-amount">${formatMoney(earned)}</div>
+                <div class="offline-earned-sub">ждёт в копилке</div>
+            </div>
+            <button class="offline-claim-btn" id="offline-claim-btn">
+                💰 Забрать!
+            </button>
+            <div class="offline-note">
+                Максимум 24 часа оффлайна засчитывается
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('offline-claim-btn').onclick = () => {
+        overlay.remove();
+        updateClaimBtn();
+        updateNavDot();
+        updateHUD();
+        updateHomeWorkBtn();
+    };
+}
 
 /* ══════════════════════════════════════════════
    HUD
@@ -531,13 +659,15 @@ function updateHUD(){
 }
 
 /* ══════════════════════════════════════════════
-   TICK
+   TICK — каждую секунду
 ══════════════════════════════════════════════ */
 setInterval(()=>{
+    // Работа → pending (нужно забрать)
     if(currentJob){
         pendingMoney+=getJobIncome();
         updateWorkPageLive();updateClaimBtn();updateNavDot();updateHomeWorkBtn();
     }
+    // Бизнесы → сразу на счёт
     if(ownedBusinesses.size>0){
         money+=getBizIncome();
         updateHUD();updateHomeBizSub();
@@ -561,7 +691,8 @@ function claimMoney(){
 }
 function updateClaimBtn(){
     const btn=document.getElementById('claim-btn'),has=pendingMoney>0;
-    btn.disabled=!has;btn.textContent=has?'💰 Забрать '+formatMoney(pendingMoney):'💰 Забрать';
+    btn.disabled=!has;
+    btn.textContent=has?'💰 Забрать '+formatMoney(pendingMoney):'💰 Забрать';
     btn.classList.toggle('has-money',has);
 }
 function updateNavDot(){
@@ -607,7 +738,7 @@ function hire(jobId){
     currentJob=jobId;jobHireTime=Date.now();pendingMoney=0;
     updateWorkPageStatic();updateNavWork();updateNavDot();updateHomeWorkBtn();renderJobsList();
     saveGame(false);
-    alert('✅ Вы устроились: '+job.name+'\n💵 $'+job.income+'/сек');
+    alert('✅ Вы устроились: '+job.name+'\n💵 $'+job.income+'/сек\n💡 Деньги копятся даже когда вы offline!');
 }
 function fireJob(jobId){
     if(currentJob!==jobId)return;
@@ -635,7 +766,20 @@ function renderJobsList(){
         let notice='';
         if(otherJob)notice=`<div class="notice-badge other-notice">💼 Уже работаете в другом месте</div>`;
         else if(!can){const need=[];if(!lvlOk)need.push(job.requiredLevel+' ур.');if(!popOk)need.push('⭐'+job.requiredPop);notice=`<div class="notice-badge locked-notice">🔒 Нужно: ${need.join(' · ')}</div>`;}
-        card.innerHTML=`<div class="job-top"><div class="job-icon">${job.icon}</div><div class="job-info"><div class="job-name">${job.name}</div><div class="job-meta"><span>${job.description}</span><span>📈 Доход растёт со стажем</span></div><div class="job-reqs">${reqLvl}${reqPop}</div></div><div class="${sc}"><span>$${job.income}</span><span class="per-sec-small">в секунду</span></div></div>${notice}${(!isHired&&!otherJob&&can)?`<button class="hire-btn" onclick="hire('${job.id}')">👋 Устроиться</button>`:''}${isHired?`<button class="fire-btn" onclick="fireJob('${job.id}')">🚪 Уволиться</button>`:''}`;
+        card.innerHTML=`
+            <div class="job-top">
+                <div class="job-icon">${job.icon}</div>
+                <div class="job-info">
+                    <div class="job-name">${job.name}</div>
+                    <div class="job-meta"><span>${job.description}</span><span>📈 Доход растёт со стажем</span><span>💤 Работает оффлайн</span></div>
+                    <div class="job-reqs">${reqLvl}${reqPop}</div>
+                </div>
+                <div class="${sc}"><span>$${job.income}</span><span class="per-sec-small">в секунду</span></div>
+            </div>
+            ${notice}
+            ${(!isHired&&!otherJob&&can)?`<button class="hire-btn" onclick="hire('${job.id}')">👋 Устроиться</button>`:''}
+            ${isHired?`<button class="fire-btn" onclick="fireJob('${job.id}')">🚪 Уволиться</button>`:''}
+        `;
         c.appendChild(card);
     });
 }
@@ -695,15 +839,21 @@ function renderSchoolsList(){
 }
 
 /* ══════════════════════════════════════════════
-   BIZ
+   BIZ ACTIONS
 ══════════════════════════════════════════════ */
 function buyBiz(id){
     const b=bizById(id);if(!b||ownedBusinesses.has(id))return;
-    if(!canBuyBiz(id)){const msgs=[];if(level<b.requiredLevel)msgs.push('📊 Уровень '+b.requiredLevel);if(popularity<b.requiredPop)msgs.push('⭐ '+b.requiredPop);if(money<b.requiredMoney)msgs.push('💰 '+formatMoney(b.requiredMoney));alert('❌ Нужно:\n'+msgs.join('\n'));return;}
-    if(!confirm('🏢 Купить «'+b.name+'» за '+formatMoney(b.price)+'?'))return;
+    if(!canBuyBiz(id)){
+        const msgs=[];
+        if(level<b.requiredLevel)msgs.push('📊 Уровень '+b.requiredLevel);
+        if(popularity<b.requiredPop)msgs.push('⭐ '+b.requiredPop);
+        if(money<b.requiredMoney)msgs.push('💰 '+formatMoney(b.requiredMoney));
+        alert('❌ Нужно:\n'+msgs.join('\n'));return;
+    }
+    if(!confirm('🏢 Купить «'+b.name+'» за '+formatMoney(b.price)+'?\n💤 Работает даже оффлайн!'))return;
     money-=b.price;ownedBusinesses.add(id);
     updateHUD();renderBizList();updateHomeBizSub();saveGame(false);
-    alert('✅ Куплено: «'+b.name+'»\n💵 +$'+b.incomePerSec+'/сек автоматически!');
+    alert('✅ Куплено: «'+b.name+'»\n💵 +$'+b.incomePerSec+'/сек — даже когда вы offline!');
 }
 function sellBiz(id){
     const b=bizById(id);if(!b||!ownedBusinesses.has(id))return;
@@ -712,60 +862,64 @@ function sellBiz(id){
     money+=sp;ownedBusinesses.delete(id);
     updateHUD();renderBizList();updateHomeBizSub();saveGame(false);
 }
+
+/* ══════════════════════════════════════════════
+   RENDER BIZ
+══════════════════════════════════════════════ */
 function renderBizList(){
     const c=document.getElementById('biz-list');if(!c)return;c.innerHTML='';
     BUSINESS_CONFIG.forEach(b=>{
         const isOwned=ownedBusinesses.has(b.id),lvlOk=level>=b.requiredLevel,popOk=popularity>=b.requiredPop,monOk=money>=b.requiredMoney,canBuy=lvlOk&&popOk&&monOk&&!isOwned;
         const card=document.createElement('div');card.className='biz-card';
         if(isOwned)card.classList.add('owned-biz');else if(!lvlOk||!popOk)card.classList.add('locked-biz');
-        const tags=[];if(b.requiredLevel>0)tags.push(`<span class="biz-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${b.requiredLevel} ур.</span>`);if(b.requiredPop>0)tags.push(`<span class="biz-tag ${popOk?'ok':'fail'}">${popOk?'✅':'🔒'} ⭐${b.requiredPop}</span>`);tags.push(`<span class="biz-tag info">💰 $${b.incomePerSec}/сек</span>`);
+        const tags=[];
+        if(b.requiredLevel>0)tags.push(`<span class="biz-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${b.requiredLevel} ур.</span>`);
+        if(b.requiredPop>0)tags.push(`<span class="biz-tag ${popOk?'ok':'fail'}">${popOk?'✅':'🔒'} ⭐${b.requiredPop}</span>`);
+        tags.push(`<span class="biz-tag info">💰 $${b.incomePerSec}/сек</span>`);
+        tags.push(`<span class="biz-tag info">💤 offline</span>`);
         let bc='biz-price-badge',pm=formatMoney(b.price),ps='стоимость';
         if(isOwned){bc+=' owned-badge';pm='✅ В деле';ps='$'+b.incomePerSec+'/сек';}else if(!lvlOk||!popOk)bc+=' locked-badge-style';
-        const roi=isOwned?`<div class="biz-income-row"><span class="biz-income-label">📈 Пассивный доход</span><span class="biz-income-value">+$${b.incomePerSec}/сек</span></div>`:'';
-        let lockNotice='';if(!isOwned&&(!lvlOk||!popOk||!monOk)){const need=[];if(!lvlOk)need.push(b.requiredLevel+' ур.');if(!popOk)need.push('⭐'+b.requiredPop);if(!monOk)need.push(formatMoney(b.requiredMoney));lockNotice=`<div class="notice-badge locked-notice" style="margin-top:8px">🔒 Нужно: ${need.join(' · ')}</div>`;}
+        const roi=isOwned?`<div class="biz-income-row"><span class="biz-income-label">📈 Пассивный доход (offline)</span><span class="biz-income-value">+$${b.incomePerSec}/сек</span></div>`:'';
+        let lockNotice='';
+        if(!isOwned&&(!lvlOk||!popOk||!monOk)){const need=[];if(!lvlOk)need.push(b.requiredLevel+' ур.');if(!popOk)need.push('⭐'+b.requiredPop);if(!monOk)need.push(formatMoney(b.requiredMoney));lockNotice=`<div class="notice-badge locked-notice" style="margin-top:8px">🔒 Нужно: ${need.join(' · ')}</div>`;}
         card.innerHTML=`<div class="biz-top"><div class="biz-icon">${b.icon}</div><div class="biz-info"><div class="biz-name">${b.name}</div><div class="biz-desc">${b.description}</div><div class="biz-tags">${tags.join('')}</div></div><div class="${bc}"><span class="price-main">${pm}</span><span class="price-sub">${ps}</span></div></div>${roi}${lockNotice}${(!isOwned&&canBuy)?`<button class="buy-biz-btn" onclick="buyBiz('${b.id}')">🏢 Купить за ${formatMoney(b.price)}</button>`:''}${isOwned?`<button class="sell-biz-btn" onclick="sellBiz('${b.id}')">💸 Продать за ${formatMoney(Math.floor(b.price*b.sellPercent))}</button>`:''}`;
         c.appendChild(card);
     });
 }
 
 /* ══════════════════════════════════════════════
-   🏆 LEADERBOARD — реальные данные с сервера
+   🏆 LEADERBOARD
 ══════════════════════════════════════════════ */
 async function renderLeaderboard(){
     if(lbLoading)return;
     lbLoading=true;
-
     const c=document.getElementById('lb-content');
     c.innerHTML=`<div class="lb-loading"><div class="lb-spinner"></div><span>Загружаем топ...</span></div>`;
     updateMyLbPos(null);
 
-    let list=lbCache[lbTab];
-
-    if(!list){
-        list = await fetchTop('/top');
-        if(list) lbCache[lbTab]=list;
+    if(!lbCache[lbTab]){
+        lbCache[lbTab]=await fetchTop();
     }
-
     lbLoading=false;
 
-    if(!list){
+    const rawList=lbCache[lbTab];
+    if(!rawList){
         c.innerHTML=`<div class="lb-empty"><div class="lb-empty-icon">📡</div>Нет связи с сервером.<br><br><button class="lb-refresh-btn" onclick="lbCache={global:null,friends:null};renderLeaderboard()">🔄 Повторить</button></div>`;
         return;
     }
 
-    // Добавить себя если нет в списке
-    const meInList=list.find(p=>String(p.id)===String(MY_ID));
-    const fullList=meInList
-        ? list.map(p=>({...p,isMe:String(p.id)===String(MY_ID)}))
-        : [...list,{id:MY_ID,name:MY_NAME,photo:MY_PHOTO,money,level,popularity,businesses:ownedBusinesses.size,isMe:true}].sort((a,b)=>b.money-a.money);
+    const meInList=rawList.find(p=>String(p.id)===String(MY_ID));
+    const list=meInList
+        ? rawList.map(p=>({...p,isMe:String(p.id)===String(MY_ID)}))
+        : [...rawList,{id:MY_ID,name:MY_NAME,photo:MY_PHOTO,money,level,popularity,businesses:ownedBusinesses.size,isMe:true}].sort((a,b)=>b.money-a.money);
 
-    updateMyLbPos(fullList);
-    renderLbList(fullList,c);
+    updateMyLbPos(list);
+    renderLbList(list,c);
 }
 
 function updateMyLbPos(list){
-    const myIdx=list?list.findIndex(p=>p.isMe):-1;
-    document.getElementById('lb-my-rank').textContent ='#'+(myIdx>=0?myIdx+1:'—');
+    const idx=list?list.findIndex(p=>p.isMe):-1;
+    document.getElementById('lb-my-rank').textContent ='#'+(idx>=0?idx+1:'—');
     document.getElementById('lb-my-name').textContent =MY_NAME;
     document.getElementById('lb-my-stats').textContent='Уровень '+level+' · ⭐'+popularity;
     document.getElementById('lb-my-money').textContent=formatMoney(money);
@@ -773,44 +927,21 @@ function updateMyLbPos(list){
 
 function renderLbList(list,c){
     c.innerHTML='';
-
-    const label=document.createElement('div');
-    label.className='lb-section-label';
-    label.textContent=lbTab==='global'?'🌍 ВСЕ ИГРОКИ':'👥 ДРУЗЬЯ';
-    c.appendChild(label);
-
-    if(list.length===0){
-        const empty=document.createElement('div');empty.className='lb-empty';
-        empty.innerHTML='<div class="lb-empty-icon">🎮</div>Пока нет игроков.<br>Будь первым!';
-        c.appendChild(empty);return;
-    }
-
+    const label=document.createElement('div');label.className='lb-section-label';label.textContent='🌍 ВСЕ ИГРОКИ';c.appendChild(label);
+    if(list.length===0){const e=document.createElement('div');e.className='lb-empty';e.innerHTML='<div class="lb-empty-icon">🎮</div>Пока нет игроков.<br>Будь первым!';c.appendChild(e);return;}
     const ul=document.createElement('div');ul.className='lb-list';
-
     list.forEach((p,i)=>{
         const rank=i+1;
-        if(rank===4){
-            const sep=document.createElement('div');sep.className='lb-sep';
-            sep.innerHTML=`<div class="lb-sep-line"></div><span class="lb-sep-text">ОСТАЛЬНЫЕ</span><div class="lb-sep-line"></div>`;
-            ul.appendChild(sep);
-        }
+        if(rank===4){const sep=document.createElement('div');sep.className='lb-sep';sep.innerHTML=`<div class="lb-sep-line"></div><span class="lb-sep-text">ОСТАЛЬНЫЕ</span><div class="lb-sep-line"></div>`;ul.appendChild(sep);}
         const item=document.createElement('div');item.className='lb-item';
         if(p.isMe)item.classList.add('lb-me');
-        if(rank===1)item.classList.add('lb-top1');
-        if(rank===2)item.classList.add('lb-top2');
-        if(rank===3)item.classList.add('lb-top3');
-
+        if(rank===1)item.classList.add('lb-top1');if(rank===2)item.classList.add('lb-top2');if(rank===3)item.classList.add('lb-top3');
         let rankIcon='#'+rank,rankClass='normal';
-        if(rank===1){rankIcon='🥇';rankClass='gold';}
-        else if(rank===2){rankIcon='🥈';rankClass='silver';}
-        else if(rank===3){rankIcon='🥉';rankClass='bronze';}
-
+        if(rank===1){rankIcon='🥇';rankClass='gold';}else if(rank===2){rankIcon='🥈';rankClass='silver';}else if(rank===3){rankIcon='🥉';rankClass='bronze';}
         const initials=(p.name||'?')[0].toUpperCase();
-        const avatarInner=p.photo?`<img src="${p.photo}" alt="">`:initials;
-
         item.innerHTML=`
             <div class="lb-rank ${rankClass}">${rankIcon}</div>
-            <div class="lb-avatar ${p.isMe?'me-avatar':''}">${avatarInner}</div>
+            <div class="lb-avatar ${p.isMe?'me-avatar':''}">${p.photo?`<img src="${p.photo}" alt="">`:initials}</div>
             <div class="lb-user">
                 <div class="lb-username">${p.name}${p.isMe?' <span style="font-size:10px;color:#ffd200">(вы)</span>':''}</div>
                 <div class="lb-userstats">Уровень ${p.level} · ⭐${p.popularity}${p.businesses>0?' · 🏢'+p.businesses:''}</div>
@@ -820,11 +951,8 @@ function renderLbList(list,c){
         ul.appendChild(item);
     });
     c.appendChild(ul);
-
-    const btn=document.createElement('button');btn.className='lb-refresh-btn';
-    btn.textContent='🔄 Обновить';
-    btn.onclick=()=>{lbCache={global:null,friends:null};renderLeaderboard();};
-    c.appendChild(btn);
+    const btn=document.createElement('button');btn.className='lb-refresh-btn';btn.textContent='🔄 Обновить';
+    btn.onclick=()=>{lbCache={global:null,friends:null};renderLeaderboard();};c.appendChild(btn);
 }
 
 function switchLbTab(tab){
@@ -863,11 +991,13 @@ function updateHomeBizSub(){
    INIT
 ══════════════════════════════════════════════ */
 loadGame(()=>{
+    // Восстановить таймер учёбы
     if(studying&&studyStart){
         const s=schoolById(studying);
         if(s){const e=Date.now()-studyStart;if(e<s.duration)runStudyTimer();else finishStudy();}
         else{studying=null;studyStart=null;}
     }
+
     updateHUD();
     renderJobsList();
     renderSchoolsList();
@@ -877,7 +1007,15 @@ loadGame(()=>{
     updateHomeWorkBtn();
     updateHomeBizSub();
     updateClaimBtn();
-    syncToServer(); // сразу отправить данные при запуске
+    syncToServer();
+
+    // Показать оффлайн попап если есть заработок
+    if(window._offlineResult && window._offlineResult.earned > 0){
+        setTimeout(()=>{
+            showOfflinePopup(window._offlineResult.earned, window._offlineResult.secs);
+            window._offlineResult = null;
+        }, 600);
+    }
 });
 </script>
 </body>
