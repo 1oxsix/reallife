@@ -698,6 +698,20 @@ function startTapGame(job, modal) {
     let timerId = null;
     const target = job.minigameTarget || 30;
     
+    // ОПРЕДЕЛЯЕМ ФУНКЦИЮ ДО render()
+    window.tapFinalize = function(earned) {
+        if(earned > 0) {
+            money += earned;
+            showMoneyPop(earned);
+        }
+        const gameModal = document.getElementById('mg-modal');
+        if(gameModal) gameModal.remove();
+        updateHUD();
+        updateHomeWorkBtn();
+        minigameActive = false;
+        saveGame(false);
+    };
+    
     function render() {
         const targetMet = taps >= target;
         const earned = targetMet ? getJobReward() : 0;
@@ -718,7 +732,7 @@ function startTapGame(job, modal) {
                             <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
                             <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
                         ` : `
-                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
+                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">�� Не справился</div>
                             <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
                         `}
                     </div>
@@ -756,19 +770,6 @@ function startTapGame(job, modal) {
             };
         }
     }
-    
-    window.tapFinalize = function(earned) {
-        if(earned > 0) {
-            money += earned;
-            showMoneyPop(earned);
-        }
-        const gameModal = document.getElementById('mg-modal');
-        if(gameModal) gameModal.remove();
-        updateHUD();
-        updateHomeWorkBtn();
-        minigameActive = false;
-        saveGame(false);
-    };
     
     render();
 }
@@ -820,6 +821,10 @@ function startMathGame(job, modal) {
         saveGame(false);
     }
     
+    // ОПРЕДЕЛЯЕМ ДО render()
+    window.currentMathCheck = checkAnswer;
+    window.currentMathFinalize = finalizeMathGame;
+    
     function render() {
         if(!currentQuestion) {
             currentQuestion = generateQuestion();
@@ -842,10 +847,6 @@ function startMathGame(job, modal) {
                 <button class="minigame-close-btn" onclick="window.currentMathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
-        
-        // Привязываем обработчики ПОСЛЕ того как DOM обновился
-        window.currentMathCheck = checkAnswer;
-        window.currentMathFinalize = finalizeMathGame;
     }
     
     nextQuestion();
