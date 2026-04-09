@@ -715,14 +715,14 @@ function startTapGame(job, modal) {
                 ${timeLeft === 0 ? `
                     <div style="text-align:center;margin-top:16px;">
                         ${targetMet ? `
-                            <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Ус��ех!</div>
+                            <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
                             <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
                         ` : `
                             <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
                             <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
                         `}
                     </div>
-                    <button class="minigame-close-btn" onclick="document.getElementById('mg-modal').remove();updateHUD();updateHomeWorkBtn();minigameActive=false;saveGame(false);">✖️ Закрыть</button>
+                    <button class="minigame-close-btn" onclick="window.tapFinalize(${earned})">✖️ Закрыть</button>
                 ` : ''}
             </div>
         `;
@@ -763,6 +763,19 @@ function startTapGame(job, modal) {
         }
     }
     
+    window.tapFinalize = function(earned) {
+        if(earned > 0) {
+            money += earned;
+            showMoneyPop(earned);
+        }
+        const gameModal = document.getElementById('mg-modal');
+        if(gameModal) gameModal.remove();
+        updateHUD();
+        updateHomeWorkBtn();
+        minigameActive = false;
+        saveGame(false);
+    };
+    
     render();
 }
 
@@ -792,6 +805,28 @@ function startMathGame(job, modal) {
         render();
     }
     
+    function checkAnswer(selected, correct) {
+        if(selected === correct) {
+            score++;
+            nextQuestion();
+        } else {
+            finalizeMathGame(getJobReward() * score);
+        }
+    }
+    
+    function finalizeMathGame(earned) {
+        if(earned > 0) {
+            money += earned;
+            showMoneyPop(earned);
+        }
+        const gameModal = document.getElementById('mg-modal');
+        if(gameModal) gameModal.remove();
+        updateHUD();
+        updateHomeWorkBtn();
+        minigameActive = false;
+        saveGame(false);
+    }
+    
     function render() {
         if(!currentQuestion) {
             currentQuestion = generateQuestion();
@@ -805,41 +840,22 @@ function startMathGame(job, modal) {
                 <div class="minigame-game-area">
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-                        ${currentQuestion.options.map((opt, i) => `
-                            <button class="math-option-btn" onclick="checkAnswer(${opt}, ${currentQuestion.answer})">${opt}</button>
+                        ${currentQuestion.options.map((opt) => `
+                            <button class="math-option-btn" onclick="window.mathCheckAnswer(${opt}, ${currentQuestion.answer})">${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" onclick="finalizeMathGame(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" onclick="window.mathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
-        
-        window.checkAnswer = function(selected, correct) {
-            if(selected === correct) {
-                score++;
-                nextQuestion();
-            } else {
-                finalizeMathGame(getJobReward() * score);
-            }
-        };
     }
     
-    window.finalizeMathGame = function(earned) {
-        if(earned > 0) {
-            money += earned;
-            showMoneyPop(earned);
-        }
-        document.getElementById('mg-modal').remove();
-        updateHUD();
-        updateHomeWorkBtn();
-        minigameActive = false;
-        saveGame(false);
-    };
+    window.mathCheckAnswer = checkAnswer;
+    window.mathFinalize = finalizeMathGame;
     
     nextQuestion();
 }
-
 /* ══════════════════════════════════════════════
    WORK PAGE
 ══════════════════════════════════════════════ */
