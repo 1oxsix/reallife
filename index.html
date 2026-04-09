@@ -737,12 +737,6 @@ function startTapGame(job, modal) {
                         if (timeLeft <= 0) {
                             clearInterval(timerId);
                             running = false;
-                            const targetMet = taps >= target;
-                            const finalEarned = targetMet ? getJobReward() : 0;
-                            if(finalEarned > 0) {
-                                money += finalEarned;
-                                showMoneyPop(finalEarned);
-                            }
                             render();
                         } else {
                             render();
@@ -848,10 +842,11 @@ function startMathGame(job, modal) {
                 <button class="minigame-close-btn" onclick="window.currentMathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
+        
+        // Привязываем обработчики ПОСЛЕ того как DOM обновился
+        window.currentMathCheck = checkAnswer;
+        window.currentMathFinalize = finalizeMathGame;
     }
-    
-    window.currentMathCheck = checkAnswer;
-    window.currentMathFinalize = finalizeMathGame;
     
     nextQuestion();
 }
