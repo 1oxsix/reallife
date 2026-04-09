@@ -698,8 +698,7 @@ function startTapGame(job, modal) {
     let timerId = null;
     const target = job.minigameTarget || 30;
     
-    // ОПРЕДЕЛЯЕМ ФУНКЦИЮ ДО render()
-    window.tapFinalize = function(earned) {
+    function finalizeTap(earned) {
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
@@ -710,7 +709,7 @@ function startTapGame(job, modal) {
         updateHomeWorkBtn();
         minigameActive = false;
         saveGame(false);
-    };
+    }
     
     function render() {
         const targetMet = taps >= target;
@@ -732,11 +731,11 @@ function startTapGame(job, modal) {
                             <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
                             <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
                         ` : `
-                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">�� Не справился</div>
+                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
                             <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
                         `}
                     </div>
-                    <button class="minigame-close-btn" onclick="window.tapFinalize(${earned})">✖️ Закрыть</button>
+                    <button class="minigame-close-btn" id="tap-close-btn">✖️ Закрыть</button>
                 ` : ''}
             </div>
         `;
@@ -768,6 +767,12 @@ function startTapGame(job, modal) {
                     render();
                 }
             };
+        }
+        
+        // Привязываем кнопку закрытия
+        const closeBtn = document.getElementById('tap-close-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => finalizeTap(earned);
         }
     }
     
@@ -805,11 +810,11 @@ function startMathGame(job, modal) {
             score++;
             nextQuestion();
         } else {
-            finalizeMathGame(getJobReward() * score);
+            finalizeMath(getJobReward() * score);
         }
     }
     
-    function finalizeMathGame(earned) {
+    function finalizeMath(earned) {
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
@@ -820,10 +825,6 @@ function startMathGame(job, modal) {
         minigameActive = false;
         saveGame(false);
     }
-    
-    // ОПРЕДЕЛЯЕМ ДО render()
-    window.currentMathCheck = checkAnswer;
-    window.currentMathFinalize = finalizeMathGame;
     
     function render() {
         if(!currentQuestion) {
@@ -838,15 +839,29 @@ function startMathGame(job, modal) {
                 <div class="minigame-game-area">
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-                        ${currentQuestion.options.map((opt) => `
-                            <button class="math-option-btn" onclick="window.currentMathCheck(${opt}, ${currentQuestion.answer})">${opt}</button>
+                        ${currentQuestion.options.map((opt, idx) => `
+                            <button class="math-option-btn math-opt-${idx}" data-value="${opt}">${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" onclick="window.currentMathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" id="math-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
+        
+        // Привязываем кнопки ответов
+        currentQuestion.options.forEach((opt, idx) => {
+            const btn = document.querySelector(`.math-opt-${idx}`);
+            if(btn) {
+                btn.onclick = () => checkAnswer(opt, currentQuestion.answer);
+            }
+        });
+        
+        // Привязываем кноп��у закрытия
+        const closeBtn = document.getElementById('math-close-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => finalizeMath(earned);
+        }
     }
     
     nextQuestion();
