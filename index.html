@@ -248,30 +248,32 @@
         @keyframes toastAnim { 0%{opacity:0;transform:translateX(-50%) translateY(10px)} 15%{opacity:1;transform:translateX(-50%) translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(10px)} }
 
         /* MINIGAME OVERLAY */
-        .minigame-overlay {
-            position:fixed; inset:0; z-index:99998;
-            background:rgba(0,0,0,0.9);
-            display:flex; align-items:center; justify-content:center;
-            padding:24px;
-        }
-        .minigame-box {
-            background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
-            border:2px solid rgba(76,222,128,0.4);
-            border-radius:24px; padding:32px 24px;
-            text-align:center; max-width:360px; width:100%;
-            box-shadow:0 20px 60px rgba(0,0,0,0.6);
-        }
-        .minigame-title { font-size:24px; font-weight:bold; color:#fff; margin-bottom:16px; }
-        .minigame-game-area { background:rgba(0,0,0,0.3); border:2px solid rgba(76,222,128,0.3); border-radius:16px; padding:24px; margin:20px 0; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
-        .button-mash-target { width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg,#4cde80,#00c472); border:4px solid #fff; font-size:48px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 20px rgba(76,222,128,0.6); transition:transform 0.05s; }
-        .button-mash-target:active { transform:scale(0.9); }
-        .button-mash-counter { font-size:36px; font-weight:900; color:#4cde80; text-shadow:0 0 10px rgba(76,222,128,0.6); }
-        .minigame-progress { width:100%; height:12px; background:rgba(0,0,0,0.4); border-radius:6px; overflow:hidden; }
-        .minigame-progress-fill { height:100%; background:linear-gradient(90deg,#4cde80,#00c472); transition:width 0.2s; }
-        .minigame-close-btn { width:100%; padding:14px; border:none; border-radius:12px; background:rgba(255,107,107,0.15); border:1.5px solid #ff6b6b; color:#ff6b6b; font-size:16px; font-weight:bold; cursor:pointer; margin-top:12px; }
-        .minigame-close-btn:active { transform:scale(0.97); }
-        .minigame-result { font-size:18px; color:#fff; margin-bottom:16px; }
-        .minigame-reward-display { font-size:48px; font-weight:900; color:#4cde80; text-shadow:0 0 28px rgba(76,222,128,0.55); margin:16px 0; }
+        /* MINIGAME */
+.minigame-overlay {
+    position:fixed; inset:0; z-index:99998;
+    background:rgba(0,0,0,0.9);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+}
+.minigame-box {
+    background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+    border:2px solid rgba(76,222,128,0.4);
+    border-radius:24px; padding:32px 24px;
+    text-align:center; max-width:360px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.mg-modal-title { font-size:24px; font-weight:bold; color:#fff; margin-bottom:8px; text-align:center; }
+.mg-modal-sub { font-size:14px; color:rgba(255,255,255,0.6); text-align:center; margin-bottom:16px; }
+.minigame-game-area { background:rgba(0,0,0,0.3); border:2px solid rgba(76,222,128,0.3); border-radius:16px; padding:24px; margin:20px 0; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+.tap-timer { font-size:24px; font-weight:bold; color:#ffd200; }
+.tap-counter { font-size:18px; color:rgba(255,255,255,0.7); }
+.tap-area { width:140px; height:140px; border-radius:50%; background:linear-gradient(135deg,#4cde80,#00c472); border:4px solid #fff; font-size:64px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 20px rgba(76,222,128,0.6); transition:transform 0.1s; }
+.tap-area:active { transform:scale(0.88); }
+.math-option-btn { width:100%; padding:14px; border:none; border-radius:10px; background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; font-weight:bold; cursor:pointer; transition:all 0.2s; }
+.math-option-btn:hover { background:rgba(76,222,128,0.25); border-color:#4cde80; }
+.math-option-btn:active { transform:scale(0.95); }
+.minigame-close-btn { width:100%; padding:14px; border:none; border-radius:12px; background:rgba(255,107,107,0.15); border:1.5px solid #ff6b6b; color:#ff6b6b; font-size:16px; font-weight:bold; cursor:pointer; margin-top:12px; }
+.minigame-close-btn:active { transform:scale(0.97); }
 
         /* NAV */
         .bottom-nav { flex-shrink:0; width:100%; background:linear-gradient(180deg,#1a1a1a 0%,#2c2c2c 100%); border-top:2.5px solid #000; box-shadow:0 -3px 14px rgba(0,0,0,0.7); display:flex; padding:6px 4px 8px; gap:4px; }
@@ -400,10 +402,10 @@
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:50, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:3000, minigameTarget:5 },
-    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:100, requiredLevel:2, requiredPop:50, minigameType:'tap', minigameDuration:4000, minigameTarget:10 },
-    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Строительство',    income:10, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:15000, minigameTarget:50 },
-    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:8, requiredLevel:3, requiredPop:140, minigameType:'tap', minigameDuration:10000, minigameTarget:35 },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:5, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
+    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:7, requiredLevel:2, requiredPop:50, minigameType:'math' },
+    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Строительство',    income:10, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:5, minigameTarget:50 },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:8, requiredLevel:3, requiredPop:140, minigameType:'math' },
 ];
 
 const SCHOOLS_CONFIG = [
@@ -677,126 +679,165 @@ function startMinigame(){
     if(!job) return;
     
     minigameActive = true;
-    const overlay = document.createElement('div');
-    overlay.className = 'minigame-overlay';
-    overlay.id = 'active-minigame';
+    const modal = document.createElement('div');
+    modal.className = 'minigame-overlay';
+    modal.id = 'mg-modal';
+    document.body.appendChild(modal);
     
-    const reward = getJobReward();
-    const config = {
-        duration: job.minigameDuration,
-        target: job.minigameTarget,
-        type: job.minigameType
-    };
-    
-    if(config.type === 'tap') {
-        renderTapMinigame(overlay, config, reward, job);
+    if(job.minigameType === 'tap') {
+        startTapGame(job, modal);
+    } else if(job.minigameType === 'math') {
+        startMathGame(job, modal);
     }
-    
-    document.body.appendChild(overlay);
 }
 
-function renderTapMinigame(overlay, config, reward, job) {
-    let clicks = 0;
-    let timeLeft = config.duration;
-    let gameOver = false;
+function startTapGame(job, modal) {
+    let taps = 0;
+    let timeLeft = job.minigameDuration || 5;
+    let running = false;
+    let timerId = null;
+    const target = job.minigameTarget || 30;
     
-    overlay.innerHTML = `
-        <div class="minigame-box">
-            <div class="minigame-title">${job.icon} ${job.name}</div>
-            <div class="minigame-game-area">
-                <div class="minigame-progress">
-                    <div class="minigame-progress-fill" id="game-time-fill" style="width:100%"></div>
+    function render() {
+        const targetMet = taps >= target;
+        const earned = targetMet ? getJobReward() : 0;
+        modal.innerHTML = `
+            <div class="minigame-box">
+                <div class="mg-modal-title">${job.name}</div>
+                <div class="mg-modal-sub">${job.description}</div>
+                <div class="minigame-game-area">
+                    <div class="tap-timer">${running ? '⏱️ ' + timeLeft + 'с' : (timeLeft === 0 ? 'Время!' : 'Готов?')}</div>
+                    <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Нужно: <span style="color:#4cde80;font-weight:bold;">${target}</span> | Тапов: <span style="color:#ffd200;font-weight:bold;">${taps}</span></div>
+                    <div class="tap-counter">${taps}/${target}</div>
+                    <div class="tap-area" id="tap-btn">${running ? '💥' : '👆'}</div>
+                    ${!running && timeLeft > 0 ? '<div class="mg-modal-sub" style="margin-top:12px;font-size:13px;">Нажми на кружок чтобы начать!</div>' : ''}
                 </div>
-                <div style="font-size:14px;color:rgba(255,255,255,0.6);">Нажимай на кнопку!</div>
-                <button class="button-mash-target" id="tap-button">👆</button>
-                <div class="button-mash-counter" id="click-counter">0</div>
+                ${timeLeft === 0 ? `
+                    <div style="text-align:center;margin-top:16px;">
+                        ${targetMet ? `
+                            <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Ус��ех!</div>
+                            <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
+                        ` : `
+                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
+                            <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
+                        `}
+                    </div>
+                    <button class="minigame-close-btn" onclick="document.getElementById('mg-modal').remove();updateHUD();updateHomeWorkBtn();minigameActive=false;saveGame(false);">✖️ Закрыть</button>
+                ` : ''}
             </div>
-            <button class="minigame-close-btn" id="game-close-btn">✖️ Выход</button>
-        </div>
-    `;
-    
-    const tapBtn = overlay.querySelector('#tap-button');
-    const counter = overlay.querySelector('#click-counter');
-    const timeFill = overlay.querySelector('#game-time-fill');
-    const closeBtn = overlay.querySelector('#game-close-btn');
-    
-    const updateDisplay = () => {
-        counter.textContent = clicks;
-        const pct = Math.max(0, (timeLeft / config.duration) * 100);
-        timeFill.style.width = pct + '%';
-    };
-    
-    tapBtn.onclick = () => {
-        if(!gameOver) {
-            clicks++;
-            updateDisplay();
-        }
-    };
-    
-    closeBtn.onclick = () => {
-        gameOver = true;
-        endMinigame(overlay, clicks, config.target, reward, job);
-    };
-    
-    const gameTimer = setInterval(() => {
-        if(gameOver) {
-            clearInterval(gameTimer);
-            return;
-        }
-        timeLeft -= 50;
-        updateDisplay();
+        `;
         
-        if(timeLeft <= 0) {
-            gameOver = true;
-            clearInterval(gameTimer);
-            endMinigame(overlay, clicks, config.target, reward, job);
+        const tapBtn = document.getElementById('tap-btn');
+        if(tapBtn) {
+            tapBtn.onclick = () => {
+                if (!running && timeLeft > 0) {
+                    running = true;
+                    timerId = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft <= 0) {
+                            clearInterval(timerId);
+                            running = false;
+                            const targetMet = taps >= target;
+                            const finalEarned = targetMet ? getJobReward() : 0;
+                            if(finalEarned > 0) {
+                                money += finalEarned;
+                                showMoneyPop(finalEarned);
+                            }
+                            render();
+                        } else {
+                            render();
+                        }
+                    }, 1000);
+                }
+                if (running) {
+                    taps++;
+                    if(tapBtn) {
+                        tapBtn.style.transform = 'scale(0.88)';
+                        setTimeout(() => {
+                            if(tapBtn) tapBtn.style.transform = 'scale(1)';
+                        }, 60);
+                    }
+                    render();
+                }
+            };
         }
-    }, 50);
-    
-    updateDisplay();
-}
-
-function endMinigame(overlay, clicks, target, reward, job) {
-    minigameActive = false;
-    
-    let actualReward = 0;
-    let result = '❌ Не справился!';
-    
-    if(clicks >= target) {
-        actualReward = reward;
-        result = `✅ Успех! +${formatMoney(reward)}`;
-        money += actualReward;
-        
-        showMoneyPop(actualReward);
     }
     
-    overlay.innerHTML = `
-        <div class="minigame-box">
-            <div class="minigame-title">${job.icon} ${job.name}</div>
-            <div class="minigame-game-area">
-                <div class="minigame-result">${result}</div>
-                <div style="font-size:14px;color:rgba(255,255,255,0.6);">Нужно было: ${target} нажатий</div>
-                <div style="font-size:14px;color:#4cde80;">Получилось: ${clicks} нажатий</div>
-                <div class="minigame-reward-display">${formatMoney(actualReward)}</div>
-            </div>
-            <button class="minigame-close-btn" onclick="this.parentElement.parentElement.remove();document.getElementById('page-work')&&updateWorkPageStatic();updateHUD();">✖️ Закрыть</button>
-        </div>
-    `;
-    
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    saveGame(false);
+    render();
 }
 
-function showMoneyPop(amount) {
-    const pop = document.createElement('div');
-    pop.className = 'money-pop';
-    pop.textContent = '+' + formatMoney(amount);
-    pop.style.left = (window.innerWidth / 2 - 30) + 'px';
-    pop.style.top = (window.innerHeight / 2 - 100) + 'px';
-    document.body.appendChild(pop);
-    setTimeout(() => pop.remove(), 1200);
+function startMathGame(job, modal) {
+    let score = 0;
+    let currentQuestion = null;
+    
+    function generateQuestion() {
+        const a = Math.floor(Math.random() * 20) + 1;
+        const b = Math.floor(Math.random() * 20) + 1;
+        const op = ['+', '-', '*'][Math.floor(Math.random() * 3)];
+        let answer;
+        if(op === '+') answer = a + b;
+        else if(op === '-') answer = a - b;
+        else answer = a * b;
+        
+        const wrong1 = answer + Math.floor(Math.random() * 10) + 1;
+        const wrong2 = answer - Math.floor(Math.random() * 10) - 1;
+        
+        const options = [answer, wrong1, wrong2].sort(() => Math.random() - 0.5);
+        
+        return { question: `${a} ${op} ${b}`, answer, options };
+    }
+    
+    function nextQuestion() {
+        currentQuestion = generateQuestion();
+        render();
+    }
+    
+    function render() {
+        if(!currentQuestion) {
+            currentQuestion = generateQuestion();
+        }
+        
+        const earned = getJobReward() * score;
+        modal.innerHTML = `
+            <div class="minigame-box">
+                <div class="mg-modal-title">${job.name}</div>
+                <div class="mg-modal-sub">${job.description}</div>
+                <div class="minigame-game-area">
+                    <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+                        ${currentQuestion.options.map((opt, i) => `
+                            <button class="math-option-btn" onclick="checkAnswer(${opt}, ${currentQuestion.answer})">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
+                </div>
+                <button class="minigame-close-btn" onclick="finalizeMathGame(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+            </div>
+        `;
+        
+        window.checkAnswer = function(selected, correct) {
+            if(selected === correct) {
+                score++;
+                nextQuestion();
+            } else {
+                finalizeMathGame(getJobReward() * score);
+            }
+        };
+    }
+    
+    window.finalizeMathGame = function(earned) {
+        if(earned > 0) {
+            money += earned;
+            showMoneyPop(earned);
+        }
+        document.getElementById('mg-modal').remove();
+        updateHUD();
+        updateHomeWorkBtn();
+        minigameActive = false;
+        saveGame(false);
+    };
+    
+    nextQuestion();
 }
 
 /* ══════════════════════════════════════════════
