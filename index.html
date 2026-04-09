@@ -7,12 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body {
-            height: 100%;
-            overflow: hidden; /* ← запрещаем скролл на body */
-        }
-
+        html, body { height: 100%; overflow: hidden; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -22,16 +17,7 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* ─── HUD — фиксированная высота, не скроллится ─── */
-        .hud {
-            flex-shrink: 0;
-            width: 100%;
-            background: linear-gradient(180deg,#2c2c2c 0%,#1a1a1a 100%);
-            border-bottom: 2.5px solid #000;
-            box-shadow: 0 3px 14px rgba(0,0,0,0.7);
-            padding: 5px 8px 6px;
-        }
+        .hud { flex-shrink:0; width:100%; background:linear-gradient(180deg,#2c2c2c 0%,#1a1a1a 100%); border-bottom:2.5px solid #000; box-shadow:0 3px 14px rgba(0,0,0,0.7); padding:5px 8px 6px; }
         .hud-nickname { text-align:center; font-size:11px; font-weight:600; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
         .hud-row { display:flex; align-items:center; gap:6px; }
         .level-box { width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#4a7c2f 0%,#2d5a10 100%); border:2px solid #111; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
@@ -50,47 +36,10 @@
         .progress-fill { height:100%; border-radius:6px; transition:width 0.4s ease; background:linear-gradient(90deg,#ff4e4e 0%,#ff0000 100%); box-shadow:0 0 6px #ff000088; }
         .health-percent { font-size:10px; font-weight:bold; color:#ddd; min-width:26px; text-align:right; flex-shrink:0; }
 
-        /* ─── PAGES WRAPPER — занимает всё пространство между HUD и навбаром ─── */
-        .pages-wrap {
-            flex: 1;
-            overflow: hidden; /* скролл только внутри страниц */
-            position: relative;
-        }
+        .pages-wrap { flex:1; overflow:hidden; position:relative; }
+        .page { display:none; position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+        .page.active { display:block; }
 
-        /* ─── КАЖДАЯ СТРАНИЦА — скроллится сама по себе ─── */
-        .page {
-            display: none;
-            position: absolute;
-            inset: 0;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .page.active { display: block; }
-
-        /* ─── BOTTOM NAV — фиксированная высота, не скроллится ─── */
-        .bottom-nav {
-            flex-shrink: 0;
-            width: 100%;
-            background: linear-gradient(180deg,#1a1a1a 0%,#2c2c2c 100%);
-            border-top: 2.5px solid #000;
-            box-shadow: 0 -3px 14px rgba(0,0,0,0.7);
-            display: flex;
-            padding: 6px 0 10px;
-        }
-        .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; padding:6px 0; border-radius:10px; transition:background 0.15s; }
-        .nav-btn:active { background:rgba(255,255,255,0.08); }
-        .nav-btn .nav-icon  { font-size:22px; }
-        .nav-btn .nav-label { font-size:10px; color:#666; font-weight:600; }
-        .nav-btn.active .nav-icon  { filter:drop-shadow(0 0 4px #ffe066); }
-        .nav-btn.active .nav-label { color:#ffe066; }
-        .nav-btn.nav-locked .nav-icon  { opacity:0.3; }
-        .nav-btn.nav-locked .nav-label { color:#444; }
-        .nav-btn.nav-locked { cursor:not-allowed; }
-        .nav-btn-wrap { position:relative; flex:1; display:flex; justify-content:center; }
-        .nav-pending-dot { position:absolute; top:4px; right:12px; width:8px; height:8px; background:#4cde80; border-radius:50%; border:1.5px solid #1a1a1a; display:none; animation:dotPulse 1.5s ease-in-out infinite; }
-        @keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.7} }
-
-        /* ─── HOME ─── */
         .home-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px; min-height:100%; }
         .home-emoji { font-size:64px; }
         .home-title { font-size:24px; font-weight:bold; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.4); margin-bottom:6px; text-align:center; }
@@ -103,11 +52,6 @@
         .home-btn-title { font-size:15px; font-weight:bold; color:#fff; }
         .home-btn-sub { font-size:11px; color:rgba(255,255,255,0.6); margin-top:2px; }
 
-        /* ─── LIST PAGES ─── */
-        .list-inner { padding:16px; display:flex; flex-direction:column; gap:14px; }
-        .page-header { text-align:center; color:#fff; font-size:18px; font-weight:bold; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
-
-        /* ─── WORK PAGE ─── */
         .work-inner { padding:16px; display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:20px; }
         .work-job-badge { width:100%; background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.25); border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(6px); }
         .work-job-icon { font-size:36px; }
@@ -149,7 +93,9 @@
         .seniority-footer { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.38); }
         .seniority-footer .hl { color:#74b9ff; font-weight:bold; }
 
-        /* ─── JOB CARDS ─── */
+        .list-inner { padding:16px; display:flex; flex-direction:column; gap:14px; }
+        .page-header { text-align:center; color:#fff; font-size:18px; font-weight:bold; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
+
         .job-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .job-card.locked-job { background:rgba(0,0,0,0.3); border-color:rgba(255,107,107,0.3); opacity:0.6; }
         .job-card.other-job  { background:rgba(0,0,0,0.25); border-color:rgba(255,200,100,0.25); opacity:0.5; }
@@ -175,7 +121,6 @@
         .notice-badge.locked-notice { background:rgba(255,107,107,0.12); border:1.5px solid #ff6b6b; color:#ff6b6b; }
         .notice-badge.other-notice  { background:rgba(255,200,100,0.12); border:1.5px solid #ffc864; color:#ffc864; }
 
-        /* ─── SCHOOL CARDS ─── */
         .school-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .school-card.active-school    { background:rgba(255,255,255,0.18); border-color:#ffe066; }
         .school-card.completed-school { background:rgba(46,213,115,0.10); border-color:#2ed573; }
@@ -191,8 +136,8 @@
         .reward-lvl { color:#a8d880; }
         .reward-pop { color:#ffe066; }
         .school-price { font-size:13px; font-weight:bold; color:#4cde80; background:rgba(0,0,0,0.3); border-radius:8px; padding:4px 10px; white-space:nowrap; flex-shrink:0; align-self:flex-start; }
-        .school-price.free         { color:#74b9ff; }
-        .school-price.done         { color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid #2ed573; }
+        .school-price.free { color:#74b9ff; }
+        .school-price.done { color:#2ed573; background:rgba(46,213,115,0.15); border:1px solid #2ed573; }
         .school-price.locked-price { color:#ff6b6b; background:rgba(255,107,107,0.12); border:1px solid #ff6b6b; }
         .school-progress-label { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.8); margin-bottom:5px; font-weight:600; }
         .school-progress-track { width:100%; height:12px; background:rgba(0,0,0,0.4); border-radius:6px; overflow:hidden; border:1px solid rgba(0,0,0,0.5); }
@@ -204,7 +149,6 @@
         .enroll-btn.free-btn { background:linear-gradient(135deg,#74b9ff,#0984e3); color:#fff; }
         .enroll-btn.paid-btn { background:linear-gradient(135deg,#f7971e,#ffd200); color:#333; }
 
-        /* ─── BUSINESS CARDS ─── */
         .biz-card { background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); border-radius:16px; padding:16px; backdrop-filter:blur(6px); }
         .biz-card.owned-biz  { background:rgba(255,214,0,0.08); border-color:#ffd200; }
         .biz-card.locked-biz { background:rgba(0,0,0,0.3); border-color:rgba(255,107,107,0.3); opacity:0.6; }
@@ -241,7 +185,7 @@
         .lb-my-pos { background:rgba(255,214,0,0.1); border:2px solid rgba(255,214,0,0.4); border-radius:14px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
         .lb-my-rank { font-size:22px; font-weight:900; color:#ffd200; min-width:36px; text-align:center; }
         .lb-my-info { flex:1; }
-        .lb-my-name { font-size:14px; font-weight:bold; color:#fff; }
+        .lb-my-name  { font-size:14px; font-weight:bold; color:#fff; }
         .lb-my-stats { font-size:11px; color:rgba(255,255,255,0.55); margin-top:2px; }
         .lb-my-money { font-size:15px; font-weight:bold; color:#4cde80; }
         .lb-list { display:flex; flex-direction:column; gap:8px; }
@@ -255,7 +199,7 @@
         .lb-rank.silver { color:#c0c0c0; }
         .lb-rank.bronze { color:#cd7f32; }
         .lb-rank.normal { color:rgba(255,255,255,0.4); font-size:13px; }
-        .lb-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; color:#fff; flex-shrink:0; border:2px solid rgba(255,255,255,0.15); overflow:hidden; }
+        .lb-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; color:#fff; flex-shrink:0; border:2px solid rgba(255,255,255,0.15); overflow:hidden; }
         .lb-avatar img { width:100%; height:100%; object-fit:cover; }
         .lb-avatar.me-avatar { border-color:#ffd200; }
         .lb-user { flex:1; min-width:0; }
@@ -266,23 +210,37 @@
         .lb-sep-line { flex:1; height:1px; background:rgba(255,255,255,0.1); }
         .lb-sep-text { font-size:10px; color:rgba(255,255,255,0.3); font-weight:600; }
         .lb-section-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1px; padding:0 4px; }
-        .lb-note { text-align:center; font-size:11px; color:rgba(255,255,255,0.25); padding:8px 0 4px; line-height:1.6; }
+        .lb-empty { text-align:center; padding:40px 20px; color:rgba(255,255,255,0.4); font-size:14px; line-height:1.8; }
+        .lb-empty-icon { font-size:48px; margin-bottom:12px; }
+        .lb-loading { display:flex; flex-direction:column; align-items:center; gap:12px; padding:40px 20px; color:rgba(255,255,255,0.5); font-size:13px; }
+        .lb-spinner { width:36px; height:36px; border:3px solid rgba(255,255,255,0.1); border-top-color:#ffe066; border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .lb-refresh-btn { width:100%; margin-top:8px; padding:10px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.6); border-radius:10px; font-size:13px; cursor:pointer; }
 
-        /* Тост сохранения */
         .save-toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(46,213,115,0.9); color:#fff; padding:8px 18px; border-radius:20px; font-size:12px; font-weight:600; z-index:9999; pointer-events:none; animation:toastAnim 2s ease forwards; white-space:nowrap; }
         @keyframes toastAnim { 0%{opacity:0;transform:translateX(-50%) translateY(10px)} 15%{opacity:1;transform:translateX(-50%) translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(-6px)} }
+
+        .bottom-nav { flex-shrink:0; width:100%; background:linear-gradient(180deg,#1a1a1a 0%,#2c2c2c 100%); border-top:2.5px solid #000; box-shadow:0 -3px 14px rgba(0,0,0,0.7); display:flex; padding:6px 0 10px; }
+        .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; padding:6px 0; border-radius:10px; transition:background 0.15s; }
+        .nav-btn:active { background:rgba(255,255,255,0.08); }
+        .nav-btn .nav-icon  { font-size:22px; }
+        .nav-btn .nav-label { font-size:10px; color:#666; font-weight:600; }
+        .nav-btn.active .nav-icon  { filter:drop-shadow(0 0 4px #ffe066); }
+        .nav-btn.active .nav-label { color:#ffe066; }
+        .nav-btn.nav-locked .nav-icon  { opacity:0.3; }
+        .nav-btn.nav-locked .nav-label { color:#444; }
+        .nav-btn.nav-locked { cursor:not-allowed; }
+        .nav-btn-wrap { position:relative; flex:1; display:flex; justify-content:center; }
+        .nav-pending-dot { position:absolute; top:4px; right:12px; width:8px; height:8px; background:#4cde80; border-radius:50%; border:1.5px solid #1a1a1a; display:none; animation:dotPulse 1.5s ease-in-out infinite; }
+        @keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.7} }
     </style>
 </head>
 <body>
 
-<!-- HUD -->
 <div class="hud">
     <div class="hud-nickname" id="nickname">Игрок</div>
     <div class="hud-row">
-        <div class="level-box">
-            <span class="level-label">lvl</span>
-            <span class="level-number" id="hud-level">1</span>
-        </div>
+        <div class="level-box"><span class="level-label">lvl</span><span class="level-number" id="hud-level">1</span></div>
         <div class="stats">
             <div class="stats-row">
                 <div class="stat-chip"><span class="icon">💰</span><span class="value money-value" id="hud-money">$0</span></div>
@@ -297,10 +255,8 @@
     </div>
 </div>
 
-<!-- Pages wrapper -->
 <div class="pages-wrap">
 
-    <!-- Главная -->
     <div class="page active" id="page-home">
         <div class="home-inner">
             <div class="home-emoji">🌆</div>
@@ -309,31 +265,15 @@
                 <div class="home-sub">Учись, работай, открывай бизнесы.<br>Развивай своего персонажа!</div>
             </div>
             <div class="home-btns">
-                <button class="home-btn" onclick="switchPage('dev')">
-                    <span class="home-btn-icon">📚</span>
-                    <div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Повышай уровень</div></div>
-                </button>
-                <button class="home-btn" onclick="switchPage('jobs')">
-                    <span class="home-btn-icon">📋</span>
-                    <div><div class="home-btn-title">Вакансии</div><div class="home-btn-sub">Найди работу</div></div>
-                </button>
-                <button class="home-btn locked-btn" id="home-work-btn" onclick="switchPage('work')">
-                    <span class="home-btn-icon">💼</span>
-                    <div><div class="home-btn-title">Моя работа</div><div class="home-btn-sub" id="home-work-sub">⚠️ Нет работы</div></div>
-                </button>
-                <button class="home-btn" onclick="switchPage('biz')">
-                    <span class="home-btn-icon">🏢</span>
-                    <div><div class="home-btn-title">Бизнесы</div><div class="home-btn-sub" id="home-biz-sub">Открой своё дело</div></div>
-                </button>
-                <button class="home-btn" onclick="switchPage('lb')">
-                    <span class="home-btn-icon">🏆</span>
-                    <div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub">Соревнуйся с другими</div></div>
-                </button>
+                <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Повышай уровень</div></div></button>
+                <button class="home-btn" onclick="switchPage('jobs')"><span class="home-btn-icon">📋</span><div><div class="home-btn-title">Вакансии</div><div class="home-btn-sub">Найди работу</div></div></button>
+                <button class="home-btn locked-btn" id="home-work-btn" onclick="switchPage('work')"><span class="home-btn-icon">💼</span><div><div class="home-btn-title">Моя работа</div><div class="home-btn-sub" id="home-work-sub">⚠️ Нет работы</div></div></button>
+                <button class="home-btn" onclick="switchPage('biz')"><span class="home-btn-icon">🏢</span><div><div class="home-btn-title">Бизнесы</div><div class="home-btn-sub" id="home-biz-sub">Открой своё дело</div></div></button>
+                <button class="home-btn" onclick="switchPage('lb')"><span class="home-btn-icon">🏆</span><div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub" id="home-lb-sub">Соревнуйся с другими</div></div></button>
             </div>
         </div>
     </div>
 
-    <!-- Вакансии -->
     <div class="page" id="page-jobs">
         <div class="list-inner">
             <div class="page-header">📋 Вакансии</div>
@@ -341,15 +281,11 @@
         </div>
     </div>
 
-    <!-- Работа -->
     <div class="page" id="page-work">
         <div class="work-inner">
             <div class="work-job-badge">
                 <div class="work-job-icon" id="work-icon">❓</div>
-                <div class="work-job-info">
-                    <div class="work-job-title">Вы работаете</div>
-                    <div class="work-job-name" id="work-name">—</div>
-                </div>
+                <div class="work-job-info"><div class="work-job-title">Вы работаете</div><div class="work-job-name" id="work-name">—</div></div>
             </div>
             <div class="pending-card">
                 <div class="pending-label">💸 Заработано за сессию</div>
@@ -363,20 +299,13 @@
                 <div class="mult-chip"><div class="mult-chip-label">Итого/сек</div><div class="mult-chip-value mult-total" id="mult-total">$0</div></div>
             </div>
             <div class="seniority-card">
-                <div class="seniority-header">
-                    <div class="seniority-title">📅 Стаж работы</div>
-                    <div class="seniority-days-badge" id="seniority-badge">0 дней</div>
-                </div>
+                <div class="seniority-header"><div class="seniority-title">📅 Стаж работы</div><div class="seniority-days-badge" id="seniority-badge">0 дней</div></div>
                 <div class="seniority-track"><div class="seniority-fill" id="seniority-fill"></div></div>
-                <div class="seniority-footer">
-                    <span>Сейчас: <span class="hl" id="seniority-mult-now">×1.00</span></span>
-                    <span>Макс: <span class="hl">×3.00</span> (100 дней)</span>
-                </div>
+                <div class="seniority-footer"><span>Сейчас: <span class="hl" id="seniority-mult-now">×1.00</span></span><span>Макс: <span class="hl">×3.00</span> (100 дней)</span></div>
             </div>
         </div>
     </div>
 
-    <!-- Образование -->
     <div class="page" id="page-dev">
         <div class="list-inner">
             <div class="page-header">📚 Образование</div>
@@ -384,7 +313,6 @@
         </div>
     </div>
 
-    <!-- Бизнесы -->
     <div class="page" id="page-biz">
         <div class="list-inner">
             <div class="page-header">🏢 Бизнесы</div>
@@ -392,7 +320,6 @@
         </div>
     </div>
 
-    <!-- Лидерборд -->
     <div class="page" id="page-lb">
         <div class="lb-inner">
             <div class="page-header">🏆 Топ игроков</div>
@@ -402,78 +329,57 @@
             </div>
             <div class="lb-my-pos">
                 <div class="lb-my-rank" id="lb-my-rank">#—</div>
-                <div class="lb-my-info">
-                    <div class="lb-my-name"  id="lb-my-name">Вы</div>
-                    <div class="lb-my-stats" id="lb-my-stats">Уровень 1 · ⭐0</div>
-                </div>
+                <div class="lb-my-info"><div class="lb-my-name" id="lb-my-name">Вы</div><div class="lb-my-stats" id="lb-my-stats">Уровень 1 · ⭐0</div></div>
                 <div class="lb-my-money" id="lb-my-money">$0</div>
             </div>
             <div id="lb-content"></div>
         </div>
     </div>
 
-</div><!-- /pages-wrap -->
+</div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
-    <button class="nav-btn active" id="nav-home" onclick="switchPage('home')">
-        <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
-    </button>
-    <button class="nav-btn" id="nav-jobs" onclick="switchPage('jobs')">
-        <span class="nav-icon">📋</span><span class="nav-label">Вакансии</span>
-    </button>
+    <button class="nav-btn active" id="nav-home" onclick="switchPage('home')"><span class="nav-icon">🏠</span><span class="nav-label">Главная</span></button>
+    <button class="nav-btn" id="nav-jobs" onclick="switchPage('jobs')"><span class="nav-icon">📋</span><span class="nav-label">Вакансии</span></button>
     <div class="nav-btn-wrap">
-        <button class="nav-btn nav-locked" id="nav-work" onclick="switchPage('work')">
-            <span class="nav-icon">💼</span><span class="nav-label">Работа</span>
-        </button>
+        <button class="nav-btn nav-locked" id="nav-work" onclick="switchPage('work')"><span class="nav-icon">💼</span><span class="nav-label">Работа</span></button>
         <div class="nav-pending-dot" id="nav-pending-dot"></div>
     </div>
-    <button class="nav-btn" id="nav-dev" onclick="switchPage('dev')">
-        <span class="nav-icon">📚</span><span class="nav-label">Учёба</span>
-    </button>
-    <button class="nav-btn" id="nav-biz" onclick="switchPage('biz')">
-        <span class="nav-icon">🏢</span><span class="nav-label">Бизнес</span>
-    </button>
-    <button class="nav-btn" id="nav-lb" onclick="switchPage('lb')">
-        <span class="nav-icon">🏆</span><span class="nav-label">Топ</span>
-    </button>
+    <button class="nav-btn" id="nav-dev" onclick="switchPage('dev')"><span class="nav-icon">📚</span><span class="nav-label">Учёба</span></button>
+    <button class="nav-btn" id="nav-biz" onclick="switchPage('biz')"><span class="nav-icon">🏢</span><span class="nav-label">Бизнес</span></button>
+    <button class="nav-btn" id="nav-lb"  onclick="switchPage('lb')"><span class="nav-icon">🏆</span><span class="nav-label">Топ</span></button>
 </div>
 
 <script>
-/* ╔══════════════════════════════════════════════════════╗
-   ║              ⚙️  КОНФИГ ВАКАНСИЙ                    ║
-   ╚══════════════════════════════════════════════════════╝ */
+/* ══════════════════════════════════════════════
+   ⚙️ КОНФИГ — меняй только здесь
+══════════════════════════════════════════════ */
+
+// 🌐 Адрес твоего сервера на Railway
+const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
+
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:1, requiredPop:20 },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Частичная занятость', income:2, requiredLevel:2, requiredPop:20 },
     { id:'courier',  name:'Курьер',    icon:'🚴', description:'Полная занятость',    income:3, requiredLevel:2, requiredPop:50 },
-    // { id:'manager', name:'Менеджер', icon:'👔', description:'Офисная работа', income:6, requiredLevel:5, requiredPop:200 },
 ];
 
-/* ╔══════════════════════════════════════════════════════╗
-   ║            🎓  КОНФИГ ОБРАЗОВАНИЯ                   ║
-   ╚══════════════════════════════════════════════════════╝ */
 const SCHOOLS_CONFIG = [
     { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:60*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
     { id:'private', name:'Частная школа', icon:'🏛',  duration:60*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
-    // { id:'university', name:'Университет', icon:'🎓', duration:5*60*1000, cost:1000, rewardLvl:5, rewardPop:200, requiredLvl:3, blocksId:'' },
 ];
 
-/* ╔══════════════════════════════════════════════════════╗
-   ║              🏢  КОНФИГ БИЗНЕСОВ                    ║
-   ╚══════════════════════════════════════════════════════╝ */
 const BUSINESS_CONFIG = [
     { id:'kiosk', name:'Газетный киоск', icon:'🗞️', description:'Небольшой киоск у метро.', price:500, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:0, requiredMoney:500 },
-    // { id:'cafe', name:'Кофейня', icon:'☕', description:'Уютная кофейня.', price:3000, incomePerSec:7, sellPercent:0.6, requiredLevel:3, requiredPop:100, requiredMoney:3000 },
 ];
 
 /* ══════════════════════════════════════════════
    TELEGRAM
 ══════════════════════════════════════════════ */
 let tg = null;
-try { tg = window.Telegram?.WebApp || null; if (tg) { tg.ready(); tg.expand(); } } catch(e) {}
+try { tg = window.Telegram?.WebApp||null; if(tg){tg.ready();tg.expand();} } catch(e){}
 
 const TG_USER  = tg?.initDataUnsafe?.user || null;
-const MY_ID    = TG_USER?.id    ? String(TG_USER.id) : 'local_' + Math.random().toString(36).slice(2);
+const MY_ID    = TG_USER?.id    ? String(TG_USER.id) : 'local_'+Math.random().toString(36).slice(2);
 const MY_NAME  = TG_USER?.username || TG_USER?.first_name || 'Игрок';
 const MY_PHOTO = TG_USER?.photo_url || '';
 
@@ -490,65 +396,91 @@ const AUTOSAVE_SEC       = 30;
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
-let money = 0, pendingMoney = 0, popularity = 0, health = 100, level = 1;
-let currentJob = null, jobHireTime = null;
-let studying = null, studyStart = null, studyTimer = null;
-let completedSchools = new Set();
-let lockedSchools    = new Set();
-let ownedBusinesses  = new Set();
-let lbTab = 'global';
+let money=0, pendingMoney=0, popularity=0, health=100, level=1;
+let currentJob=null, jobHireTime=null;
+let studying=null, studyStart=null, studyTimer=null;
+let completedSchools=new Set(), lockedSchools=new Set(), ownedBusinesses=new Set();
+let lbTab='global', lbCache={global:null,friends:null}, lbLoading=false;
 
 /* ══════════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════════ */
-const jobById    = id => JOBS_CONFIG.find(j => j.id === id);
-const schoolById = id => SCHOOLS_CONFIG.find(s => s.id === id);
-const bizById    = id => BUSINESS_CONFIG.find(b => b.id === id);
+const jobById    = id => JOBS_CONFIG.find(j=>j.id===id);
+const schoolById = id => SCHOOLS_CONFIG.find(s=>s.id===id);
+const bizById    = id => BUSINESS_CONFIG.find(b=>b.id===id);
 
-function formatMoney(n) {
-    n = Math.floor(n);
-    if (n >= 1_000_000) return '$'+(n/1_000_000).toFixed(1)+'M';
-    if (n >= 1_000)     return '$'+(n/1_000).toFixed(1)+'K';
-    return '$'+n;
+function formatMoney(n){
+    n=Math.floor(n);
+    if(n>=1_000_000)return'$'+(n/1_000_000).toFixed(1)+'M';
+    if(n>=1_000)return'$'+(n/1_000).toFixed(1)+'K';
+    return'$'+n;
 }
-function formatPop(n) {
-    if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+'M';
-    if (n >= 1_000)     return (n/1_000).toFixed(1)+'K';
+function formatPop(n){
+    if(n>=1_000_000)return(n/1_000_000).toFixed(1)+'M';
+    if(n>=1_000)return(n/1_000).toFixed(1)+'K';
     return String(n);
 }
-function formatTime(ms) {
-    if (ms <= 0) return '0с';
-    const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000), s=Math.floor((ms%60000)/1000);
-    if (h>0) return h+'ч '+m+'м'; if (m>0) return m+'м '+s+'с'; return s+'с';
+function formatTime(ms){
+    if(ms<=0)return'0с';
+    const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
+    if(h>0)return h+'ч '+m+'м'; if(m>0)return m+'м '+s+'с'; return s+'с';
 }
-function dayWord(n) {
-    if (n%100>=11&&n%100<=19) return 'дней';
+function dayWord(n){
+    if(n%100>=11&&n%100<=19)return'дней';
     const r=n%10; if(r===1)return'день'; if(r>=2&&r<=4)return'дня'; return'дней';
 }
-function getSeniorityDays() { if(!jobHireTime)return 0; return Math.floor((Date.now()-jobHireTime)/MS_PER_DAY); }
-function getMultiplier()    { return 1+(Math.min(getSeniorityDays(),MAX_SENIORITY_DAYS)*2)/100; }
-function getJobIncome()     { if(!currentJob)return 0; return jobById(currentJob).income*getMultiplier(); }
-function getBizIncome()     { let t=0; ownedBusinesses.forEach(id=>{const b=bizById(id);if(b)t+=b.incomePerSec;}); return t; }
-function canHireJob(id)     { const j=jobById(id); return level>=j.requiredLevel&&popularity>=j.requiredPop; }
-function canBuyBiz(id)      { const b=bizById(id); return level>=b.requiredLevel&&popularity>=b.requiredPop&&money>=b.requiredMoney; }
+function getSeniorityDays(){ if(!jobHireTime)return 0; return Math.floor((Date.now()-jobHireTime)/MS_PER_DAY); }
+function getMultiplier()   { return 1+(Math.min(getSeniorityDays(),MAX_SENIORITY_DAYS)*2)/100; }
+function getJobIncome()    { if(!currentJob)return 0; return jobById(currentJob).income*getMultiplier(); }
+function getBizIncome()    { let t=0; ownedBusinesses.forEach(id=>{const b=bizById(id);if(b)t+=b.incomePerSec;}); return t; }
+function canHireJob(id)    { const j=jobById(id); return level>=j.requiredLevel&&popularity>=j.requiredPop; }
+function canBuyBiz(id)     { const b=bizById(id); return level>=b.requiredLevel&&popularity>=b.requiredPop&&money>=b.requiredMoney; }
+
+/* ══════════════════════════════════════════════
+   🌐 СЕРВЕР
+══════════════════════════════════════════════ */
+async function syncToServer(){
+    try {
+        await fetch(SERVER_URL+'/save',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
+                money:Math.floor(money), level, popularity,
+                businesses:ownedBusinesses.size,
+                updatedAt:Date.now()
+            })
+        });
+    } catch(e){ console.log('sync fail',e); }
+}
+
+async function fetchTop(endpoint, body=null){
+    try {
+        const opts = body
+            ? {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}
+            : {method:'GET'};
+        const res = await fetch(SERVER_URL+endpoint, opts);
+        return await res.json();
+    } catch(e){ return null; }
+}
 
 /* ══════════════════════════════════════════════
    💾 SAVE / LOAD
 ══════════════════════════════════════════════ */
-function buildSave() {
+function buildSave(){
     return JSON.stringify({
-        money, pendingMoney, popularity, health, level,
-        currentJob, jobHireTime, studying, studyStart,
+        money,pendingMoney,popularity,health,level,
+        currentJob,jobHireTime,studying,studyStart,
         completedSchools:[...completedSchools],
         lockedSchools:   [...lockedSchools],
         ownedBusinesses: [...ownedBusinesses],
-        savedAt: Date.now(), playerName: MY_NAME, playerId: MY_ID
+        savedAt:Date.now(),playerName:MY_NAME,playerId:MY_ID
     });
 }
-function applySave(raw) {
-    if (!raw) return false;
-    try {
-        const d = JSON.parse(raw);
+function applySave(raw){
+    if(!raw)return false;
+    try{
+        const d=JSON.parse(raw);
         money=d.money||0; pendingMoney=d.pendingMoney||0; popularity=d.popularity||0;
         health=d.health??100; level=d.level||1;
         currentJob=d.currentJob||null; jobHireTime=d.jobHireTime||null;
@@ -557,41 +489,42 @@ function applySave(raw) {
         lockedSchools   =new Set(d.lockedSchools   ||[]);
         ownedBusinesses =new Set(d.ownedBusinesses ||[]);
         return true;
-    } catch(e) { return false; }
+    }catch(e){return false;}
 }
-function saveGame(toast=false) {
-    const data = buildSave();
-    if (tg?.CloudStorage) {
-        tg.CloudStorage.setItem(SAVE_KEY, data, err => {
-            if (err) { try { localStorage.setItem(SAVE_KEY,data); } catch(e){} }
+function saveGame(toast=false){
+    const data=buildSave();
+    if(tg?.CloudStorage){
+        tg.CloudStorage.setItem(SAVE_KEY,data,err=>{
+            if(err){try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
         });
-    } else { try { localStorage.setItem(SAVE_KEY,data); } catch(e){} }
-    if (toast) showSaveToast();
+    } else {try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
+    syncToServer(); // ← отправляем на сервер при каждом сохранении
+    if(toast)showSaveToast();
 }
-function loadGame(cb) {
-    if (tg?.CloudStorage) {
-        tg.CloudStorage.getItem(SAVE_KEY, (err,val) => {
-            if (!err && val) applySave(val);
-            else { const l=localStorage.getItem(SAVE_KEY); if(l) applySave(l); }
+function loadGame(cb){
+    if(tg?.CloudStorage){
+        tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
+            if(!err&&val)applySave(val);
+            else{const l=localStorage.getItem(SAVE_KEY);if(l)applySave(l);}
             cb();
         });
-    } else { const l=localStorage.getItem(SAVE_KEY); if(l) applySave(l); cb(); }
+    } else {const l=localStorage.getItem(SAVE_KEY);if(l)applySave(l);cb();}
 }
-function showSaveToast() {
-    const t=document.createElement('div'); t.className='save-toast'; t.textContent='💾 Прогресс сохранён';
-    document.body.appendChild(t); setTimeout(()=>t.remove(),2100);
+function showSaveToast(){
+    const t=document.createElement('div');t.className='save-toast';t.textContent='💾 Прогресс сохранён';
+    document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
 }
-setInterval(()=>saveGame(false), AUTOSAVE_SEC*1000);
-window.addEventListener('beforeunload', ()=>saveGame(false));
-if (tg) tg.onEvent('viewportChanged', ()=>saveGame(false));
+setInterval(()=>saveGame(false),AUTOSAVE_SEC*1000);
+window.addEventListener('beforeunload',()=>saveGame(false));
+if(tg)tg.onEvent('viewportChanged',()=>saveGame(false));
 
 /* ══════════════════════════════════════════════
    HUD
 ══════════════════════════════════════════════ */
-function updateHUD() {
-    document.getElementById('hud-money').textContent = formatMoney(money);
-    document.getElementById('hud-pop').textContent   = formatPop(popularity);
-    document.getElementById('hud-level').textContent = level;
+function updateHUD(){
+    document.getElementById('hud-money').textContent=formatMoney(money);
+    document.getElementById('hud-pop').textContent=formatPop(popularity);
+    document.getElementById('hud-level').textContent=level;
     const hp=Math.max(0,Math.min(100,health));
     document.getElementById('hud-health-fill').style.width=hp+'%';
     document.getElementById('hud-health-pct').textContent=hp+'%';
@@ -601,139 +534,108 @@ function updateHUD() {
    TICK
 ══════════════════════════════════════════════ */
 setInterval(()=>{
-    if (currentJob) {
-        pendingMoney += getJobIncome();
-        updateWorkPageLive(); updateClaimBtn(); updateNavDot(); updateHomeWorkBtn();
+    if(currentJob){
+        pendingMoney+=getJobIncome();
+        updateWorkPageLive();updateClaimBtn();updateNavDot();updateHomeWorkBtn();
     }
-    if (ownedBusinesses.size > 0) {
-        money += getBizIncome();
-        updateHUD(); updateHomeBizSub();
-        if (document.getElementById('page-biz').classList.contains('active')) renderBizList();
+    if(ownedBusinesses.size>0){
+        money+=getBizIncome();
+        updateHUD();updateHomeBizSub();
+        if(document.getElementById('page-biz').classList.contains('active'))renderBizList();
     }
-}, 1000);
+},1000);
 
 /* ══════════════════════════════════════════════
    CLAIM
 ══════════════════════════════════════════════ */
-function claimMoney() {
-    if (pendingMoney <= 0) return;
-    const amount=pendingMoney; money+=amount; pendingMoney=0;
-    updateHUD(); updateWorkPageLive(); updateClaimBtn(); updateNavDot(); updateHomeWorkBtn(); renderJobsList();
-    const flash=document.createElement('div'); flash.className='claimed-flash'; document.body.appendChild(flash); setTimeout(()=>flash.remove(),500);
-    const pop=document.createElement('div'); pop.className='money-pop'; pop.textContent='+'+formatMoney(amount);
+function claimMoney(){
+    if(pendingMoney<=0)return;
+    const amount=pendingMoney;money+=amount;pendingMoney=0;
+    updateHUD();updateWorkPageLive();updateClaimBtn();updateNavDot();updateHomeWorkBtn();renderJobsList();
+    const flash=document.createElement('div');flash.className='claimed-flash';document.body.appendChild(flash);setTimeout(()=>flash.remove(),500);
+    const pop=document.createElement('div');pop.className='money-pop';pop.textContent='+'+formatMoney(amount);
     const rect=document.getElementById('claim-btn').getBoundingClientRect();
-    pop.style.left=(rect.left+rect.width/2-30)+'px'; pop.style.top=rect.top+'px';
-    document.body.appendChild(pop); setTimeout(()=>pop.remove(),1200);
+    pop.style.left=(rect.left+rect.width/2-30)+'px';pop.style.top=rect.top+'px';
+    document.body.appendChild(pop);setTimeout(()=>pop.remove(),1200);
     saveGame(false);
 }
-function updateClaimBtn() {
-    const btn=document.getElementById('claim-btn'), has=pendingMoney>0;
-    btn.disabled=!has; btn.textContent=has?'💰 Забрать '+formatMoney(pendingMoney):'💰 Забрать';
+function updateClaimBtn(){
+    const btn=document.getElementById('claim-btn'),has=pendingMoney>0;
+    btn.disabled=!has;btn.textContent=has?'💰 Забрать '+formatMoney(pendingMoney):'💰 Забрать';
     btn.classList.toggle('has-money',has);
 }
-function updateNavDot() {
+function updateNavDot(){
     document.getElementById('nav-pending-dot').style.display=(currentJob&&pendingMoney>0)?'block':'none';
 }
 
 /* ══════════════════════════════════════════════
    WORK PAGE
 ══════════════════════════════════════════════ */
-function updateWorkPageLive() {
-    if (!currentJob) return;
-    const days=getSeniorityDays(), mult=getMultiplier(), income=getJobIncome();
-    const pct=Math.min(100,(days/MAX_SENIORITY_DAYS)*100), base=jobById(currentJob).income;
+function updateWorkPageLive(){
+    if(!currentJob)return;
+    const days=getSeniorityDays(),mult=getMultiplier(),income=getJobIncome();
+    const pct=Math.min(100,(days/MAX_SENIORITY_DAYS)*100),base=jobById(currentJob).income;
     const el=document.getElementById('pending-amount');
-    el.textContent=formatMoney(pendingMoney); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-    document.getElementById('per-sec-label').textContent      ='+'+formatMoney(income);
-    document.getElementById('mult-base-chip').textContent     ='$'+base;
-    document.getElementById('mult-bonus').textContent         ='×'+mult.toFixed(2);
-    document.getElementById('mult-total').textContent         =formatMoney(income);
-    document.getElementById('seniority-badge').textContent    =days+' '+dayWord(days);
-    document.getElementById('seniority-fill').style.width     =pct+'%';
-    document.getElementById('seniority-mult-now').textContent ='×'+mult.toFixed(2);
+    el.textContent=formatMoney(pendingMoney);el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+    document.getElementById('per-sec-label').textContent     ='+'+formatMoney(income);
+    document.getElementById('mult-base-chip').textContent    ='$'+base;
+    document.getElementById('mult-bonus').textContent        ='×'+mult.toFixed(2);
+    document.getElementById('mult-total').textContent        =formatMoney(income);
+    document.getElementById('seniority-badge').textContent   =days+' '+dayWord(days);
+    document.getElementById('seniority-fill').style.width    =pct+'%';
+    document.getElementById('seniority-mult-now').textContent='×'+mult.toFixed(2);
 }
-function updateWorkPageStatic() {
-    if (!currentJob) return;
+function updateWorkPageStatic(){
+    if(!currentJob)return;
     const job=jobById(currentJob);
     document.getElementById('work-icon').textContent=job.icon;
     document.getElementById('work-name').textContent=job.name;
-    updateWorkPageLive(); updateClaimBtn();
+    updateWorkPageLive();updateClaimBtn();
 }
 
 /* ══════════════════════════════════════════════
    HIRE / FIRE
 ══════════════════════════════════════════════ */
-function hire(jobId) {
+function hire(jobId){
     const job=jobById(jobId);
-    if (!job||!canHireJob(jobId)) {
+    if(!job||!canHireJob(jobId)){
         const msgs=[];
-        if(level<job.requiredLevel) msgs.push('📊 Нужен уровень '+job.requiredLevel);
-        if(popularity<job.requiredPop) msgs.push('⭐ Нужно '+job.requiredPop+' популярности');
-        alert('❌ Требования:\n'+msgs.join('\n')); return;
+        if(level<job.requiredLevel)msgs.push('📊 Нужен уровень '+job.requiredLevel);
+        if(popularity<job.requiredPop)msgs.push('⭐ Нужно '+job.requiredPop+' популярности');
+        alert('❌ Требования:\n'+msgs.join('\n'));return;
     }
-    currentJob=jobId; jobHireTime=Date.now(); pendingMoney=0;
-    updateWorkPageStatic(); updateNavWork(); updateNavDot(); updateHomeWorkBtn(); renderJobsList();
+    currentJob=jobId;jobHireTime=Date.now();pendingMoney=0;
+    updateWorkPageStatic();updateNavWork();updateNavDot();updateHomeWorkBtn();renderJobsList();
     saveGame(false);
     alert('✅ Вы устроились: '+job.name+'\n💵 $'+job.income+'/сек');
 }
-function fireJob(jobId) {
-    if (currentJob!==jobId) return;
-    if (pendingMoney>0&&!confirm('⚠️ Незабранные '+formatMoney(pendingMoney)+' пропадут!\nУволиться?')) return;
-    currentJob=null; jobHireTime=null; pendingMoney=0;
-    updateNavWork(); updateNavDot(); updateHomeWorkBtn(); updateClaimBtn(); renderJobsList();
+function fireJob(jobId){
+    if(currentJob!==jobId)return;
+    if(pendingMoney>0&&!confirm('⚠️ Незабранные '+formatMoney(pendingMoney)+' пропадут!\nУволиться?'))return;
+    currentJob=null;jobHireTime=null;pendingMoney=0;
+    updateNavWork();updateNavDot();updateHomeWorkBtn();updateClaimBtn();renderJobsList();
     saveGame(false);
-    if (document.querySelector('.page.active')?.id==='page-work') switchPage('home');
+    if(document.querySelector('.page.active')?.id==='page-work')switchPage('home');
     alert('🚪 Вы уволились.');
 }
 
 /* ══════════════════════════════════════════════
-   RENDER JOBS  ← исправлено: прямая вставка в #jobs-list
+   RENDER JOBS
 ══════════════════════════════════════════════ */
-function renderJobsList() {
-    const c = document.getElementById('jobs-list');
-    if (!c) return;
-    c.innerHTML = '';
-
-    JOBS_CONFIG.forEach(job => {
-        const isHired=currentJob===job.id, otherJob=currentJob!==null&&!isHired;
-        const can=canHireJob(job.id), lvlOk=level>=job.requiredLevel, popOk=popularity>=job.requiredPop;
-
-        const card=document.createElement('div');
-        card.className='job-card';
-        if(isHired) card.classList.add('hired-job');
-        else if(otherJob) card.classList.add('other-job');
-        else if(!can) card.classList.add('locked-job');
-
-        let sc='job-salary-badge';
-        if(isHired) sc+=' hired-salary';
-        else if(!can||otherJob) sc+=' locked-salary';
-
+function renderJobsList(){
+    const c=document.getElementById('jobs-list');if(!c)return;c.innerHTML='';
+    JOBS_CONFIG.forEach(job=>{
+        const isHired=currentJob===job.id,otherJob=currentJob!==null&&!isHired;
+        const can=canHireJob(job.id),lvlOk=level>=job.requiredLevel,popOk=popularity>=job.requiredPop;
+        const card=document.createElement('div');card.className='job-card';
+        if(isHired)card.classList.add('hired-job');else if(otherJob)card.classList.add('other-job');else if(!can)card.classList.add('locked-job');
+        let sc='job-salary-badge';if(isHired)sc+=' hired-salary';else if(!can||otherJob)sc+=' locked-salary';
         const reqLvl=`<span class="req-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${job.requiredLevel} уровень</span>`;
         const reqPop=`<span class="req-tag ${popOk?'ok':'fail'}">${popOk?'✅':'🔒'} ⭐${job.requiredPop}</span>`;
-
         let notice='';
-        if(otherJob) notice=`<div class="notice-badge other-notice">💼 Уже работаете в другом месте</div>`;
-        else if(!can){
-            const need=[];
-            if(!lvlOk) need.push(job.requiredLevel+' ур.');
-            if(!popOk) need.push('⭐'+job.requiredPop);
-            notice=`<div class="notice-badge locked-notice">🔒 Нужно: ${need.join(' · ')}</div>`;
-        }
-
-        card.innerHTML=`
-            <div class="job-top">
-                <div class="job-icon">${job.icon}</div>
-                <div class="job-info">
-                    <div class="job-name">${job.name}</div>
-                    <div class="job-meta"><span>${job.description}</span><span>📈 Доход растёт со стажем</span></div>
-                    <div class="job-reqs">${reqLvl}${reqPop}</div>
-                </div>
-                <div class="${sc}"><span>$${job.income}</span><span class="per-sec-small">в секунду</span></div>
-            </div>
-            ${notice}
-            ${(!isHired&&!otherJob&&can)?`<button class="hire-btn" onclick="hire('${job.id}')">👋 Устроиться</button>`:''}
-            ${isHired?`<button class="fire-btn" onclick="fireJob('${job.id}')">🚪 Уволиться</button>`:''}
-        `;
+        if(otherJob)notice=`<div class="notice-badge other-notice">💼 Уже работаете в другом месте</div>`;
+        else if(!can){const need=[];if(!lvlOk)need.push(job.requiredLevel+' ур.');if(!popOk)need.push('⭐'+job.requiredPop);notice=`<div class="notice-badge locked-notice">🔒 Нужно: ${need.join(' · ')}</div>`;}
+        card.innerHTML=`<div class="job-top"><div class="job-icon">${job.icon}</div><div class="job-info"><div class="job-name">${job.name}</div><div class="job-meta"><span>${job.description}</span><span>📈 Доход растёт со стажем</span></div><div class="job-reqs">${reqLvl}${reqPop}</div></div><div class="${sc}"><span>$${job.income}</span><span class="per-sec-small">в секунду</span></div></div>${notice}${(!isHired&&!otherJob&&can)?`<button class="hire-btn" onclick="hire('${job.id}')">👋 Устроиться</button>`:''}${isHired?`<button class="fire-btn" onclick="fireJob('${job.id}')">🚪 Уволиться</button>`:''}`;
         c.appendChild(card);
     });
 }
@@ -741,276 +643,191 @@ function renderJobsList() {
 /* ══════════════════════════════════════════════
    SCHOOL ACTIONS
 ══════════════════════════════════════════════ */
-function enroll(sid) {
-    if(studying) return;
-    if(completedSchools.has(sid)||lockedSchools.has(sid)) return;
-    const s=schoolById(sid); if(!s) return;
+function enroll(sid){
+    if(studying)return;if(completedSchools.has(sid)||lockedSchools.has(sid))return;
+    const s=schoolById(sid);if(!s)return;
     if(level<s.requiredLvl){alert('❌ Нужен '+s.requiredLvl+' уровень!');return;}
     if(s.cost>0&&money<s.cost){alert('❌ Недостаточно денег! Нужно $'+s.cost);return;}
     if(s.cost>0){money-=s.cost;updateHUD();}
-    studying=sid; studyStart=Date.now();
-    renderSchoolsList(); runStudyTimer(); saveGame(false);
+    studying=sid;studyStart=Date.now();
+    renderSchoolsList();runStudyTimer();saveGame(false);
 }
-function runStudyTimer() {
-    if(studyTimer) clearInterval(studyTimer);
+function runStudyTimer(){
+    if(studyTimer)clearInterval(studyTimer);
     studyTimer=setInterval(()=>{
-        if(!studying||!studyStart) return;
-        const s=schoolById(studying), elapsed=Date.now()-studyStart;
-        const left=Math.max(0,s.duration-elapsed), pct=Math.min(100,(elapsed/s.duration)*100).toFixed(1);
+        if(!studying||!studyStart)return;
+        const s=schoolById(studying),elapsed=Date.now()-studyStart;
+        const left=Math.max(0,s.duration-elapsed),pct=Math.min(100,(elapsed/s.duration)*100).toFixed(1);
         const fe=document.getElementById('school-fill-'+studying);
         const te=document.getElementById('school-time-'+studying);
-        if(fe) fe.style.width=pct+'%';
-        if(te) te.textContent=formatTime(left);
+        if(fe)fe.style.width=pct+'%';if(te)te.textContent=formatTime(left);
         if(left<=0){clearInterval(studyTimer);studyTimer=null;finishStudy();}
     },500);
 }
-function finishStudy() {
-    const sid=studying, s=schoolById(sid);
-    level+=s.rewardLvl; popularity+=s.rewardPop;
-    completedSchools.add(sid); if(s.blocksId) lockedSchools.add(s.blocksId);
-    studying=null; studyStart=null;
-    updateHUD(); renderSchoolsList(); renderJobsList(); renderBizList();
+function finishStudy(){
+    const sid=studying,s=schoolById(sid);
+    level+=s.rewardLvl;popularity+=s.rewardPop;
+    completedSchools.add(sid);if(s.blocksId)lockedSchools.add(s.blocksId);
+    studying=null;studyStart=null;
+    updateHUD();renderSchoolsList();renderJobsList();renderBizList();
     saveGame(true);
     alert('🎓 Обучение завершено!\n📈 Уровень: +'+s.rewardLvl+' → '+level+'\n⭐ Популярность: +'+s.rewardPop+' → '+popularity);
 }
 
 /* ══════════════════════════════════════════════
-   RENDER SCHOOLS  ← исправлено: прямая вставка в #schools-list
+   RENDER SCHOOLS
 ══════════════════════════════════════════════ */
-function renderSchoolsList() {
-    const c = document.getElementById('schools-list');
-    if (!c) return;
-    c.innerHTML = '';
-
-    SCHOOLS_CONFIG.forEach(s => {
-        const isDone=completedSchools.has(s.id), isLocked=lockedSchools.has(s.id);
-        const isSt=studying===s.id, othSt=studying!==null&&!isSt;
-        const lvlOk=level>=s.requiredLvl, isFree=s.cost===0;
-
-        const card=document.createElement('div');
-        card.className='school-card';
-        if(isDone) card.classList.add('completed-school');
-        else if(isLocked) card.classList.add('locked-school');
-        else if(isSt) card.classList.add('active-school');
-        else if(othSt) card.classList.add('other-studying');
-
-        let pt=isFree?'Бесплатно':'$'+s.cost, pc='school-price'+(isFree?' free':'');
-        if(isDone){pt='✅ Пройдено';pc='school-price done';}
-        if(isLocked){pt='🔒 Закрыто';pc='school-price locked-price';}
-
-        const rw=[];
-        if(s.rewardLvl>0) rw.push(`<span class="reward-tag reward-lvl">+${s.rewardLvl} уровень${s.rewardLvl>1?'я':''}</span>`);
-        if(s.rewardPop>0) rw.push(`<span class="reward-tag reward-pop">+${s.rewardPop} популярности</span>`);
-
-        let btn='';
-        if(!isDone&&!isLocked&&!isSt&&!othSt&&lvlOk){
-            const bc=isFree?'free-btn':'paid-btn';
-            const bt=isFree?'📖 Поступить бесплатно':`🎓 Поступить за $${s.cost}`;
-            btn=`<button class="enroll-btn ${bc}" onclick="enroll('${s.id}')">${bt}</button>`;
-        }
-
-        const prog=isSt?`
-            <div>
-                <div class="school-progress-label">
-                    <span>🎒 Обучение идёт...</span>
-                    <span id="school-time-${s.id}">—</span>
-                </div>
-                <div class="school-progress-track">
-                    <div class="school-progress-fill" id="school-fill-${s.id}"></div>
-                </div>
-            </div>`:'';
-
-        card.innerHTML=`
-            <div class="school-top">
-                <div class="school-icon">${s.icon}</div>
-                <div class="school-info">
-                    <div class="school-name">${s.name}</div>
-                    <div class="school-meta">
-                        <span>⏱ ${formatTime(s.duration)}</span>
-                        ${s.requiredLvl>0?`<span>📌 ${s.requiredLvl} уровень</span>`:'<span>📌 Без требований</span>'}
-                    </div>
-                    <div class="school-rewards">${rw.join('')}</div>
-                </div>
-                <div class="${pc}">${pt}</div>
-            </div>
-            ${prog}
-            ${isDone?'<div class="completed-badge">✅ Пройдено</div>':''}
-            ${isLocked?'<div class="locked-badge">🔒 Вы выбрали другую школу</div>':''}
-            ${!isDone&&!isLocked&&!lvlOk&&!isSt?`<div class="locked-badge">🔒 Нужен ${s.requiredLvl} уровень</div>`:''}
-            ${btn}
-        `;
+function renderSchoolsList(){
+    const c=document.getElementById('schools-list');if(!c)return;c.innerHTML='';
+    SCHOOLS_CONFIG.forEach(s=>{
+        const isDone=completedSchools.has(s.id),isLocked=lockedSchools.has(s.id);
+        const isSt=studying===s.id,othSt=studying!==null&&!isSt,lvlOk=level>=s.requiredLvl,isFree=s.cost===0;
+        const card=document.createElement('div');card.className='school-card';
+        if(isDone)card.classList.add('completed-school');else if(isLocked)card.classList.add('locked-school');else if(isSt)card.classList.add('active-school');else if(othSt)card.classList.add('other-studying');
+        let pt=isFree?'Бесплатно':'$'+s.cost,pc='school-price'+(isFree?' free':'');
+        if(isDone){pt='✅ Пройдено';pc='school-price done';}if(isLocked){pt='🔒 Закрыто';pc='school-price locked-price';}
+        const rw=[];if(s.rewardLvl>0)rw.push(`<span class="reward-tag reward-lvl">+${s.rewardLvl} уровень${s.rewardLvl>1?'я':''}</span>`);if(s.rewardPop>0)rw.push(`<span class="reward-tag reward-pop">+${s.rewardPop} популярности</span>`);
+        let btn='';if(!isDone&&!isLocked&&!isSt&&!othSt&&lvlOk){const bc=isFree?'free-btn':'paid-btn',bt=isFree?'📖 Поступить бесплатно':`🎓 Поступить за $${s.cost}`;btn=`<button class="enroll-btn ${bc}" onclick="enroll('${s.id}')">${bt}</button>`;}
+        const prog=isSt?`<div><div class="school-progress-label"><span>🎒 Обучение идёт...</span><span id="school-time-${s.id}">—</span></div><div class="school-progress-track"><div class="school-progress-fill" id="school-fill-${s.id}"></div></div></div>`:'';
+        card.innerHTML=`<div class="school-top"><div class="school-icon">${s.icon}</div><div class="school-info"><div class="school-name">${s.name}</div><div class="school-meta"><span>⏱ ${formatTime(s.duration)}</span>${s.requiredLvl>0?`<span>📌 ${s.requiredLvl} уровень</span>`:'<span>📌 Без требований</span>'}</div><div class="school-rewards">${rw.join('')}</div></div><div class="${pc}">${pt}</div></div>${prog}${isDone?'<div class="completed-badge">✅ Пройдено</div>':''}${isLocked?'<div class="locked-badge">🔒 Вы выбрали другую школу</div>':''}${!isDone&&!isLocked&&!lvlOk&&!isSt?`<div class="locked-badge">🔒 Нужен ${s.requiredLvl} уровень</div>`:''}${btn}`;
         c.appendChild(card);
     });
 }
 
 /* ══════════════════════════════════════════════
-   BIZ ACTIONS
+   BIZ
 ══════════════════════════════════════════════ */
-function buyBiz(id) {
-    const b=bizById(id); if(!b||ownedBusinesses.has(id)) return;
-    if(!canBuyBiz(id)){
-        const msgs=[];
-        if(level<b.requiredLevel) msgs.push('📊 Уровень '+b.requiredLevel);
-        if(popularity<b.requiredPop) msgs.push('⭐ '+b.requiredPop+' популярности');
-        if(money<b.requiredMoney) msgs.push('💰 '+formatMoney(b.requiredMoney));
-        alert('❌ Нужно:\n'+msgs.join('\n')); return;
-    }
-    if(!confirm('🏢 Купить «'+b.name+'» за '+formatMoney(b.price)+'?')) return;
-    money-=b.price; ownedBusinesses.add(id);
-    updateHUD(); renderBizList(); updateHomeBizSub(); saveGame(false);
+function buyBiz(id){
+    const b=bizById(id);if(!b||ownedBusinesses.has(id))return;
+    if(!canBuyBiz(id)){const msgs=[];if(level<b.requiredLevel)msgs.push('📊 Уровень '+b.requiredLevel);if(popularity<b.requiredPop)msgs.push('⭐ '+b.requiredPop);if(money<b.requiredMoney)msgs.push('💰 '+formatMoney(b.requiredMoney));alert('❌ Нужно:\n'+msgs.join('\n'));return;}
+    if(!confirm('🏢 Купить «'+b.name+'» за '+formatMoney(b.price)+'?'))return;
+    money-=b.price;ownedBusinesses.add(id);
+    updateHUD();renderBizList();updateHomeBizSub();saveGame(false);
     alert('✅ Куплено: «'+b.name+'»\n💵 +$'+b.incomePerSec+'/сек автоматически!');
 }
-function sellBiz(id) {
-    const b=bizById(id); if(!b||!ownedBusinesses.has(id)) return;
+function sellBiz(id){
+    const b=bizById(id);if(!b||!ownedBusinesses.has(id))return;
     const sp=Math.floor(b.price*b.sellPercent);
-    if(!confirm('💸 Продать «'+b.name+'» за '+formatMoney(sp)+'?')) return;
-    money+=sp; ownedBusinesses.delete(id);
-    updateHUD(); renderBizList(); updateHomeBizSub(); saveGame(false);
+    if(!confirm('💸 Продать «'+b.name+'» за '+formatMoney(sp)+'?'))return;
+    money+=sp;ownedBusinesses.delete(id);
+    updateHUD();renderBizList();updateHomeBizSub();saveGame(false);
 }
-
-/* ══════════════════════════════════════════════
-   RENDER BIZ
-══════════════════════════════════════════════ */
-function renderBizList() {
-    const c=document.getElementById('biz-list');
-    if(!c) return;
-    c.innerHTML='';
-
+function renderBizList(){
+    const c=document.getElementById('biz-list');if(!c)return;c.innerHTML='';
     BUSINESS_CONFIG.forEach(b=>{
-        const isOwned=ownedBusinesses.has(b.id), lvlOk=level>=b.requiredLevel;
-        const popOk=popularity>=b.requiredPop, monOk=money>=b.requiredMoney;
-        const canBuy=lvlOk&&popOk&&monOk&&!isOwned;
-
-        const card=document.createElement('div'); card.className='biz-card';
-        if(isOwned) card.classList.add('owned-biz');
-        else if(!lvlOk||!popOk) card.classList.add('locked-biz');
-
-        const tags=[];
-        if(b.requiredLevel>0) tags.push(`<span class="biz-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${b.requiredLevel} ур.</span>`);
-        if(b.requiredPop>0)   tags.push(`<span class="biz-tag ${popOk?'ok':'fail'}">${popOk?'✅':'🔒'} ⭐${b.requiredPop}</span>`);
-        tags.push(`<span class="biz-tag info">💰 $${b.incomePerSec}/сек</span>`);
-
-        let bc='biz-price-badge', pm=formatMoney(b.price), ps='стоимость';
-        if(isOwned){bc+=' owned-badge';pm='✅ В деле';ps='$'+b.incomePerSec+'/сек';}
-        else if(!lvlOk||!popOk) bc+=' locked-badge-style';
-
+        const isOwned=ownedBusinesses.has(b.id),lvlOk=level>=b.requiredLevel,popOk=popularity>=b.requiredPop,monOk=money>=b.requiredMoney,canBuy=lvlOk&&popOk&&monOk&&!isOwned;
+        const card=document.createElement('div');card.className='biz-card';
+        if(isOwned)card.classList.add('owned-biz');else if(!lvlOk||!popOk)card.classList.add('locked-biz');
+        const tags=[];if(b.requiredLevel>0)tags.push(`<span class="biz-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${b.requiredLevel} ур.</span>`);if(b.requiredPop>0)tags.push(`<span class="biz-tag ${popOk?'ok':'fail'}">${popOk?'✅':'🔒'} ⭐${b.requiredPop}</span>`);tags.push(`<span class="biz-tag info">💰 $${b.incomePerSec}/сек</span>`);
+        let bc='biz-price-badge',pm=formatMoney(b.price),ps='стоимость';
+        if(isOwned){bc+=' owned-badge';pm='✅ В деле';ps='$'+b.incomePerSec+'/сек';}else if(!lvlOk||!popOk)bc+=' locked-badge-style';
         const roi=isOwned?`<div class="biz-income-row"><span class="biz-income-label">📈 Пассивный доход</span><span class="biz-income-value">+$${b.incomePerSec}/сек</span></div>`:'';
-
-        let lockNotice='';
-        if(!isOwned&&(!lvlOk||!popOk||!monOk)){
-            const need=[];
-            if(!lvlOk) need.push(b.requiredLevel+' ур.');
-            if(!popOk) need.push('⭐'+b.requiredPop);
-            if(!monOk) need.push(formatMoney(b.requiredMoney));
-            lockNotice=`<div class="notice-badge locked-notice" style="margin-top:8px">🔒 Нужно: ${need.join(' · ')}</div>`;
-        }
-
-        card.innerHTML=`
-            <div class="biz-top">
-                <div class="biz-icon">${b.icon}</div>
-                <div class="biz-info">
-                    <div class="biz-name">${b.name}</div>
-                    <div class="biz-desc">${b.description}</div>
-                    <div class="biz-tags">${tags.join('')}</div>
-                </div>
-                <div class="${bc}"><span class="price-main">${pm}</span><span class="price-sub">${ps}</span></div>
-            </div>
-            ${roi}${lockNotice}
-            ${(!isOwned&&canBuy)?`<button class="buy-biz-btn" onclick="buyBiz('${b.id}')">🏢 Купить за ${formatMoney(b.price)}</button>`:''}
-            ${isOwned?`<button class="sell-biz-btn" onclick="sellBiz('${b.id}')">💸 Продать за ${formatMoney(Math.floor(b.price*b.sellPercent))}</button>`:''}
-        `;
+        let lockNotice='';if(!isOwned&&(!lvlOk||!popOk||!monOk)){const need=[];if(!lvlOk)need.push(b.requiredLevel+' ур.');if(!popOk)need.push('⭐'+b.requiredPop);if(!monOk)need.push(formatMoney(b.requiredMoney));lockNotice=`<div class="notice-badge locked-notice" style="margin-top:8px">🔒 Нужно: ${need.join(' · ')}</div>`;}
+        card.innerHTML=`<div class="biz-top"><div class="biz-icon">${b.icon}</div><div class="biz-info"><div class="biz-name">${b.name}</div><div class="biz-desc">${b.description}</div><div class="biz-tags">${tags.join('')}</div></div><div class="${bc}"><span class="price-main">${pm}</span><span class="price-sub">${ps}</span></div></div>${roi}${lockNotice}${(!isOwned&&canBuy)?`<button class="buy-biz-btn" onclick="buyBiz('${b.id}')">🏢 Купить за ${formatMoney(b.price)}</button>`:''}${isOwned?`<button class="sell-biz-btn" onclick="sellBiz('${b.id}')">💸 Продать за ${formatMoney(Math.floor(b.price*b.sellPercent))}</button>`:''}`;
         c.appendChild(card);
     });
 }
 
 /* ══════════════════════════════════════════════
-   LEADERBOARD
+   🏆 LEADERBOARD — реальные данные с сервера
 ══════════════════════════════════════════════ */
-const DEMO_PLAYERS = [
-    {id:'d1',name:'aleksei_pro', photo:'',money:15800,level:8,popularity:420},
-    {id:'d2',name:'maria_life',  photo:'',money:12300,level:7,popularity:310},
-    {id:'d3',name:'kolyan777',   photo:'',money:9500, level:6,popularity:280},
-    {id:'d4',name:'sunny_girl',  photo:'',money:7200, level:5,popularity:190},
-    {id:'d5',name:'trader_max',  photo:'',money:5600, level:4,popularity:150},
-    {id:'d6',name:'dasha_wins',  photo:'',money:3100, level:3,popularity:90 },
-    {id:'d7',name:'igor_k',      photo:'',money:1800, level:2,popularity:55 },
-    {id:'d8',name:'newbie_one',  photo:'',money:400,  level:1,popularity:10 },
-];
-const DEMO_FRIENDS = [
-    {id:'f1',name:'best_friend',photo:'',money:8800,level:6,popularity:240},
-    {id:'f2',name:'Антон',       photo:'',money:3200,level:3,popularity:80 },
-    {id:'f3',name:'Катя',        photo:'',money:900, level:2,popularity:25 },
-];
-
-function getMyEntry() {
-    return {id:MY_ID,name:MY_NAME,photo:MY_PHOTO,money,level,popularity,isMe:true};
-}
-
-function renderLeaderboard() {
-    const list = (lbTab==='global'
-        ? [...DEMO_PLAYERS, getMyEntry()]
-        : [...DEMO_FRIENDS, getMyEntry()]
-    ).sort((a,b)=>b.money-a.money);
-
-    const myIdx=list.findIndex(p=>p.isMe);
-    document.getElementById('lb-my-rank').textContent  = '#'+(myIdx+1);
-    document.getElementById('lb-my-name').textContent  = MY_NAME;
-    document.getElementById('lb-my-stats').textContent = 'Уровень '+level+' · ⭐'+popularity;
-    document.getElementById('lb-my-money').textContent = formatMoney(money);
+async function renderLeaderboard(){
+    if(lbLoading)return;
+    lbLoading=true;
 
     const c=document.getElementById('lb-content');
+    c.innerHTML=`<div class="lb-loading"><div class="lb-spinner"></div><span>Загружаем топ...</span></div>`;
+    updateMyLbPos(null);
+
+    let list=lbCache[lbTab];
+
+    if(!list){
+        list = await fetchTop('/top');
+        if(list) lbCache[lbTab]=list;
+    }
+
+    lbLoading=false;
+
+    if(!list){
+        c.innerHTML=`<div class="lb-empty"><div class="lb-empty-icon">📡</div>Нет связи с сервером.<br><br><button class="lb-refresh-btn" onclick="lbCache={global:null,friends:null};renderLeaderboard()">🔄 Повторить</button></div>`;
+        return;
+    }
+
+    // Добавить себя если нет в списке
+    const meInList=list.find(p=>String(p.id)===String(MY_ID));
+    const fullList=meInList
+        ? list.map(p=>({...p,isMe:String(p.id)===String(MY_ID)}))
+        : [...list,{id:MY_ID,name:MY_NAME,photo:MY_PHOTO,money,level,popularity,businesses:ownedBusinesses.size,isMe:true}].sort((a,b)=>b.money-a.money);
+
+    updateMyLbPos(fullList);
+    renderLbList(fullList,c);
+}
+
+function updateMyLbPos(list){
+    const myIdx=list?list.findIndex(p=>p.isMe):-1;
+    document.getElementById('lb-my-rank').textContent ='#'+(myIdx>=0?myIdx+1:'—');
+    document.getElementById('lb-my-name').textContent =MY_NAME;
+    document.getElementById('lb-my-stats').textContent='Уровень '+level+' · ⭐'+popularity;
+    document.getElementById('lb-my-money').textContent=formatMoney(money);
+}
+
+function renderLbList(list,c){
     c.innerHTML='';
 
-    const secLabel=document.createElement('div');
-    secLabel.className='lb-section-label';
-    secLabel.textContent=lbTab==='global'?'🌍 ТОП ИГРОКОВ · демо-данные':'👥 ТОП ДРУЗЕЙ · демо-данные';
-    c.appendChild(secLabel);
+    const label=document.createElement('div');
+    label.className='lb-section-label';
+    label.textContent=lbTab==='global'?'🌍 ВСЕ ИГРОКИ':'👥 ДРУЗЬЯ';
+    c.appendChild(label);
 
-    const ul=document.createElement('div'); ul.className='lb-list';
+    if(list.length===0){
+        const empty=document.createElement('div');empty.className='lb-empty';
+        empty.innerHTML='<div class="lb-empty-icon">🎮</div>Пока нет игроков.<br>Будь первым!';
+        c.appendChild(empty);return;
+    }
+
+    const ul=document.createElement('div');ul.className='lb-list';
 
     list.forEach((p,i)=>{
         const rank=i+1;
-
         if(rank===4){
-            const sep=document.createElement('div'); sep.className='lb-sep';
+            const sep=document.createElement('div');sep.className='lb-sep';
             sep.innerHTML=`<div class="lb-sep-line"></div><span class="lb-sep-text">ОСТАЛЬНЫЕ</span><div class="lb-sep-line"></div>`;
             ul.appendChild(sep);
         }
-
-        const item=document.createElement('div'); item.className='lb-item';
-        if(p.isMe)  item.classList.add('lb-me');
+        const item=document.createElement('div');item.className='lb-item';
+        if(p.isMe)item.classList.add('lb-me');
         if(rank===1)item.classList.add('lb-top1');
         if(rank===2)item.classList.add('lb-top2');
         if(rank===3)item.classList.add('lb-top3');
 
-        let rankIcon='#'+rank, rankClass='normal';
+        let rankIcon='#'+rank,rankClass='normal';
         if(rank===1){rankIcon='🥇';rankClass='gold';}
         else if(rank===2){rankIcon='🥈';rankClass='silver';}
         else if(rank===3){rankIcon='🥉';rankClass='bronze';}
 
         const initials=(p.name||'?')[0].toUpperCase();
-        const avatarInner=p.photo?`<img src="${p.photo}" alt="">`:`${initials}`;
+        const avatarInner=p.photo?`<img src="${p.photo}" alt="">`:initials;
 
         item.innerHTML=`
             <div class="lb-rank ${rankClass}">${rankIcon}</div>
             <div class="lb-avatar ${p.isMe?'me-avatar':''}">${avatarInner}</div>
             <div class="lb-user">
                 <div class="lb-username">${p.name}${p.isMe?' <span style="font-size:10px;color:#ffd200">(вы)</span>':''}</div>
-                <div class="lb-userstats">Уровень ${p.level} · ⭐${p.popularity}</div>
+                <div class="lb-userstats">Уровень ${p.level} · ⭐${p.popularity}${p.businesses>0?' · 🏢'+p.businesses:''}</div>
             </div>
             <div class="lb-amount">${formatMoney(p.money)}</div>
         `;
         ul.appendChild(item);
     });
-
     c.appendChild(ul);
 
-    const note=document.createElement('div'); note.className='lb-note';
-    note.textContent='Для реального топа требуется сервер. Данные других игроков — демо.';
-    c.appendChild(note);
+    const btn=document.createElement('button');btn.className='lb-refresh-btn';
+    btn.textContent='🔄 Обновить';
+    btn.onclick=()=>{lbCache={global:null,friends:null};renderLeaderboard();};
+    c.appendChild(btn);
 }
 
-function switchLbTab(tab) {
+function switchLbTab(tab){
     lbTab=tab;
     document.getElementById('tab-global').classList.toggle('active',tab==='global');
     document.getElementById('tab-friends').classList.toggle('active',tab==='friends');
@@ -1020,51 +837,47 @@ function switchLbTab(tab) {
 /* ══════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════ */
-function switchPage(name) {
-    if(name==='work'&&!currentJob) return;
+function switchPage(name){
+    if(name==='work'&&!currentJob)return;
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('page-'+name).classList.add('active');
     document.getElementById('nav-'+name).classList.add('active');
-    if(!currentJob) document.getElementById('nav-work').classList.remove('active');
-    if(name==='work') updateWorkPageStatic();
-    if(name==='biz')  renderBizList();
-    if(name==='lb')   renderLeaderboard();
+    if(!currentJob)document.getElementById('nav-work').classList.remove('active');
+    if(name==='work')updateWorkPageStatic();
+    if(name==='biz')renderBizList();
+    if(name==='lb')renderLeaderboard();
 }
-function updateNavWork()     { document.getElementById('nav-work').classList.toggle('nav-locked',!currentJob); }
-function updateHomeWorkBtn() {
-    const btn=document.getElementById('home-work-btn'), sub=document.getElementById('home-work-sub');
+function updateNavWork(){document.getElementById('nav-work').classList.toggle('nav-locked',!currentJob);}
+function updateHomeWorkBtn(){
+    const btn=document.getElementById('home-work-btn'),sub=document.getElementById('home-work-sub');
     if(currentJob){btn.classList.remove('locked-btn');sub.textContent=pendingMoney>0?'💰 Забрать '+formatMoney(pendingMoney):'💸 '+formatMoney(getJobIncome())+'/сек';}
     else{btn.classList.add('locked-btn');sub.textContent='⚠️ Нет работы';}
 }
-function updateHomeBizSub() {
-    const sub=document.getElementById('home-biz-sub'), cnt=ownedBusinesses.size, inc=getBizIncome();
+function updateHomeBizSub(){
+    const sub=document.getElementById('home-biz-sub'),cnt=ownedBusinesses.size,inc=getBizIncome();
     sub.textContent=cnt>0?'🏢 '+cnt+' бизнес(ов) · +$'+inc+'/сек':'Открой своё дело';
 }
 
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
-loadGame(() => {
-    // Восстановить таймер учёбы если шла
-    if (studying && studyStart) {
+loadGame(()=>{
+    if(studying&&studyStart){
         const s=schoolById(studying);
-        if(s){
-            const elapsed=Date.now()-studyStart;
-            if(elapsed<s.duration) runStudyTimer();
-            else finishStudy();
-        } else { studying=null; studyStart=null; }
+        if(s){const e=Date.now()-studyStart;if(e<s.duration)runStudyTimer();else finishStudy();}
+        else{studying=null;studyStart=null;}
     }
-
     updateHUD();
-    renderJobsList();       // ← теперь всегда находит #jobs-list
-    renderSchoolsList();    // ← теперь всегда находит #schools-list
+    renderJobsList();
+    renderSchoolsList();
     renderBizList();
     updateNavWork();
     updateNavDot();
     updateHomeWorkBtn();
     updateHomeBizSub();
     updateClaimBtn();
+    syncToServer(); // сразу отправить данные при запуске
 });
 </script>
 </body>
