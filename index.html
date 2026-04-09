@@ -819,8 +819,7 @@ function startMathGame(job, modal) {
             money += earned;
             showMoneyPop(earned);
         }
-        const gameModal = document.getElementById('mg-modal');
-        if(gameModal) gameModal.remove();
+        if(modal && modal.parentElement) modal.remove();
         updateHUD();
         updateHomeWorkBtn();
         minigameActive = false;
@@ -841,18 +840,18 @@ function startMathGame(job, modal) {
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
                         ${currentQuestion.options.map((opt) => `
-                            <button class="math-option-btn" onclick="window.mathCheckAnswer(${opt}, ${currentQuestion.answer})">${opt}</button>
+                            <button class="math-option-btn" onclick="window.currentMathCheck(${opt}, ${currentQuestion.answer})">${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" onclick="window.mathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" onclick="window.currentMathFinalize(${earned})">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
     }
     
-    window.mathCheckAnswer = checkAnswer;
-    window.mathFinalize = finalizeMathGame;
+    window.currentMathCheck = checkAnswer;
+    window.currentMathFinalize = finalizeMathGame;
     
     nextQuestion();
 }
