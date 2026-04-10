@@ -702,18 +702,17 @@ function startTapGame(job, modal) {
     let running = false;
     let timerId = null;
     const target = job.minigameTarget || 30;
+    let gameOver = false;
     
     function endGame(earned) {
+        gameOver = true;
         if(timerId) clearInterval(timerId);
-        
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
-        
         const gameModal = document.getElementById('mg-modal');
         if(gameModal) gameModal.remove();
-        
         updateHUD();
         updateHomeWorkBtn();
         minigameActive = false;
@@ -721,82 +720,71 @@ function startTapGame(job, modal) {
     }
     
     function render() {
+        if(gameOver) return;
+        
         const targetMet = taps >= target;
         const earned = targetMet ? getJobReward() : 0;
         
-        const minigameBox = document.querySelector('.minigame-box');
-        if(minigameBox) minigameBox.remove();
-        
-        const newBox = document.createElement('div');
-        newBox.className = 'minigame-box';
-        
-        newBox.innerHTML = `
-            <div class="mg-modal-title">${job.name}</div>
-            <div class="mg-modal-sub">${job.description}</div>
-            <div class="minigame-game-area">
-                <div class="tap-timer">${running ? '⏱️ ' + timeLeft + 'с' : (timeLeft === 0 ? 'Время!' : 'Готов?')}</div>
-                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Нужно: <span style="color:#4cde80;font-weight:bold;">${target}</span> | Тапов: <span style="color:#ffd200;font-weight:bold;">${taps}</span></div>
-                <div class="tap-counter">${taps}/${target}</div>
-                <div class="tap-area" id="tap-btn">${running ? '💥' : '👆'}</div>
-                ${!running && timeLeft > 0 ? '<div class="mg-modal-sub" style="margin-top:12px;font-size:13px;">Нажми на кружок чтобы начать!</div>' : ''}
-            </div>
-            ${timeLeft === 0 ? `
-                <div style="text-align:center;margin-top:16px;">
-                    ${targetMet ? `
-                        <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
-                        <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
-                    ` : `
-                        <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
-                        <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
-                    `}
+        modal.innerHTML = `
+            <div class="minigame-box">
+                <div class="mg-modal-title">${job.name}</div>
+                <div class="mg-modal-sub">${job.description}</div>
+                <div class="minigame-game-area">
+                    <div class="tap-timer">${running ? '⏱️ ' + timeLeft + 'с' : (timeLeft === 0 ? 'Время!' : 'Готов?')}</div>
+                    <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Нужно: <span style="color:#4cde80;font-weight:bold;">${target}</span> | Тапов: <span style="color:#ffd200;font-weight:bold;">${taps}</span></div>
+                    <div class="tap-counter">${taps}/${target}</div>
+                    <div class="tap-area" id="tap-btn">${running ? '💥' : '👆'}</div>
+                    ${!running && timeLeft > 0 ? '<div class="mg-modal-sub" style="margin-top:12px;font-size:13px;">Нажми на кружок чтобы начать!</div>' : ''}
                 </div>
-                <button class="minigame-close-btn" id="close-tap-btn">✖️ Закрыть</button>
-            ` : ''}
+                ${timeLeft === 0 ? `
+                    <div style="text-align:center;margin-top:16px;">
+                        ${targetMet ? `
+                            <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
+                            <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
+                        ` : `
+                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
+                            <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
+                        `}
+                    </div>
+                    <button class="minigame-close-btn">✖️ Закрыть</button>
+                ` : ''}
+            </div>
         `;
         
-        modal.innerHTML = '';
-        modal.appendChild(newBox);
+        attachTapListeners(earned);
+    }
+    
+    function attachTapListeners(earned) {
+        const tapBtn = document.getElementById('tap-btn');
+        const closeBtn = document.querySelector('.minigame-close-btn');
         
-        // Привязываем события ПОСЛЕ добавления в DOM
-        const closeBtn = document.getElementById('close-tap-btn');
-        if(closeBtn) {
-            closeBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const final = taps >= target ? getJobReward() : 0;
-                endGame(final);
-            };
+        if(tapBtn) {
+            tapBtn.onclick = handleTapClick;
         }
         
-        const tapBtn = document.getElementById('tap-btn');
-        if(tapBtn) {
-            tapBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (!running && timeLeft > 0) {
-                    running = true;
-                    timerId = setInterval(() => {
-                        timeLeft--;
-                        if (timeLeft <= 0) {
-                            clearInterval(timerId);
-                            running = false;
-                            render();
-                        } else {
-                            render();
-                        }
-                    }, 1000);
+        if(closeBtn && timeLeft === 0) {
+            closeBtn.onclick = () => endGame(earned);
+        }
+    }
+    
+    function handleTapClick() {
+        if(gameOver) return;
+        
+        if (!running && timeLeft > 0) {
+            running = true;
+            timerId = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    running = false;
                 }
-                
-                if (running) {
-                    taps++;
-                    tapBtn.style.transform = 'scale(0.88)';
-                    setTimeout(() => {
-                        if(tapBtn) tapBtn.style.transform = 'scale(1)';
-                    }, 60);
-                    render();
-                }
-            };
+                render();
+            }, 1000);
+        }
+        
+        if (running) {
+            taps++;
+            render();
         }
     }
     
@@ -806,7 +794,7 @@ function startTapGame(job, modal) {
 function startMathGame(job, modal) {
     let score = 0;
     let currentQuestion = null;
-    let isGameActive = true;
+    let gameOver = false;
     
     function generateQuestion() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -826,7 +814,7 @@ function startMathGame(job, modal) {
     }
     
     function checkAnswer(selected, correct) {
-        if(!isGameActive) return;
+        if(gameOver) return;
         
         if(selected === correct) {
             score++;
@@ -837,7 +825,7 @@ function startMathGame(job, modal) {
     }
     
     function endGame(earned) {
-        isGameActive = false;
+        gameOver = true;
         
         if(earned > 0) {
             money += earned;
@@ -854,57 +842,49 @@ function startMathGame(job, modal) {
     }
     
     function nextQuestion() {
-        if(!isGameActive) return;
+        if(gameOver) return;
         currentQuestion = generateQuestion();
         render();
     }
     
     function render() {
+        if(gameOver) return;
+        
         if(!currentQuestion) {
             currentQuestion = generateQuestion();
         }
         
         const earned = getJobReward() * score;
         
-        const minigameBox = document.querySelector('.minigame-box');
-        if(minigameBox) minigameBox.remove();
-        
-        const newBox = document.createElement('div');
-        newBox.className = 'minigame-box';
-        
-        newBox.innerHTML = `
-            <div class="mg-modal-title">${job.name}</div>
-            <div class="mg-modal-sub">${job.description}</div>
-            <div class="minigame-game-area">
-                <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
-                <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-                    ${currentQuestion.options.map((opt, idx) => `
-                        <button class="math-option-btn" data-value="${opt}" ${!isGameActive ? 'disabled' : ''}>${opt}</button>
-                    `).join('')}
+        modal.innerHTML = `
+            <div class="minigame-box">
+                <div class="mg-modal-title">${job.name}</div>
+                <div class="mg-modal-sub">${job.description}</div>
+                <div class="minigame-game-area">
+                    <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
+                        ${currentQuestion.options.map((opt) => `
+                            <button class="math-option-btn" data-value="${opt}">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
+                <button class="minigame-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
-            <button class="minigame-close-btn" id="math-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
         `;
         
-        modal.innerHTML = '';
-        modal.appendChild(newBox);
-        
-        // Привязываем события ПОСЛЕ добавления в DOM
-        const closeBtn = document.getElementById('math-close-btn');
+        attachMathListeners(earned);
+    }
+    
+    function attachMathListeners(earned) {
+        const closeBtn = document.querySelector('.minigame-close-btn');
         if(closeBtn) {
-            closeBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                endGame(earned);
-            };
+            closeBtn.onclick = () => endGame(earned);
         }
         
-        if(isGameActive) {
+        if(!gameOver) {
             document.querySelectorAll('.math-option-btn').forEach(btn => {
-                btn.onclick = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                btn.onclick = function() {
                     const value = parseInt(this.getAttribute('data-value'));
                     checkAnswer(value, currentQuestion.answer);
                 };
