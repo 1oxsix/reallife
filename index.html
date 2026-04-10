@@ -696,17 +696,24 @@ function startTapGame(job, modal) {
     let timeLeft = job.minigameDuration || 5;
     let running = false;
     let timerId = null;
-    let gameEnded = false;  // ← ДОБАВЛЯЕМ флаг окончания игры
     const target = job.minigameTarget || 30;
     
     function finalizeTap(earned) {
-        gameEnded = true;  // ← Помечаем что игра закончилась
+        if(timerId) clearInterval(timerId);
+        
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
-        const gameModal = document.getElementById('mg-modal');
-        if(gameModal && gameModal.parentElement) gameModal.remove();
+        
+        // ПРАВИЛЬНОЕ удаление модала
+        setTimeout(() => {
+            const gameModal = document.getElementById('mg-modal');
+            if(gameModal) {
+                gameModal.parentElement.removeChild(gameModal);
+            }
+        }, 100);
+        
         updateHUD();
         updateHomeWorkBtn();
         minigameActive = false;
@@ -716,6 +723,7 @@ function startTapGame(job, modal) {
     function render() {
         const targetMet = taps >= target;
         const earned = targetMet ? getJobReward() : 0;
+        
         modal.innerHTML = `
             <div class="minigame-box">
                 <div class="mg-modal-title">${job.name}</div>
@@ -737,14 +745,16 @@ function startTapGame(job, modal) {
                             <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
                         `}
                     </div>
-                    <button class="minigame-close-btn" id="tap-close-btn">✖️ Закрыть</button>
+                    <button class="minigame-close-btn" onclick="finalizeTapGame()">✖️ Закрыть</button>
                 ` : ''}
             </div>
         `;
         
         const tapBtn = document.getElementById('tap-btn');
-        if(tapBtn && !gameEnded) {
-            tapBtn.onclick = () => {
+        if(tapBtn && timeLeft > 0) {
+            tapBtn.onclick = (e) => {
+                e.stopPropagation();
+                
                 if (!running && timeLeft > 0) {
                     running = true;
                     timerId = setInterval(() => {
@@ -758,6 +768,7 @@ function startTapGame(job, modal) {
                         }
                     }, 1000);
                 }
+                
                 if (running) {
                     taps++;
                     if(tapBtn) {
@@ -770,17 +781,14 @@ function startTapGame(job, modal) {
                 }
             };
         }
-        
-        // Привязываем кнопку закрытия
-        const closeBtn = document.getElementById('tap-close-btn');
-        if(closeBtn) {
-            closeBtn.onclick = () => {
-                const targetMet = taps >= target;
-                const earned = targetMet ? getJobReward() : 0;
-                finalizeTap(earned);
-            };
-        }
     }
+    
+    // Глобальная функция для закрытия
+    window.finalizeTapGame = function() {
+        const targetMet = taps >= target;
+        const earned = targetMet ? getJobReward() : 0;
+        finalizeTap(earned);
+    };
     
     render();
 }
@@ -788,7 +796,7 @@ function startTapGame(job, modal) {
 function startMathGame(job, modal) {
     let score = 0;
     let currentQuestion = null;
-    let gameEnded = false;  // ← ДОБАВЛЯЕМ флаг окончания игры
+    let gameActive = true;
     
     function generateQuestion() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -807,32 +815,43 @@ function startMathGame(job, modal) {
         return { question: `${a} ${op} ${b}`, answer, options };
     }
     
-    function nextQuestion() {
-        currentQuestion = generateQuestion();
-        render();
-    }
-    
     function checkAnswer(selected, correct) {
+        if(!gameActive) return;
+        
         if(selected === correct) {
             score++;
             nextQuestion();
         } else {
-            // ← НЕПРАВИЛЬНЫЙ ОТВЕТ - СРАЗУ ЗАВЕРШАЕМ ИГРУ
+            // НЕПРАВИЛЬНЫЙ ОТВЕТ - КОНЕЦ ИГРЫ
             finalizeMath(getJobReward() * score);
         }
     }
     
     function finalizeMath(earned) {
-        gameEnded = true;  // ← Помечаем что игра закончилась
+        gameActive = false;
+        
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
-        if(modal && modal.parentElement) modal.remove();
+        
+        setTimeout(() => {
+            const gameModal = document.getElementById('mg-modal');
+            if(gameModal) {
+                gameModal.parentElement.removeChild(gameModal);
+            }
+        }, 100);
+        
         updateHUD();
         updateHomeWorkBtn();
         minigameActive = false;
         saveGame(false);
+    }
+    
+    function nextQuestion() {
+        if(!gameActive) return;
+        currentQuestion = generateQuestion();
+        render();
     }
     
     function render() {
@@ -849,25 +868,33 @@ function startMathGame(job, modal) {
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
                         ${currentQuestion.options.map((opt, idx) => `
-                            <button class="math-option-btn math-opt-${idx}" data-value="${opt}" ${gameEnded ? 'disabled' : ''}>${opt}</button>
+                            <button class="math-option-btn math-opt-${idx}" ${!gameActive ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" id="math-close-btn" onclick="document.getElementById('mg-modal').remove();minigameActive=false;">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" onclick="finalizeMathGame()">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
         
-        // Привязываем кнопки ответов ТОЛЬКО если игра не закончилась
-        if(!gameEnded) {
+        if(gameActive) {
             currentQuestion.options.forEach((opt, idx) => {
                 const btn = document.querySelector(`.math-opt-${idx}`);
                 if(btn) {
-                    btn.onclick = () => checkAnswer(opt, currentQuestion.answer);
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        checkAnswer(opt, currentQuestion.answer);
+                    };
                 }
             });
         }
     }
+    
+    // Глобальная функция для закрытия
+    window.finalizeMathGame = function() {
+        const earned = getJobReward() * score;
+        finalizeMath(earned);
+    };
     
     nextQuestion();
 }
