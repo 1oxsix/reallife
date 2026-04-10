@@ -1436,7 +1436,7 @@ function renderSchoolsList(){
         
         const prog=isSt?`<div><div class="school-progress-label"><span>🎒 Обучение идёт...</span><span id="school-time-${s.id}">—</span></div><div class="school-progress-track"><div class="school-progress-fill" id="school-fill-${s.id}"></div></div></div>`:'';
         
-        card.innerHTML=`<div class="school-top"><div class="school-icon">${s.icon}</div><div class="school-info"><div class="school-name">${s.name}</div><div class="school-meta"><span>⏱️ ${formatTime(s.duration)}</span><span>ХОЧУ МЯСА</span></div><div class="school-rewards">${rw.join('')}</div>${reqTags.length>0?`<div class="job-reqs" style="margin-top:8px;">${reqTags.join('')}</div>`:''}</div><div class="${pc}">${pt}</div></div>${prog}${isDone?'<div class="completed-badge">✅ Пройдено</div>':''}${isLocked?'<div class="locked-badge">🔒 Закрыто</div>':''}${summary}${btn}`;
+        card.innerHTML=`<div class="school-top"><div class="school-icon">${s.icon}</div><div class="school-info"><div class="school-name">${s.name}</div><div class="school-meta"><span>⏱️ ${formatTime(s.duration)}</span></div><div class="school-rewards">${rw.join('')}</div>${reqTags.length>0?`<div class="job-reqs" style="margin-top:8px;">${reqTags.join('')}</div>`:''}</div><div class="${pc}">${pt}</div></div>${prog}${isDone?'<div class="completed-badge">✅ Пройдено</div>':''}${isLocked?'<div class="locked-badge">🔒 Закрыто</div>':''}${summary}${btn}`;
         c.appendChild(card);
     });
 }
