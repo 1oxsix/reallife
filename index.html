@@ -697,8 +697,10 @@ function startTapGame(job, modal) {
     let running = false;
     let timerId = null;
     const target = job.minigameTarget || 30;
+    let gameFinished = false;
     
-    function finalizeTap(earned) {
+    function endGame(earned) {
+        gameFinished = true;
         if(timerId) clearInterval(timerId);
         
         if(earned > 0) {
@@ -706,13 +708,8 @@ function startTapGame(job, modal) {
             showMoneyPop(earned);
         }
         
-        // ПРАВИЛЬНОЕ удаление модала
-        setTimeout(() => {
-            const gameModal = document.getElementById('mg-modal');
-            if(gameModal) {
-                gameModal.parentElement.removeChild(gameModal);
-            }
-        }, 100);
+        const gameModal = document.getElementById('mg-modal');
+        if(gameModal) gameModal.remove();
         
         updateHUD();
         updateHomeWorkBtn();
@@ -745,14 +742,27 @@ function startTapGame(job, modal) {
                             <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
                         `}
                     </div>
-                    <button class="minigame-close-btn" onclick="finalizeTapGame()">✖️ Закрыть</button>
+                    <button class="minigame-close-btn" id="close-btn">✖️ Закрыть</button>
                 ` : ''}
             </div>
         `;
         
+        // Обработчик для кнопки закрытия
+        const closeBtn = document.getElementById('close-btn');
+        if(closeBtn && timeLeft === 0) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const final = taps >= target ? getJobReward() : 0;
+                endGame(final);
+            }, { once: true });
+        }
+        
+        // Обработчик для кружка
         const tapBtn = document.getElementById('tap-btn');
-        if(tapBtn && timeLeft > 0) {
-            tapBtn.onclick = (e) => {
+        if(tapBtn && !gameFinished) {
+            tapBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 e.stopPropagation();
                 
                 if (!running && timeLeft > 0) {
@@ -771,24 +781,15 @@ function startTapGame(job, modal) {
                 
                 if (running) {
                     taps++;
-                    if(tapBtn) {
-                        tapBtn.style.transform = 'scale(0.88)';
-                        setTimeout(() => {
-                            if(tapBtn) tapBtn.style.transform = 'scale(1)';
-                        }, 60);
-                    }
+                    tapBtn.style.transform = 'scale(0.88)';
+                    setTimeout(() => {
+                        tapBtn.style.transform = 'scale(1)';
+                    }, 60);
                     render();
                 }
-            };
+            }, { once: false });
         }
     }
-    
-    // Глобальная функция для закрытия
-    window.finalizeTapGame = function() {
-        const targetMet = taps >= target;
-        const earned = targetMet ? getJobReward() : 0;
-        finalizeTap(earned);
-    };
     
     render();
 }
@@ -796,7 +797,7 @@ function startTapGame(job, modal) {
 function startMathGame(job, modal) {
     let score = 0;
     let currentQuestion = null;
-    let gameActive = true;
+    let gameFinished = false;
     
     function generateQuestion() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -816,31 +817,26 @@ function startMathGame(job, modal) {
     }
     
     function checkAnswer(selected, correct) {
-        if(!gameActive) return;
+        if(gameFinished) return;
         
         if(selected === correct) {
             score++;
             nextQuestion();
         } else {
-            // НЕПРАВИЛЬНЫЙ ОТВЕТ - КОНЕЦ ИГРЫ
-            finalizeMath(getJobReward() * score);
+            endGame(getJobReward() * score);
         }
     }
     
-    function finalizeMath(earned) {
-        gameActive = false;
+    function endGame(earned) {
+        gameFinished = true;
         
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
         
-        setTimeout(() => {
-            const gameModal = document.getElementById('mg-modal');
-            if(gameModal) {
-                gameModal.parentElement.removeChild(gameModal);
-            }
-        }, 100);
+        const gameModal = document.getElementById('mg-modal');
+        if(gameModal) gameModal.remove();
         
         updateHUD();
         updateHomeWorkBtn();
@@ -849,7 +845,7 @@ function startMathGame(job, modal) {
     }
     
     function nextQuestion() {
-        if(!gameActive) return;
+        if(gameFinished) return;
         currentQuestion = generateQuestion();
         render();
     }
@@ -868,33 +864,37 @@ function startMathGame(job, modal) {
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
                         ${currentQuestion.options.map((opt, idx) => `
-                            <button class="math-option-btn math-opt-${idx}" ${!gameActive ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${opt}</button>
+                            <button class="math-option-btn" data-idx="${idx}" data-value="${opt}" ${gameFinished ? 'disabled' : ''}>${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" onclick="finalizeMathGame()">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" id="math-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
         
-        if(gameActive) {
-            currentQuestion.options.forEach((opt, idx) => {
-                const btn = document.querySelector(`.math-opt-${idx}`);
-                if(btn) {
-                    btn.onclick = (e) => {
-                        e.stopPropagation();
-                        checkAnswer(opt, currentQuestion.answer);
-                    };
-                }
+        // Обработчик для кнопки закрытия
+        const closeBtn = document.getElementById('math-close-btn');
+        if(closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                endGame(earned);
+            }, { once: true });
+        }
+        
+        // Обработчики для кнопок ответов
+        if(!gameFinished) {
+            document.querySelectorAll('.math-option-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const value = parseInt(this.getAttribute('data-value'));
+                    checkAnswer(value, currentQuestion.answer);
+                }, { once: true });
             });
         }
     }
-    
-    // Глобальная функция для закрытия
-    window.finalizeMathGame = function() {
-        const earned = getJobReward() * score;
-        finalizeMath(earned);
-    };
     
     nextQuestion();
 }
