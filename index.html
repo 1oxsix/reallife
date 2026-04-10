@@ -696,15 +696,17 @@ function startTapGame(job, modal) {
     let timeLeft = job.minigameDuration || 5;
     let running = false;
     let timerId = null;
+    let gameEnded = false;  // ← ДОБАВЛЯЕМ флаг окончания игры
     const target = job.minigameTarget || 30;
     
     function finalizeTap(earned) {
+        gameEnded = true;  // ← Помечаем что игра закончилась
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
         const gameModal = document.getElementById('mg-modal');
-        if(gameModal) gameModal.remove();
+        if(gameModal && gameModal.parentElement) gameModal.remove();
         updateHUD();
         updateHomeWorkBtn();
         minigameActive = false;
@@ -741,7 +743,7 @@ function startTapGame(job, modal) {
         `;
         
         const tapBtn = document.getElementById('tap-btn');
-        if(tapBtn) {
+        if(tapBtn && !gameEnded) {
             tapBtn.onclick = () => {
                 if (!running && timeLeft > 0) {
                     running = true;
@@ -772,7 +774,11 @@ function startTapGame(job, modal) {
         // Привязываем кнопку закрытия
         const closeBtn = document.getElementById('tap-close-btn');
         if(closeBtn) {
-            closeBtn.onclick = () => finalizeTap(earned);
+            closeBtn.onclick = () => {
+                const targetMet = taps >= target;
+                const earned = targetMet ? getJobReward() : 0;
+                finalizeTap(earned);
+            };
         }
     }
     
@@ -782,6 +788,7 @@ function startTapGame(job, modal) {
 function startMathGame(job, modal) {
     let score = 0;
     let currentQuestion = null;
+    let gameEnded = false;  // ← ДОБАВЛЯЕМ флаг окончания игры
     
     function generateQuestion() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -810,11 +817,13 @@ function startMathGame(job, modal) {
             score++;
             nextQuestion();
         } else {
+            // ← НЕПРАВИЛЬНЫЙ ОТВЕТ - СРАЗУ ЗАВЕРШАЕМ ИГРУ
             finalizeMath(getJobReward() * score);
         }
     }
     
     function finalizeMath(earned) {
+        gameEnded = true;  // ← Помечаем что игра закончилась
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
@@ -840,27 +849,23 @@ function startMathGame(job, modal) {
                     <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
                     <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
                         ${currentQuestion.options.map((opt, idx) => `
-                            <button class="math-option-btn math-opt-${idx}" data-value="${opt}">${opt}</button>
+                            <button class="math-option-btn math-opt-${idx}" data-value="${opt}" ${gameEnded ? 'disabled' : ''}>${opt}</button>
                         `).join('')}
                     </div>
                     <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
                 </div>
-                <button class="minigame-close-btn" id="math-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+                <button class="minigame-close-btn" id="math-close-btn" onclick="document.getElementById('mg-modal').remove();minigameActive=false;">✖️ Закончить и забрать ${formatMoney(earned)}</button>
             </div>
         `;
         
-        // Привязываем кнопки ответов
-        currentQuestion.options.forEach((opt, idx) => {
-            const btn = document.querySelector(`.math-opt-${idx}`);
-            if(btn) {
-                btn.onclick = () => checkAnswer(opt, currentQuestion.answer);
-            }
-        });
-        
-        // Привязываем кноп��у закрытия
-        const closeBtn = document.getElementById('math-close-btn');
-        if(closeBtn) {
-            closeBtn.onclick = () => finalizeMath(earned);
+        // Привязываем кнопки ответов ТОЛЬКО если игра не закончилась
+        if(!gameEnded) {
+            currentQuestion.options.forEach((opt, idx) => {
+                const btn = document.querySelector(`.math-opt-${idx}`);
+                if(btn) {
+                    btn.onclick = () => checkAnswer(opt, currentQuestion.answer);
+                }
+            });
         }
     }
     
