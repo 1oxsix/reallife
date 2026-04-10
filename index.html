@@ -172,6 +172,10 @@
         /* LEADERBOARD */
         .lb-inner { padding:16px; display:flex; flex-direction:column; gap:14px; }
         .lb-tabs { display:flex; background:rgba(0,0,0,0.3); border-radius:14px; padding:4px; gap:4px; }
+        .assets-tabs { display:flex; background:rgba(0,0,0,0.3); border-radius:14px; padding:4px; gap:4px; margin-bottom:16px; }
+        .assets-tab { flex:1; padding:10px 6px; border:none; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; color:rgba(255,255,255,0.5); background:transparent; transition:all 0.3s ease; }
+        .assets-tab:active { transform:scale(0.97); }
+        .assets-tab.active { background:rgba(255,255,255,0.15); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
         .lb-tab { flex:1; padding:10px 6px; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; color:rgba(255,255,255,0.5); background:transparent; transition:all 0.2s; }
         .lb-tab:active { transform:scale(0.97); }
         .lb-tab.active { background:rgba(255,255,255,0.15); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
@@ -450,7 +454,7 @@
                 <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Улучши навыки</div></div></button>
                 <button class="home-btn" onclick="switchPage('jobs')"><span class="home-btn-icon">📋</span><div><div class="home-btn-title">Вакансии</div><div class="home-btn-sub">Найди работу</div></div></button>
                 <button class="home-btn locked-btn" id="home-work-btn" onclick="switchPage('work')"><span class="home-btn-icon">💼</span><div><div class="home-btn-title">Моя работа</div><div class="home-btn-sub" id="home-work-sub">⚠️ Нет работы</div></div></button>
-                <button class="home-btn" onclick="switchPage('biz')"><span class="home-btn-icon">🏢</span><div><div class="home-btn-title">Бизнесы</div><div class="home-btn-sub" id="home-biz-sub">Открой своё дело</div></div></button>
+                <button class="home-btn" onclick="switchPage('assets')"><span class="home-btn-icon">💎</span><div><div class="home-btn-title">Активы</div><div class="home-btn-sub" id="home-biz-sub">3 активов</div></div></button>
                 <button class="home-btn" onclick="switchPage('lb')"><span class="home-btn-icon">🏆</span><div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub">Соревнуйся</div></div></button>
             </div>
         </div>
@@ -490,12 +494,17 @@
         </div>
     </div>
 
-    <div class="page" id="page-biz">
-        <div class="list-inner">
-            <div class="page-header">🏢 Бизнесы</div>
-            <div id="biz-list"></div>
+    <div class="page" id="page-assets">
+    <div class="list-inner">
+        <div class="page-header">💎 Активы</div>
+        <div class="assets-tabs">
+            <button class="assets-tab active" id="tab-bizz" onclick="switchAssetsTab('bizz')">🏢 Бизнесы</button>
+            <button class="assets-tab" id="tab-cars" onclick="switchAssetsTab('cars')">🚗 Автомобили</button>
+            <button class="assets-tab" id="tab-realestate" onclick="switchAssetsTab('realestate')">🏠 Недвижимость</button>
         </div>
+        <div id="assets-content"></div>
     </div>
+</div>
 
     <div class="page" id="page-lb">
         <div class="lb-inner">
@@ -520,7 +529,7 @@
     <button class="nav-btn" id="nav-jobs" onclick="switchPage('jobs')"><span class="nav-icon">📋</span><span class="nav-label">Вакансии</span></button>
     <button class="nav-btn nav-locked" id="nav-work" onclick="switchPage('work')"><span class="nav-icon">💼</span><span class="nav-label">Работа</span></button>
     <button class="nav-btn" id="nav-dev" onclick="switchPage('dev')"><span class="nav-icon">📚</span><span class="nav-label">Учёба</span></button>
-    <button class="nav-btn" id="nav-biz" onclick="switchPage('biz')"><span class="nav-icon">🏢</span><span class="nav-label">Бизнес</span></button>
+    <button class="nav-btn" id="nav-assets" onclick="switchPage('assets')"><span class="nav-icon">💎</span><span class="nav-label">Активы</span></button>
     <button class="nav-btn" id="nav-lb"  onclick="switchPage('lb')"><span class="nav-icon">🏆</span><span class="nav-label">Топ</span></button>
 </div>
 
@@ -549,6 +558,18 @@ const BUSINESS_CONFIG = [
     { id:'kiosk', name:'Газетный киоск', icon:'🗞️', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:0, requiredMoney:0 },
     { id:'shaurma', name:'Киоск с Шаурмой', icon:'🌯', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, requiredMoney:0 },
     { id:'apple', name:'Перепродажа техники Apple', icon:'📱', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:100, requiredMoney:0 },
+];
+
+const CARS_CONFIG = [
+    { id:'lada', name:'Лада Гранта', icon:'🚗', description:'Надёжная бюджетная машина.', price:50000, incomePerSec:5, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:50 },
+    { id:'toyota', name:'Toyota Camry', icon:'🚙', description:'Удобная семейная машина.', price:150000, incomePerSec:12, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:100 },
+    { id:'bmw', name:'BMW M5', icon:'🏎️', description:'Спортивный автомобиль люкс класса.', price:500000, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:200 },
+];
+
+const REAL_ESTATE_CONFIG = [
+    { id:'apartment', name:'Квартира 1-комнатная', icon:'🏠', description:'Сдаётся в аренду.', price:200000, incomePerSec:10, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:80 },
+    { id:'house', name:'Коттедж', icon:'🏡', description:'Частный дом с участком.', price:800000, incomePerSec:40, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:200 },
+    { id:'tower', name:'Офисное здание', icon:'🏢', description:'Многоэтажный комплекс.', price:2000000, incomePerSec:100, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:500 },
 ];
 
 /* ══════════════════════════════════════════════
@@ -1488,6 +1509,223 @@ function renderBizList(){
         card.innerHTML=`<div class="biz-top"><div class="biz-icon">${b.icon}</div><div class="biz-info"><div class="biz-name">${b.name}</div><div class="biz-desc">${b.description}</div><div class="biz-tags">${tags.join('')}</div></div><div class="${bc}"><span class="price-main">${pm}</span><span class="price-sub">${ps}</span></div></div>${roi}${lockNotice}${!isOwned&&canBuy?`<button class="buy-biz-btn" onclick="buyBiz('${b.id}')">🛒 Купить</button>`:''}${isOwned?`<button class="sell-biz-btn" onclick="sellBiz('${b.id}')">💸 Продать</button>`:''}`;
         c.appendChild(card);
     });
+}
+
+/* ══════════════════════════════════════════════
+   💎 АКТИВЫ (БИЗНЕСЫ + МАШИНЫ + НЕДВИЖИМОСТЬ)
+══════════════════════════════════════════════ */
+let assetsTab = 'bizz';
+const carById = id => CARS_CONFIG.find(c => c.id === id);
+const realEstateById = id => REAL_ESTATE_CONFIG.find(r => r.id === id);
+
+function switchAssetsTab(tab) {
+    assetsTab = tab;
+    document.querySelectorAll('.assets-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    renderAssetsContent();
+}
+
+function renderAssetsContent() {
+    const container = document.getElementById('assets-content');
+    if (assetsTab === 'bizz') renderBizList(container);
+    else if (assetsTab === 'cars') renderCarsList(container);
+    else if (assetsTab === 'realestate') renderRealEstateList(container);
+}
+
+function renderBizList(container = null) {
+    const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
+    target.innerHTML = BUSINESS_CONFIG.map(b => {
+        const owned = ownedBusinesses.has(b.id);
+        const locked = level < b.requiredLevel || popularity < b.requiredPop;
+        const canBuy = canBuyBiz(b.id);
+        
+        return `
+            <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+                <div class="biz-top">
+                    <div class="biz-icon">${b.icon}</div>
+                    <div class="biz-info">
+                        <div class="biz-name">${b.name}</div>
+                        <div class="biz-desc">${b.description}</div>
+                        <div class="biz-tags">
+                            ${level >= b.requiredLevel ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
+                            ${popularity >= b.requiredPop ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${b.requiredPop}</div>`}
+                        </div>
+                    </div>
+                    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+                        <div class="price-main">${owned ? '✅' : formatMoney(b.price)}</div>
+                        <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
+                    </div>
+                </div>
+                ${owned ? `
+                    <div class="biz-income-row">
+                        <div class="biz-income-label">💰 Доход в секунду</div>
+                        <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
+                    </div>
+                    <button class="sell-biz-btn" onclick="sellBusiness('${b.id}')">📉 Продать за ${formatMoney(b.price * b.sellPercent)}</button>
+                ` : `
+                    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyBusiness('${b.id}')">🛒 Купить ${formatMoney(b.price)}</button>
+                `}
+            </div>
+        `;
+    }).join('');
+}
+
+function renderCarsList(container = null) {
+const target = container || document.getElementById('assets-content');
+target.innerHTML = CARS_CONFIG.map(c => {
+const owned = ownedBusinesses.has(c.id);
+const levelOk = level >= c.requiredLevel;
+const popOk = popularity >= c.requiredPop;
+const moneyOk = money >= c.price;
+const locked = !levelOk || !popOk || !moneyOk; // ДЕНГИ ТОЖЕ СЧИТАЮТСЯ!
+const canBuy = levelOk && popOk && moneyOk;
+return `
+<div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+  <div class="biz-top">
+    <div class="biz-icon">${c.icon}</div>
+    <div class="biz-info">
+      <div class="biz-name">${c.name}</div>
+      <div class="biz-desc">${c.description}</div>
+      <div class="biz-tags">
+        ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${c.requiredLevel}</div>`}
+        ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${c.requiredPop}</div>`}
+        ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(c.price)}</div>`}
+      </div>
+    </div>
+    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+      <div class="price-main">${owned ? '✅' : formatMoney(c.price)}</div>
+      <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
+    </div>
+  </div>
+  ${owned ? `
+  <div class="biz-income-row">
+    <div class="biz-income-label">💰 Доход в секунду</div>
+    <div class="biz-income-value">+${formatMoney(c.incomePerSec)}</div>
+  </div>
+  <button class="sell-biz-btn" onclick="sellAsset('${c.id}', 'cars')">📉 Продать за ${formatMoney(c.price * c.sellPercent)}</button>
+  ` : `
+  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${c.id}', 'cars')">🛒 Купить ${formatMoney(c.price)}</button>
+  `}
+</div>
+`;
+}).join('');
+}
+function renderRealEstateList(container = null) {
+const target = container || document.getElementById('assets-content');
+target.innerHTML = REAL_ESTATE_CONFIG.map(r => {
+const owned = ownedBusinesses.has(r.id);
+const levelOk = level >= r.requiredLevel;
+const popOk = popularity >= r.requiredPop;
+const moneyOk = money >= r.price;
+const locked = !levelOk || !popOk || !moneyOk; // ДЕНГИ ТОЖЕ СЧИТАЮТСЯ!
+const canBuy = levelOk && popOk && moneyOk;
+return `
+<div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+  <div class="biz-top">
+    <div class="biz-icon">${r.icon}</div>
+    <div class="biz-info">
+      <div class="biz-name">${r.name}</div>
+      <div class="biz-desc">${r.description}</div>
+      <div class="biz-tags">
+        ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${r.requiredLevel}</div>`}
+        ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${r.requiredPop}</div>`}
+        ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(r.price)}</div>`}
+      </div>
+    </div>
+    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+      <div class="price-main">${owned ? '✅' : formatMoney(r.price)}</div>
+      <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
+    </div>
+  </div>
+  ${owned ? `
+  <div class="biz-income-row">
+    <div class="biz-income-label">💰 Доход в секунду</div>
+    <div class="biz-income-value">+${formatMoney(r.incomePerSec)}</div>
+  </div>
+  <button class="sell-biz-btn" onclick="sellAsset('${r.id}', 'realestate')">📉 Продать за ${formatMoney(r.price * r.sellPercent)}</button>
+  ` : `
+  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${r.id}', 'realestate')">🛒 Купить ${formatMoney(r.price)}</button>
+  `}
+</div>
+`;
+}).join('');
+}
+function renderBizList(container = null) {
+const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
+target.innerHTML = BUSINESS_CONFIG.map(b => {
+const owned = ownedBusinesses.has(b.id);
+const levelOk = level >= b.requiredLevel;
+const popOk = popularity >= b.requiredPop;
+const moneyOk = money >= b.price;
+const locked = !levelOk || !popOk || !moneyOk; // ДЕНГИ ТОЖЕ СЧИТАЮТСЯ!
+const canBuy = levelOk && popOk && moneyOk;
+return `
+<div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+  <div class="biz-top">
+    <div class="biz-icon">${b.icon}</div>
+    <div class="biz-info">
+      <div class="biz-name">${b.name}</div>
+      <div class="biz-desc">${b.description}</div>
+      <div class="biz-tags">
+        ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
+        ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${b.requiredPop}</div>`}
+        ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(b.price)}</div>`}
+      </div>
+    </div>
+    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+      <div class="price-main">${owned ? '✅' : formatMoney(b.price)}</div>
+      <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
+    </div>
+  </div>
+  ${owned ? `
+  <div class="biz-income-row">
+    <div class="biz-income-label">💰 Доход в секунду</div>
+    <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
+  </div>
+  <button class="sell-biz-btn" onclick="sellBusiness('${b.id}')">📉 Продать за ${formatMoney(b.price * b.sellPercent)}</button>
+  ` : `
+  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyBusiness('${b.id}')">🛒 Купить ${formatMoney(b.price)}</button>
+  `}
+</div>
+`;
+}).join('');
+}
+
+function buyAsset(id, type) {
+    let item;
+    if (type === 'cars') item = carById(id);
+    else if (type === 'realestate') item = realEstateById(id);
+    else item = bizById(id);
+    
+    if (!item || money < item.price) return;
+    
+    money -= item.price;
+    ownedBusinesses.add(item.id);
+    popularity += item.rewardPop || 0;
+    
+    renderAssetsContent();
+    updateHUD();
+    updateHomeWorkBtn();
+    updateHomeBizSub();
+    saveGame(true);
+}
+
+function sellAsset(id, type) {
+    let item;
+    if (type === 'cars') item = carById(id);
+    else if (type === 'realestate') item = realEstateById(id);
+    else item = bizById(id);
+    
+    if (!item || !ownedBusinesses.has(item.id)) return;
+    
+    money += Math.floor(item.price * item.sellPercent);
+    ownedBusinesses.delete(item.id);
+    
+    renderAssetsContent();
+    updateHUD();
+    updateHomeWorkBtn();
+    updateHomeBizSub();
+    saveGame(true);
 }
 
 /* ══════════════════════════════════════════════
