@@ -248,52 +248,161 @@
         @keyframes toastAnim { 0%{opacity:0;transform:translateX(-50%) translateY(10px)} 15%{opacity:1;transform:translateX(-50%) translateY(0)} 75%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(10px)} }
 
         /* MINIGAME OVERLAY */
-        /* MINIGAME */
-        /* MINIGAME */
-.minigame-overlay {
-    position:fixed; inset:0; z-index:99998;
-    background:rgba(0,0,0,0.9);
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
-    pointer-events: auto;  /* ← ДОБАВИТЬ */
-}
-.minigame-box {
-    background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
-    border:2px solid rgba(76,222,128,0.4);
-    border-radius:24px; padding:32px 24px;
-    text-align:center; max-width:360px; width:100%;
-    box-shadow:0 20px 60px rgba(0,0,0,0.6);
-    pointer-events: auto;  /* ← ДОБАВИТЬ */
-}
-.mg-modal-title { font-size:24px; font-weight:bold; color:#fff; margin-bottom:8px; text-align:center; }
-.mg-modal-sub { font-size:14px; color:rgba(255,255,255,0.6); text-align:center; margin-bottom:16px; }
-.minigame-game-area { background:rgba(0,0,0,0.3); border:2px solid rgba(76,222,128,0.3); border-radius:16px; padding:24px; margin:20px 0; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; pointer-events: auto; /* ← ДОБАВИТЬ */ }
-.tap-timer { font-size:24px; font-weight:bold; color:#ffd200; }
-.tap-counter { font-size:18px; color:rgba(255,255,255,0.7); }
-.tap-area { width:140px; height:140px; border-radius:50%; background:linear-gradient(135deg,#4cde80,#00c472); border:4px solid #fff; font-size:64px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 20px rgba(76,222,128,0.6); transition:transform 0.1s; pointer-events: auto; /* ← ДОБАВИТЬ */ }
-.tap-area:active { transform:scale(0.88); }
-.math-option-btn { width:100%; padding:14px; border:none; border-radius:10px; background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; font-weight:bold; cursor:pointer; transition:all 0.2s; pointer-events: auto; /* ← ДОБАВИТЬ */ }
-.math-option-btn:hover { background:rgba(76,222,128,0.25); border-color:#4cde80; }
-.math-option-btn:active { transform:scale(0.95); }
-.math-option-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; } /* ← ДОБАВИТЬ */
-.minigame-close-btn { 
-    width:100%; 
-    padding:14px; 
-    border:none; 
-    border-radius:12px; 
-    background:rgba(255,107,107,0.15); 
-    border:1.5px solid #ff6b6b; 
-    color:#ff6b6b; 
-    font-size:16px; 
-    font-weight:bold; 
-    cursor:pointer; 
-    margin-top:12px;
-    pointer-events: auto;  /* ← ДОБАВЬТЕ ЭТО */
-    position: relative;    /* ← И ЭТО */
-    z-index: 99999;        /* ← И ЭТО */
-}
-.minigame-close-btn:active { transform:scale(0.97); }
+        /* MINIGAME OVERLAY */
+        .minigame-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        pointer-events: auto;
+        touch-action: auto;
+        isolation: isolate;
+        }
 
+        .minigame-box {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 2px solid rgba(76,222,128,0.4);
+        border-radius: 24px;
+        padding: 32px 24px;
+        text-align: center;
+        max-width: 360px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        pointer-events: auto;
+        position: relative;
+        z-index: 100001;
+        }
+
+        .mg-modal-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 8px;
+        text-align: center;
+        }
+
+        .mg-modal-sub {
+        font-size: 14px;
+        color: rgba(255,255,255,0.6);
+        text-align: center;
+        margin-bottom: 16px;
+        }
+
+        .minigame-game-area {
+        background: rgba(0,0,0,0.3);
+        border: 2px solid rgba(76,222,128,0.3);
+        border-radius: 16px;
+        padding: 24px;
+        margin: 20px 0;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        pointer-events: auto;
+        touch-action: auto;
+        }
+
+        .tap-timer {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ffd200;
+        }
+
+        .tap-counter {
+        font-size: 18px;
+        color: rgba(255,255,255,0.7);
+        }
+
+        .tap-area {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4cde80, #00c472);
+        border: 4px solid #fff;
+        font-size: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(76,222,128,0.6);
+        transition: transform 0.1s;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(76,222,128,0.3);
+        user-select: none;
+        -webkit-user-select: none;
+        }
+
+        .tap-area:active {
+        transform: scale(0.88);
+        }
+
+        .math-option-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.12);
+        border: 2px solid rgba(255,255,255,0.2);
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(76,222,128,0.3);
+        user-select: none;
+        -webkit-user-select: none;
+        position: relative;
+        z-index: 100002;
+        }
+
+        .math-option-btn:hover {
+        background: rgba(76,222,128,0.25);
+        border-color: #4cde80;
+        }
+
+        .math-option-btn:active {
+        transform: scale(0.95);
+        }
+
+        .math-option-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+        }   
+
+        .minigame-close-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255,107,107,0.15);
+        border: 1.5px solid #ff6b6b;
+        color: #ff6b6b;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 12px;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255,107,107,0.3);
+        user-select: none;
+        -webkit-user-select: none;
+        position: relative;
+        z-index: 100002;
+        display: block;
+        }
+
+        .minigame-close-btn:active {
+        transform: scale(0.97);
+        }
+        
 
         /* NAV */
         .bottom-nav { flex-shrink:0; width:100%; background:linear-gradient(180deg,#1a1a1a 0%,#2c2c2c 100%); border-top:2.5px solid #000; box-shadow:0 -3px 14px rgba(0,0,0,0.7); display:flex; padding:6px 4px 8px; gap:4px; }
@@ -336,7 +445,7 @@
             <div>
                 <div class="home-title">Жизнь — Симулятор</div>
                 <div class="home-sub">Учись, работай, открывай бизнесы.<br>Развивай своего персонажа!
-                <br>version 1.4</div>
+                <br>version 1.5</div>
             </div>
             <div class="home-btns">
                 <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Улучши навыки</div></div></button>
@@ -423,7 +532,7 @@
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:50, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:20 },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:50, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
     { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:25, requiredLevel:2, requiredPop:50, minigameType:'math' },
     { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Строительство',    income:10, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:5, minigameTarget:50 },
     { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:8, requiredLevel:3, requiredPop:140, minigameType:'math' },
@@ -694,25 +803,31 @@ setInterval(()=>{
 /* ══════════════════════════════════════════════
    🎮 МИНИ-ИГРЫ
 ══════════════════════════════════════════════ */
+function showMoneyPop(amount) {
+    const pop = document.createElement('div');
+    pop.className = 'money-pop';
+    pop.textContent = formatMoney(amount);
+    pop.style.left = Math.random() * window.innerWidth + 'px';
+    pop.style.top = Math.random() * (window.innerHeight * 0.5) + 'px';
+    document.body.appendChild(pop);
+    setTimeout(() => pop.remove(), 1100);
+}
+
 function startMinigame(){
     if(minigameActive || !currentJob) return;
     const job = jobById(currentJob);
     if(!job) return;
     
     minigameActive = true;
-    const modal = document.createElement('div');
-    modal.className = 'minigame-overlay';
-    modal.id = 'mg-modal';
-    document.body.appendChild(modal);
     
     if(job.minigameType === 'tap') {
-        startTapGame(job, modal);
+        startTapGame(job);
     } else if(job.minigameType === 'math') {
-        startMathGame(job, modal);
+        startMathGame(job);
     }
 }
 
-function startTapGame(job, modal) {
+function startTapGame(job) {
     let taps = 0;
     let timeLeft = job.minigameDuration || 5;
     let running = false;
@@ -720,72 +835,60 @@ function startTapGame(job, modal) {
     const target = job.minigameTarget || 30;
     let gameOver = false;
     
-    function endGame(earned) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    
+    function restoreOriginal() {
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+    }
+    
+    function endGame(earned, success) {
         gameOver = true;
         if(timerId) clearInterval(timerId);
+        
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
-        const gameModal = document.getElementById('mg-modal');
-        if(gameModal) gameModal.remove();
-        updateHUD();
-        updateHomeWorkBtn();
-        minigameActive = false;
-        saveGame(false);
+        
+        minigameCard.innerHTML = `
+            <div style="text-align:center;margin:20px 0;">
+                ${success ? `
+                    <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
+                    <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
+                ` : `
+                    <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
+                    <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
+                `}
+            </div>
+        `;
+        
+        setTimeout(() => {
+            restoreOriginal();
+            updateHUD();
+            updateHomeWorkBtn();
+            minigameActive = false;
+            saveGame(false);
+        }, 1000);
     }
     
     function render() {
         if(gameOver) return;
         
-        const targetMet = taps >= target;
-        const earned = targetMet ? getJobReward() : 0;
-        
-        modal.innerHTML = `
-            <div class="minigame-box">
-                <div class="mg-modal-title">${job.name}</div>
-                <div class="mg-modal-sub">${job.description}</div>
-                <div class="minigame-game-area">
-                    <div class="tap-timer">${running ? '⏱️ ' + timeLeft + 'с' : (timeLeft === 0 ? 'Время!' : 'Готов?')}</div>
-                    <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Нужно: <span style="color:#4cde80;font-weight:bold;">${target}</span> | Тапов: <span style="color:#ffd200;font-weight:bold;">${taps}</span></div>
-                    <div class="tap-counter">${taps}/${target}</div>
-                    <div class="tap-area" id="tap-btn">${running ? '💥' : '👆'}</div>
-                    ${!running && timeLeft > 0 ? '<div class="mg-modal-sub" style="margin-top:12px;font-size:13px;">Нажми на кружок чтобы начать!</div>' : ''}
-                </div>
-                ${timeLeft === 0 ? `
-                    <div style="text-align:center;margin-top:16px;">
-                        ${targetMet ? `
-                            <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Успех!</div>
-                            <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
-                        ` : `
-                            <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Не справился</div>
-                            <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
-                        `}
-                    </div>
-                    <button class="minigame-close-btn">✖️ Закрыть</button>
-                ` : ''}
-            </div>
+        minigameCard.innerHTML = `
+            <div class="minigame-label">🎮 ${job.name}</div>
+            <div class="tap-timer">${running ? '⏱️ ' + timeLeft + 'с' : (timeLeft === 0 ? 'Время!' : 'Готов?')}</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:16px;">Нужно: <span style="color:#4cde80;font-weight:bold;">${target}</span> | Тапов: <span style="color:#ffd200;font-weight:bold;">${taps}</span></div>
+            <div class="tap-counter">${taps}/${target}</div>
+            <div class="tap-area" id="tap-btn" style="margin:16px auto;">${running ? '💥' : '👆'}</div>
+            ${!running && timeLeft > 0 ? '<div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:12px;">Нажми на кружок чтобы начать!</div>' : ''}
         `;
         
-        attachTapListeners(earned);
-    }
-    
-    function attachTapListeners(earned) {
         const tapBtn = document.getElementById('tap-btn');
-        const closeBtn = document.querySelector('.minigame-close-btn');
-        
-        if(tapBtn) {  // ← ИСПРАВЛЕНО: убрал условие timeLeft > 0
+        if(tapBtn && !gameOver) {
             tapBtn.onclick = handleTapClick;
-        }
-        
-        if(closeBtn) {
-            closeBtn.style.pointerEvents = 'auto';
-            closeBtn.style.zIndex = '99999';
-            closeBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                endGame(earned);
-            };
         }
     }
     
@@ -796,27 +899,45 @@ function startTapGame(job, modal) {
             running = true;
             timerId = setInterval(() => {
                 timeLeft--;
+                render();
                 if (timeLeft <= 0) {
                     clearInterval(timerId);
                     running = false;
+                    setTimeout(() => {
+                        if(!gameOver) {
+                            const targetMet = taps >= target;
+                            const earned = targetMet ? getJobReward() : 0;
+                            endGame(earned, targetMet);
+                        }
+                    }, 500);
                 }
-                render();
             }, 1000);
         }
         
-        if (running) {
+        if (running && !gameOver) {
             taps++;
             render();
         }
     }
     
+    playBtn.style.display = 'none';
     render();
 }
 
-function startMathGame(job, modal) {
+function startMathGame(job) {
     let score = 0;
     let currentQuestion = null;
     let gameOver = false;
+    let isProcessing = false;
+    
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    
+    function restoreOriginal() {
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+    }
     
     function generateQuestion() {
         const a = Math.floor(Math.random() * 20) + 1;
@@ -836,31 +957,47 @@ function startMathGame(job, modal) {
     }
     
     function checkAnswer(selected, correct) {
-        if(gameOver) return;
+        if(gameOver || isProcessing) return;
+        isProcessing = true;
         
         if(selected === correct) {
             score++;
+            isProcessing = false;
             nextQuestion();
         } else {
-            endGame(getJobReward() * score);
+            const earned = getJobReward() * score;
+            endGame(earned);
         }
     }
     
     function endGame(earned) {
         gameOver = true;
+        isProcessing = true;
         
         if(earned > 0) {
             money += earned;
             showMoneyPop(earned);
         }
         
-        const gameModal = document.getElementById('mg-modal');
-        if(gameModal) gameModal.remove();
+        minigameCard.innerHTML = `
+            <div style="text-align:center;margin:20px 0;">
+                ${score > 0 ? `
+                    <div style="font-size:16px;color:#4cde80;margin-bottom:8px;">✅ Верных ответов: ${score}</div>
+                    <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">${formatMoney(earned)}</div>
+                ` : `
+                    <div style="font-size:16px;color:#ff6b6b;margin-bottom:8px;">❌ Неправильный ответ!</div>
+                    <div style="font-size:36px;font-weight:900;color:#ff6b6b;margin-bottom:16px;">$0</div>
+                `}
+            </div>
+        `;
         
-        updateHUD();
-        updateHomeWorkBtn();
-        minigameActive = false;
-        saveGame(false);
+        setTimeout(() => {
+            restoreOriginal();
+            updateHUD();
+            updateHomeWorkBtn();
+            minigameActive = false;
+            saveGame(false);
+        }, 1000);
     }
     
     function nextQuestion() {
@@ -876,41 +1013,18 @@ function startMathGame(job, modal) {
             currentQuestion = generateQuestion();
         }
         
-        const earned = getJobReward() * score;
-        
-        modal.innerHTML = `
-            <div class="minigame-box">
-                <div class="mg-modal-title">${job.name}</div>
-                <div class="mg-modal-sub">${job.description}</div>
-                <div class="minigame-game-area">
-                    <div style="font-size:32px;font-weight:bold;color:#fff;margin-bottom:24px;">${currentQuestion.question} = ?</div>
-                    <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-                        ${currentQuestion.options.map((opt) => `
-                            <button class="math-option-btn" data-value="${opt}">${opt}</button>
-                        `).join('')}
-                    </div>
-                    <div style="margin-top:16px;font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
-                </div>
-                <button class="minigame-close-btn">✖️ Закончить и забрать ${formatMoney(earned)}</button>
+        minigameCard.innerHTML = `
+            <div class="minigame-label">🎮 ${job.name}</div>
+            <div style="font-size:32px;font-weight:bold;color:#fff;margin:20px 0;">${currentQuestion.question} = ?</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                ${currentQuestion.options.map((opt) => `
+                    <button class="math-option-btn" data-value="${opt}" ${isProcessing ? 'disabled' : ''}>${opt}</button>
+                `).join('')}
             </div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);">Верных: <span style="color:#4cde80;font-weight:bold;">${score}</span></div>
         `;
         
-        attachMathListeners(earned);
-    }
-    
-    function attachMathListeners(earned) {
-        const closeBtn = document.querySelector('.minigame-close-btn');
-        if(closeBtn) {
-            closeBtn.style.pointerEvents = 'auto';
-            closeBtn.style.zIndex = '99999';
-            closeBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                endGame(earned);
-            };
-        }
-        
-        if(!gameOver) {
+        if(!gameOver && !isProcessing) {
             document.querySelectorAll('.math-option-btn').forEach(btn => {
                 btn.onclick = function() {
                     const value = parseInt(this.getAttribute('data-value'));
@@ -920,6 +1034,7 @@ function startMathGame(job, modal) {
         }
     }
     
+    playBtn.style.display = 'none';
     nextQuestion();
 }
 /* ══════════════════════════════════════════════
