@@ -724,12 +724,29 @@ function loadGame(cb){
         tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
             if(!err&&val) applySave(val);
             else { const l=localStorage.getItem(SAVE_KEY); if(l) applySave(l); }
+            checkStudyCompletion();
             cb();
         });
     } else {
         const l=localStorage.getItem(SAVE_KEY);
         if(l) applySave(l);
+        checkStudyCompletion();
         cb();
+    }
+}
+
+function checkStudyCompletion() {
+    if(!studying || !studyStart) return;
+    
+    const s = schoolById(studying);
+    const elapsed = Date.now() - studyStart;
+    
+    if(elapsed >= s.duration) {
+        // Обучение закончилось
+        finishStudy();
+    } else {
+        // Обучение ещё идёт - запускаем таймер
+        runStudyTimer();
     }
 }
 
@@ -1120,25 +1137,55 @@ function renderJobsList(){
    SCHOOL ACTIONS
 ══════════════════════════════════════════════ */
 function enroll(sid){
-    if(studying)return;if(completedSchools.has(sid)||lockedSchools.has(sid))return;
-    const s=schoolById(sid);if(!s)return;
-    if(level<s.requiredLvl){alert('❌ Нужен '+s.requiredLvl+' уровень!');return;}
-    if(s.cost>0&&money<s.cost){alert('❌ Недостаточно денег! Нужно $'+s.cost);return;}
-    if(s.cost>0){money-=s.cost;updateHUD();}
-    studying=sid;studyStart=Date.now();
-    renderSchoolsList();runStudyTimer();saveGame(false);
+    if(studying) return;
+    if(completedSchools.has(sid) || lockedSchools.has(sid)) return;
+    const s = schoolById(sid);
+    if(!s) return;
+    if(level < s.requiredLvl){
+        alert('❌ Нужен '+s.requiredLvl+' уровень!');
+        return;
+    }
+    if(s.cost > 0 && money < s.cost){
+        alert('❌ Недостаточно денег! Нужно $'+s.cost);
+        return;
+    }
+    if(s.cost > 0){
+        money -= s.cost;
+        updateHUD();
+    }
+    studying = sid;
+    studyStart = Date.now();  // ← ВАЖНО: сохраняем точное время старта
+    renderSchoolsList();
+    runStudyTimer();  // ← ЗАПУСКАЕМ ТАЙМЕР
+    saveGame(false);
 }
 function runStudyTimer(){
-    if(studyTimer)clearInterval(studyTimer);
-    studyTimer=setInterval(()=>{
-        if(!studying||!studyStart)return;
-        const s=schoolById(studying),elapsed=Date.now()-studyStart;
-        const left=Math.max(0,s.duration-elapsed),pct=Math.min(100,(elapsed/s.duration)*100).toFixed(1);
-        const fe=document.getElementById('school-fill-'+studying);
-        const te=document.getElementById('school-time-'+studying);
-        if(fe)fe.style.width=pct+'%';if(te)te.textContent=formatTime(left);
-        if(left<=0){clearInterval(studyTimer);studyTimer=null;finishStudy();}
-    },500);
+    if(studyTimer) clearInterval(studyTimer);
+    
+    function updateProgress() {
+        if(!studying || !studyStart) return;
+        
+        const s = schoolById(studying);
+        const now = Date.now();
+        const elapsed = now - studyStart;
+        const left = Math.max(0, s.duration - elapsed);
+        const pct = Math.min(100, (elapsed / s.duration) * 100).toFixed(1);
+        
+        const fe = document.getElementById('school-fill-' + studying);
+        const te = document.getElementById('school-time-' + studying);
+        
+        if(fe) fe.style.width = pct + '%';
+        if(te) te.textContent = formatTime(left);
+        
+        if(left <= 0) {
+            clearInterval(studyTimer);
+            studyTimer = null;
+            finishStudy();
+        }
+    }
+    
+    updateProgress(); // Вызываем сразу при открытии
+    studyTimer = setInterval(updateProgress, 500);
 }
 function finishStudy(){
     const sid=studying,s=schoolById(sid);
