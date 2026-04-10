@@ -276,7 +276,22 @@
 .math-option-btn:hover { background:rgba(76,222,128,0.25); border-color:#4cde80; }
 .math-option-btn:active { transform:scale(0.95); }
 .math-option-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; } /* ← ДОБАВИТЬ */
-.minigame-close-btn { width:100%; padding:14px; border:none; border-radius:12px; background:rgba(255,107,107,0.15); border:1.5px solid #ff6b6b; color:#ff6b6b; font-size:16px; font-weight:bold; cursor:pointer; margin-top:12px; pointer-events: auto; /* ← ДОБАВИТЬ */ }
+.minigame-close-btn { 
+    width:100%; 
+    padding:14px; 
+    border:none; 
+    border-radius:12px; 
+    background:rgba(255,107,107,0.15); 
+    border:1.5px solid #ff6b6b; 
+    color:#ff6b6b; 
+    font-size:16px; 
+    font-weight:bold; 
+    cursor:pointer; 
+    margin-top:12px;
+    pointer-events: auto;  /* ← ДОБАВЬТЕ ЭТО */
+    position: relative;    /* ← И ЭТО */
+    z-index: 99999;        /* ← И ЭТО */
+}
 .minigame-close-btn:active { transform:scale(0.97); }
 
 
@@ -321,7 +336,7 @@
             <div>
                 <div class="home-title">Жизнь — Симулятор</div>
                 <div class="home-sub">Учись, работай, открывай бизнесы.<br>Развивай своего персонажа!
-                <br>version 1.1</div>
+                <br>version 1.2</div>
             </div>
             <div class="home-btns">
                 <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Улучши навыки</div></div></button>
