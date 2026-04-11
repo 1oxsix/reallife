@@ -1435,7 +1435,7 @@ function finishStudy(){
     level+=s.rewardLvl;popularity+=s.rewardPop;
     completedSchools.add(sid);if(s.blocksId)lockedSchools.add(s.blocksId);
     studying=null;studyStart=null;
-    updateHUD();renderSchoolsList();renderJobsList();renderBizList();
+    updateHUD();renderSchoolsList();renderJobsList();
     saveGame(true);
     alert('🎓 Обучение завершено!\n📈 Уровень: +'+s.rewardLvl+' → '+level+'\n👥 Популярность: +'+s.rewardPop+' → '+popularity);
 }
