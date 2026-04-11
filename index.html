@@ -768,14 +768,20 @@ function saveGame(toast=false){
 function loadGame(cb){
     if(tg?.CloudStorage){
         tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
+            const isNew = !(!err&&val);
             if(!err&&val) applySave(val);
-            else { const l=localStorage.getItem(SAVE_KEY); if(l) applySave(l); }
+            else { 
+                const l=localStorage.getItem(SAVE_KEY); 
+                if(l) applySave(l);
+                else if(isNew && Math.random() < 0.2) money = 300; // ← новый игрок
+            }
             checkStudyCompletion();
             cb();
         });
     } else {
         const l=localStorage.getItem(SAVE_KEY);
         if(l) applySave(l);
+        else if(Math.random() < 0.2) money = 300; // ← новый игрок
         checkStudyCompletion();
         cb();
     }
