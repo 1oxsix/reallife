@@ -442,7 +442,7 @@
 <body>
 
 <div class="hud">
-    <div class="hud-nickname" id="nickname">Игрок</div>
+    <div class="hud-nickname" id="nickname"><span>Игрок</div>
     <div class="hud-row">
         <div class="level-box"><span class="level-label">lvl</span><span class="level-number" id="hud-level">1</span></div>
         <div class="stats">
@@ -560,35 +560,42 @@ const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
     { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:50, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
+    { id:'loader', name:'Грузчик', icon:'👨‍🔧', description:'Заргрузка вагонов', income:70, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:10, minigameTarget:50 },
     { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:50, requiredLevel:2, requiredPop:50, minigameType:'jump' },
-    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Строительство',    income:100, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:9, minigameTarget:50 },
-    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:25, requiredLevel:3, requiredPop:140, minigameType:'math' },
+    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:200, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:25, requiredLevel:5, requiredPop:140, minigameType:'math' },
+    { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:75, requiredLevel:5, requiredPop:140, minigameType:'jump' },
 ];
 
 const SCHOOLS_CONFIG = [
-    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:60*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
-    { id:'private', name:'Частная школа', icon:'🏛️',  duration:120*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
+    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:20*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
+    { id:'private', name:'Частная школа', icon:'🏛️',  duration:60*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
     { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:120*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:1, blocksId:''  },
     { id:'universitet', name:'Университет', icon:'🏛️',  duration:300*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:2, blocksId:'institut'  },
-    { id:'institut', name:'Институт', icon:'🏛️',  duration:600*1000, cost:1000, rewardLvl:2, rewardPop:100, requiredLvl:2, blocksId:'universitet'  },
+    { id:'institut', name:'Институт', icon:'🏛️',  duration:300*1000, cost:1000, rewardLvl:2, rewardPop:100, requiredLvl:2, blocksId:'universitet'  },
+    { id:'mgu', name:'МГУ', icon:'🧠',  duration:1200*1000, cost:5000, rewardLvl:2, rewardPop:200, requiredLvl:3, blocksId:''  },
+    { id:'bizschool', name:'Школа Бизнеса', icon:'🏦',  duration:600*1000, cost:1500, rewardLvl:1, rewardPop:150, requiredLvl:3, blocksId:'artschool'  },
+    { id:'artschool', name:'Школа Искусств', icon:'🖼️',  duration:600*1000, cost:1500, rewardLvl:1, rewardPop:150, requiredLvl:3, blocksId:'bizschool'  },
+    { id:'itschool', name:'Школа Программирования', icon:'🧑‍💻',  duration:600*1000, cost:2500, rewardLvl:1, rewardPop:250, requiredLvl:5, blocksId:''  },
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:10, totalLimit:2 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:100, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:20, totalLimit:2 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:100, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:30, totalLimit:2 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:2 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:2 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:2 },
+    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:2 },
 ];
 
 const CARS_CONFIG = [
-    { id:'lada', name:'Лада Гранта', image:'lada.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:5, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:50, totalLimit:1 },
-    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:12, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:100, totalLimit:1 },
-    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:200, totalLimit:1 },
+    { id:'lada', name:'Лада Гранта', image:'lada.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:1 },
+    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:0, totalLimit:1 },
+    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:1 },
 ];
 
 const REAL_ESTATE_CONFIG = [
-    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:10, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:80, totalLimit:1 },
-    { id:'house', name:'Коттедж', image:'house.PNG', description:'Частный дом с участком.', price:100, incomePerSec:40, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:200, totalLimit:1 },
-    { id:'tower', name:'Офисное здание', image:'tower.png', description:'Многоэтажный комплекс.', price:100, incomePerSec:100, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:500, totalLimit:1 },
+    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:1 },
+    { id:'house', name:'Коттедж', image:'house.PNG', description:'Частный дом с участком.', price:100, incomePerSec:0, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:0, totalLimit:1 },
+    { id:'tower', name:'Офисное здание', image:'tower.png', description:'Многоэтажный комплекс.', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:0, totalLimit:1 },
 ];
 
 /* ══════════════════════════════════════════════
