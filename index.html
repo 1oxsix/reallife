@@ -574,9 +574,9 @@ const SCHOOLS_CONFIG = [
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'kiosk.png', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:10, totalLimit:5 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.png', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:20, totalLimit:3 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.png', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:30, totalLimit:2 },
+    { id:'kiosk', name:'Газетный киоск', image:'kiosk.png', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:10, totalLimit:1 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.png', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:20, totalLimit:1 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.png', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:30, totalLimit:1 },
 ];
 
 const CARS_CONFIG = [
@@ -858,7 +858,7 @@ setInterval(()=>{
     if(ownedBusinesses.size>0){
         money+=getBizIncome();
         updateHUD();updateHomeBizSub();
-        if(document.getElementById('page-biz').classList.contains('active'))renderBizList();
+        if(document.getElementById('page-assets')?.classList.contains('active'))renderAssetsContent();
     }
 },1000);
 
@@ -1706,41 +1706,60 @@ return `
       }).join('');
       }
       async function buyAsset(id, type) {
-      let item;
-      if (type === 'cars') item = carById(id);
-      else if (type === 'realestate') item = realEstateById(id);
-      else item = bizById(id);
-      if (!item || money < item.price || !isAssetAvailable(id)) return;
-      const result = await updateAssetCount(id, -1);
-      if (!result || result.success === false) {
-      alert('❌ Не удалось купить! Лимит исчерпан или произошла ошибка.');
-      renderAssetsContent();
-      return;
-      }
-      money -= item.price;
-      ownedBusinesses.add(item.id);
-      popularity += item.rewardPop || 0;
-      renderAssetsContent();
-      updateHUD();
-      updateHomeWorkBtn();
-      updateHomeBizSub();
-      saveGame(true);
-      }
-      function sellAsset(id, type) {
-      let item;
-      if (type === 'cars') item = carById(id);
-      else if (type === 'realestate') item = realEstateById(id);
-      else item = bizById(id);
-      if (!item || !ownedBusinesses.has(item.id)) return;
-      updateAssetCount(id, 1);
-      money += Math.floor(item.price * item.sellPercent);
-      ownedBusinesses.delete(item.id);
-      renderAssetsContent();
-      updateHUD();
-      updateHomeWorkBtn();
-      updateHomeBizSub();
-      saveGame(true);
-      }
+    let item;
+    if (type === 'cars') item = carById(id);
+    else if (type === 'realestate') item = realEstateById(id);
+    else item = bizById(id);
+    
+    if (!item || money < item.price) return;
+    if (!isAssetAvailable(id)) {
+        alert('❌ Нет в наличии!');
+        return;
+    }
+    
+    // Локально уменьшаем счётчик (без ожидания сервера)
+    assetsCount[id] = (assetsCount[id] || item.totalLimit) - 1;
+    
+    // Отправляем на сервер в фоне (асинхронно)
+    updateAssetCount(id, -1).catch(e => {
+        console.warn('Server sync failed, но локально куплено');
+    });
+    
+    money -= item.price;
+    ownedBusinesses.add(item.id);
+    popularity += item.rewardPop || 0;
+    
+    renderAssetsContent();
+    updateHUD();
+    updateHomeWorkBtn();
+    updateHomeBizSub();
+    saveGame(true);
+}
+    function sellAsset(id, type) {
+    let item;
+    if (type === 'cars') item = carById(id);
+    else if (type === 'realestate') item = realEstateById(id);
+    else item = bizById(id);
+    
+    if (!item || !ownedBusinesses.has(item.id)) return;
+    
+    // Локально увеличиваем счётчик
+    assetsCount[id] = (assetsCount[id] || 0) + 1;
+    
+    // Отправляем на сервер в фоне
+    updateAssetCount(id, 1).catch(e => {
+        console.warn('Server sync failed, но локально продано');
+    });
+    
+    money += Math.floor(item.price * item.sellPercent);
+    ownedBusinesses.delete(item.id);
+    
+    renderAssetsContent();
+    updateHUD();
+    updateHomeWorkBtn();
+    updateHomeBizSub();
+    saveGame(true);
+}
       function sellBusiness(id) {
       sellAsset(id, 'bizz');
       }
@@ -1833,9 +1852,10 @@ function switchPage(name){
     document.getElementById('nav-'+name).classList.add('active');
     if(!currentJob)document.getElementById('nav-work').classList.remove('active');
     if(name==='work')updateWorkPageStatic();
-    if(name==='biz')renderBizList();
     if(name==='assets')renderAssetsContent();
     if(name==='lb')renderLeaderboard();
+    if(name==='jobs')renderJobsList();
+    if(name==='dev')renderSchoolsList();
 }
 function updateNavWork(){document.getElementById('nav-work').classList.toggle('nav-locked',!currentJob);}
 function updateHomeWorkBtn(){
