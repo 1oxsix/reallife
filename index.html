@@ -626,7 +626,8 @@ const MAX_OFFLINE_SEC    = 24 * 60 * 60;
 let money=0, popularity=0, health=100, level=0;
 let currentJob=null, jobHireTime=null;
 let studying=null, studyStart=null, studyTimer=null;
-let completedSchools=new Set(), lockedSchools=new Set(), ownedBusinesses=new Set();
+let completedSchools=new Set(), lockedSchools=new Set();
+let ownedBusinesses = {}; // Теперь это ОБЪЕКТ {assetId: count}, а не Set!
 let lbTab='global', lbCache={global:null,friends:null}, lbLoading=false;
 let minigameActive=false;
 
@@ -664,7 +665,14 @@ function dayWord(n){
 function getSeniorityDays(){ if(!jobHireTime)return 0; return Math.floor((Date.now()-jobHireTime)/MS_PER_DAY); }
 function getMultiplier()   { return 1+(Math.min(getSeniorityDays(),MAX_SENIORITY_DAYS)*2)/100; }
 function getJobReward()    { if(!currentJob)return 0; return Math.floor(jobById(currentJob).income*getMultiplier()); }
-function getBizIncome()    { let t=0; ownedBusinesses.forEach(id=>{const b=bizById(id);if(b)t+=b.incomePerSec;}); return t; }
+function getBizIncome() {
+    let t = 0;
+    for(const [assetId, count] of Object.entries(ownedBusinesses)){
+        const b = bizById(assetId);
+        if(b) t += b.incomePerSec * count;
+    }
+    return t;
+}
 function canHireJob(id)    { const j=jobById(id); return level>=j.requiredLevel&&popularity>=j.requiredPop; }
 function canBuyBiz(id)     { const b=bizById(id); return level>=b.requiredLevel&&popularity>=b.requiredPop&&money>=b.price; }
 
@@ -703,7 +711,7 @@ function buildSave(){
         currentJob, jobHireTime, studying, studyStart,
         completedSchools:[...completedSchools],
         lockedSchools:   [...lockedSchools],
-        ownedBusinesses: [...ownedBusinesses],
+        ownedBusinesses: ownedBusinesses,
         savedAt:    Date.now(),
         playerName: MY_NAME,
         playerId:   MY_ID
@@ -742,7 +750,7 @@ function applySave(raw){
         studyStart   = d.studyStart   || null;
         completedSchools = new Set(d.completedSchools || []);
         lockedSchools    = new Set(d.lockedSchools    || []);
-        ownedBusinesses  = new Set(d.ownedBusinesses  || []);
+        ownedBusinesses  = d.ownedBusinesses || {};
 
         if(d.savedAt){
             const result = calcOfflineEarnings(d.savedAt);
@@ -779,9 +787,8 @@ function loadGame(cb){
             if(!err && val){
                 applySave(val);
                 checkStudyCompletion();
-                cb();
+                loadPlayerAssets().then(cb);
             } else {
-                // CloudStorage пустой — грузим с сервера
                 loadFromServer(cb);
             }
         });
@@ -790,10 +797,23 @@ function loadGame(cb){
         if(l){
             applySave(l);
             checkStudyCompletion();
-            cb();
+            loadPlayerAssets().then(cb);
         } else {
             loadFromServer(cb);
         }
+    }
+}
+
+// ── Загрузить активы конкретного игрока с сервера ──
+async function loadPlayerAssets(){
+    try {
+        const res = await fetch(SERVER_URL+'/player-assets/'+MY_ID);
+        const d = await res.json();
+        if(d.playerAssets){
+            ownedBusinesses = d.playerAssets;
+        }
+    } catch(e){
+        console.warn('Failed to load player assets:', e);
     }
 }
 
