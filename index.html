@@ -687,7 +687,7 @@ async function syncToServer(){
             body:JSON.stringify({
                 id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
                 money:Math.floor(money), level, popularity,
-                businesses:ownedBusinesses.size,
+                businesses: Object.values(ownedBusinesses).reduce((a, b) => a + b, 0),
                 updatedAt:Date.now(),
                 savedata: buildSave()  // ← добавить полное сохранение
             })
@@ -728,10 +728,10 @@ function calcOfflineEarnings(savedAt){
     let earned = 0;
 
     // ТОЛЬКО ОТ БИЗНЕСОВ (работы не дают пассивный доход)
-    ownedBusinesses.forEach(id => {
-        const b = bizById(id);
-        if(b) earned += b.incomePerSec * cappedSec;
-    });
+    for(const [assetId, count] of Object.entries(ownedBusinesses)){
+    const b = bizById(assetId);
+    if(b) earned += b.incomePerSec * count * cappedSec;
+    }
 
     return { earned: Math.floor(earned), secs: cappedSec };
 }
@@ -916,7 +916,7 @@ function updateHUD(){
 ═══════════════════════════  ══════════════════ */
 setInterval(()=>{
     // Бизнесы → сразу на счёт
-    if(ownedBusinesses.size>0){
+    if(Object.keys(ownedBusinesses).length > 0){
         money+=getBizIncome();
         updateHUD();updateHomeBizSub();
         if(document.getElementById('page-assets')?.classList.contains('active'))renderAssetsContent();
@@ -1634,149 +1634,152 @@ document.getElementById('tab-' + tab).classList.add('active');
 renderAssetsContent();
 }
 function renderAssetsContent() {
-const container = document.getElementById('assets-content');
-if (assetsTab === 'bizz') renderBizList(container);
-else if (assetsTab === 'cars') renderCarsList(container);
-else if (assetsTab === 'realestate') renderRealEstateList(container);
+    const container = document.getElementById('assets-content');
+    if (assetsTab === 'bizz') renderBizList(container);
+    else if (assetsTab === 'cars') renderCarsList(container);
+    else if (assetsTab === 'realestate') renderRealEstateList(container);
 }
+
 function renderBizList(container = null) {
-const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
-target.innerHTML = BUSINESS_CONFIG.map(b => {
-const owned = ownedBusinesses.has(b.id);
-const levelOk = level >= b.requiredLevel;
-const popOk = popularity >= b.requiredPop;
-const moneyOk = money >= b.price;
-const countOk = isAssetAvailable(b.id);
-const locked = !levelOk || !popOk || !moneyOk || !countOk;
-const canBuy = levelOk && popOk && moneyOk && countOk;
-const remaining = getAssetCount(b.id);
-const limit = getAssetLimit(b.id);
-return `
-<div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
-  <div class="biz-top">
-    <div class="biz-icon">
-      <img src="${b.image}" alt="${b.name}" onerror="this.style.display='none'">
-      </div>
-      <div class="biz-info">
-        <div class="biz-name">${b.name}</div>
-        <div class="biz-desc">${b.description}</div>
-        <div class="biz-tags">
-          ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
-          ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${b.requiredPop}</div>`}
-          ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(b.price)}</div>`}
-          ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${limit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${limit}</div>`}
-        </div>
-      </div>
-      <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
-        <div class="price-main">${owned ? '✅' : formatMoney(b.price)}</div>
-        <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
-      </div>
-    </div>
-    ${owned ? `
-    <div class="biz-income-row">
-      <div class="biz-income-label">💰 Доход в секунду</div>
-      <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
-    </div>
-    <button class="sell-biz-btn" onclick="sellBusiness('${b.id}')">📉 Продать за ${formatMoney(b.price * b.sellPercent)}</button>
-    ` : `
-    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyBusiness('${b.id}')">🛒 Купить ${formatMoney(b.price)}</button>
-    `}
-  </div>
-  `;
-  }).join('');
-  }
-  function renderCarsList(container = null) {
-  const target = container || document.getElementById('assets-content');
-  target.innerHTML = CARS_CONFIG.map(c => {
-  const owned = ownedBusinesses.has(c.id);
-  const levelOk = level >= c.requiredLevel;
-  const popOk = popularity >= c.requiredPop;
-  const moneyOk = money >= c.price;
-  const countOk = isAssetAvailable(c.id);
-  const locked = !levelOk || !popOk || !moneyOk || !countOk;
-  const canBuy = levelOk && popOk && moneyOk && countOk;
-  const remaining = getAssetCount(c.id);
-  const limit = getAssetLimit(c.id);
-  return `
-  <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
-    <div class="biz-top">
-      <div class="biz-icon">
-        <img src="${c.image}" alt="${c.name}" onerror="this.style.display='none'">
-        </div>
-        <div class="biz-info">
-          <div class="biz-name">${c.name}</div>
-          <div class="biz-desc">${c.description}</div>
-          <div class="biz-tags">
-            ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${c.requiredLevel}</div>`}
-            ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${c.requiredPop}</div>`}
-            ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(c.price)}</div>`}
-            ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${limit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${limit}</div>`}
-          </div>
-        </div>
-        <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
-          <div class="price-main">${owned ? '✅' : formatMoney(c.price)}</div>
-          <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
-        </div>
-      </div>
-      ${owned ? `
-      <div class="biz-income-row">
-        <div class="biz-income-label">💰 Доход в секунду</div>
-        <div class="biz-income-value">+${formatMoney(c.incomePerSec)}</div>
-      </div>
-      <button class="sell-biz-btn" onclick="sellAsset('${c.id}', 'cars')">📉 Продать за ${formatMoney(c.price * c.sellPercent)}</button>
-      ` : `
-      <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${c.id}', 'cars')">🛒 Купить ${formatMoney(c.price)}</button>
-      `}
-    </div>
-    `;
+    const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
+    target.innerHTML = BUSINESS_CONFIG.map(b => {
+        const ownedCount = ownedBusinesses[b.id] || 0;  // ✅ Сколько владеет игрок
+        const levelOk = level >= b.requiredLevel;
+        const popOk = popularity >= b.requiredPop;
+        const moneyOk = money >= b.price;
+        const owned = ownedCount > 0;  // ✅ Владеет хотя бы одним
+        const locked = !levelOk || !popOk || !moneyOk;
+        const canBuy = levelOk && popOk && moneyOk;
+        
+        return `
+            <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+                <div class="biz-top">
+                    <div class="biz-icon">
+                        <img src="${b.image}" alt="${b.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="biz-info">
+                        <div class="biz-name">${b.name}</div>
+                        <div class="biz-desc">${b.description}</div>
+                        <div class="biz-tags">
+                            ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
+                            ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${b.requiredPop}</div>`}
+                            ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(b.price)}</div>`}
+                            ${owned ? `<div class="biz-tag info">📦 Владеешь: ${ownedCount}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+                        <div class="price-main">${owned ? ownedCount : formatMoney(b.price)}</div>
+                        <div class="price-sub">${owned ? 'Шт.' : 'Цена'}</div>
+                    </div>
+                </div>
+                ${owned ? `
+                    <div class="biz-income-row">
+                        <div class="biz-income-label">💰 Доход в секунду</div>
+                        <div class="biz-income-value">+${formatMoney(b.incomePerSec * ownedCount)}</div>
+                    </div>
+                ` : ''}
+                <div style="display: flex; gap: 8px;">
+                    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${b.id}', 'bizz')" style="flex: 1;">🛒 Купить</button>
+                    ${owned ? `<button class="sell-biz-btn" onclick="sellAsset('${b.id}', 'bizz')" style="flex: 1;">📉 Продать</button>` : ''}
+                </div>
+            </div>
+        `;
     }).join('');
-    }
-    function renderRealEstateList(container = null) {
+}
+
+function renderCarsList(container = null) {
+    const target = container || document.getElementById('assets-content');
+    target.innerHTML = CARS_CONFIG.map(c => {
+        const ownedCount = ownedBusinesses[c.id] || 0;  // ✅ Сколько владеет игрок
+        const levelOk = level >= c.requiredLevel;
+        const popOk = popularity >= c.requiredPop;
+        const moneyOk = money >= c.price;
+        const owned = ownedCount > 0;  // ✅ Владеет хотя бы одним
+        const locked = !levelOk || !popOk || !moneyOk;
+        const canBuy = levelOk && popOk && moneyOk;
+        
+        return `
+            <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+                <div class="biz-top">
+                    <div class="biz-icon">
+                        <img src="${c.image}" alt="${c.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="biz-info">
+                        <div class="biz-name">${c.name}</div>
+                        <div class="biz-desc">${c.description}</div>
+                        <div class="biz-tags">
+                            ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${c.requiredLevel}</div>`}
+                            ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${c.requiredPop}</div>`}
+                            ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(c.price)}</div>`}
+                            ${owned ? `<div class="biz-tag info">📦 Владеешь: ${ownedCount}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+                        <div class="price-main">${owned ? ownedCount : formatMoney(c.price)}</div>
+                        <div class="price-sub">${owned ? 'Шт.' : 'Цена'}</div>
+                    </div>
+                </div>
+                ${owned ? `
+                    <div class="biz-income-row">
+                        <div class="biz-income-label">💰 Доход в секунду</div>
+                        <div class="biz-income-value">+${formatMoney(c.incomePerSec * ownedCount)}</div>
+                    </div>
+                ` : ''}
+                <div style="display: flex; gap: 8px;">
+                    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${c.id}', 'cars')" style="flex: 1;">🛒 Купить</button>
+                    ${owned ? `<button class="sell-biz-btn" onclick="sellAsset('${c.id}', 'cars')" style="flex: 1;">📉 Продать</button>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderRealEstateList(container = null) {
     const target = container || document.getElementById('assets-content');
     target.innerHTML = REAL_ESTATE_CONFIG.map(r => {
-    const owned = ownedBusinesses.has(r.id);
-    const levelOk = level >= r.requiredLevel;
-    const popOk = popularity >= r.requiredPop;
-    const moneyOk = money >= r.price;
-    const countOk = isAssetAvailable(r.id);
-    const locked = !levelOk || !popOk || !moneyOk || !countOk;
-    const canBuy = levelOk && popOk && moneyOk && countOk;
-    const remaining = getAssetCount(r.id);
-    const limit = getAssetLimit(r.id);
-    return `
-    <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
-      <div class="biz-top">
-        <div class="biz-icon">
-          <img src="${r.image}" alt="${r.name}" onerror="this.style.display='none'">
-          </div>
-          <div class="biz-info">
-            <div class="biz-name">${r.name}</div>
-            <div class="biz-desc">${r.description}</div>
-            <div class="biz-tags">
-              ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${r.requiredLevel}</div>`}
-              ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${r.requiredPop}</div>`}
-              ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(r.price)}</div>`}
-              ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${limit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${limit}</div>`}
+        const ownedCount = ownedBusinesses[r.id] || 0;  // ✅ Сколько владеет игрок
+        const levelOk = level >= r.requiredLevel;
+        const popOk = popularity >= r.requiredPop;
+        const moneyOk = money >= r.price;
+        const owned = ownedCount > 0;  // ✅ Владеет хотя бы одним
+        const locked = !levelOk || !popOk || !moneyOk;
+        const canBuy = levelOk && popOk && moneyOk;
+        
+        return `
+            <div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+                <div class="biz-top">
+                    <div class="biz-icon">
+                        <img src="${r.image}" alt="${r.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="biz-info">
+                        <div class="biz-name">${r.name}</div>
+                        <div class="biz-desc">${r.description}</div>
+                        <div class="biz-tags">
+                            ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${r.requiredLevel}</div>`}
+                            ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${r.requiredPop}</div>`}
+                            ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(r.price)}</div>`}
+                            ${owned ? `<div class="biz-tag info">📦 Владеешь: ${ownedCount}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+                        <div class="price-main">${owned ? ownedCount : formatMoney(r.price)}</div>
+                        <div class="price-sub">${owned ? 'Шт.' : 'Цена'}</div>
+                    </div>
+                </div>
+                ${owned ? `
+                    <div class="biz-income-row">
+                        <div class="biz-income-label">💰 Доход в секунду</div>
+                        <div class="biz-income-value">+${formatMoney(r.incomePerSec * ownedCount)}</div>
+                    </div>
+                ` : ''}
+                <div style="display: flex; gap: 8px;">
+                    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${r.id}', 'realestate')" style="flex: 1;">🛒 Купить</button>
+                    ${owned ? `<button class="sell-biz-btn" onclick="sellAsset('${r.id}', 'realestate')" style="flex: 1;">📉 Продать</button>` : ''}
+                </div>
             </div>
-          </div>
-          <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
-            <div class="price-main">${owned ? '✅' : formatMoney(r.price)}</div>
-            <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
-          </div>
-        </div>
-        ${owned ? `
-        <div class="biz-income-row">
-          <div class="biz-income-label">💰 Доход в секунду</div>
-          <div class="biz-income-value">+${formatMoney(r.incomePerSec)}</div>
-        </div>
-        <button class="sell-biz-btn" onclick="sellAsset('${r.id}', 'realestate')">📉 Продать за ${formatMoney(r.price * r.sellPercent)}</button>
-        ` : `
-        <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${r.id}', 'realestate')">🛒 Купить ${formatMoney(r.price)}</button>
-        `}
-      </div>
-      `;
-      }).join('');
-      }
+        `;
+    }).join('');
+}
       async function buyAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
@@ -1784,53 +1787,88 @@ return `
     else item = bizById(id);
     
     if (!item || money < item.price) return;
-    if (!isAssetAvailable(id)) {
-        alert('❌ Нет в наличии!');
-        return;
+    
+    // Отправляем запрос на покупку на сервер
+    try {
+        const res = await fetch(SERVER_URL + '/asset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                assetId: id,
+                change: 1,  // +1 = покупка
+                playerId: MY_ID
+            })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success) {
+            // Сервер разрешил покупку
+            ownedBusinesses = data.playerAssets;
+            money -= item.price;
+            popularity += item.rewardPop || 0;
+            
+            renderAssetsContent();
+            updateHUD();
+            updateHomeWorkBtn();
+            updateHomeBizSub();
+            saveGame(true);
+            console.log(`✅ Куплен ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
+        } else {
+            alert('❌ ' + (data.error === 'limit exceeded' ? 'Все активы куплены!' : 'Ошибка покупки'));
+        }
+    } catch(e) {
+        console.error('Buy error:', e);
+        alert('❌ Ошибка подключения');
     }
-    
-    // Локально уменьшаем счётчик (без ожидания сервера)
-    assetsCount[id] = (assetsCount[id] || item.totalLimit) - 1;
-    
-    // Отправляем на сервер в фоне (асинхронно)
-    updateAssetCount(id, -1).catch(e => {
-        console.warn('Server sync failed, но локально куплено');
-    });
-    
-    money -= item.price;
-    ownedBusinesses.add(item.id);
-    popularity += item.rewardPop || 0;
-    
-    renderAssetsContent();
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    saveGame(true);
 }
-    function sellAsset(id, type) {
+
+async function sellAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
     else item = bizById(id);
     
-    if (!item || !ownedBusinesses.has(item.id)) return;
+    if (!item) return;
     
-    // Локально увеличиваем счётчик
-    assetsCount[id] = (assetsCount[id] || 0) + 1;
+    // Проверяем, есть ли что продавать
+    if (!ownedBusinesses[id] || ownedBusinesses[id] <= 0) {
+        alert('❌ Нет активов на продажу!');
+        return;
+    }
     
-    // Отправляем на сервер в фоне
-    updateAssetCount(id, 1).catch(e => {
-        console.warn('Server sync failed, но локально продано');
-    });
-    
-    money += Math.floor(item.price * item.sellPercent);
-    ownedBusinesses.delete(item.id);
-    
-    renderAssetsContent();
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    saveGame(true);
+    // Отправляем запрос на продажу на сервер
+    try {
+        const res = await fetch(SERVER_URL + '/asset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                assetId: id,
+                change: -1,  // -1 = продажа
+                playerId: MY_ID
+            })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success) {
+            // Сервер разрешил продажу
+            ownedBusinesses = data.playerAssets;
+            money += Math.floor(item.price * item.sellPercent);
+            
+            renderAssetsContent();
+            updateHUD();
+            updateHomeWorkBtn();
+            updateHomeBizSub();
+            saveGame(true);
+            console.log(`✅ Продан ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
+        } else {
+            alert('❌ Ошибка продажи');
+        }
+    } catch(e) {
+        console.error('Sell error:', e);
+        alert('❌ Ошибка подключения');
+    }
 }
       function sellBusiness(id) {
       sellAsset(id, 'bizz');
