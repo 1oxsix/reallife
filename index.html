@@ -749,11 +749,18 @@ function applySave(raw){
 
 function saveGame(toast=false){
     const data=buildSave();
+    
+    // Сохраняем локально в localStorage ПЕРВЫМ ДЕЛОМ
+    try{localStorage.setItem(SAVE_KEY,data);}catch(e){}
+    
+    // Потом отправляем на сервер
     if(tg?.CloudStorage){
         tg.CloudStorage.setItem(SAVE_KEY,data,err=>{
-            if(err){try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
+            if(err){console.warn('CloudStorage failed');}
         });
-    } else {try{localStorage.setItem(SAVE_KEY,data);}catch(e){}}
+    }
+    
+    // И синхронизируем с сервером
     syncToServer();
     if(toast) showSaveToast();
 }
@@ -794,7 +801,7 @@ function showSaveToast(){
     document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
 }
 
-setInterval(()=>saveGame(false), AUTOSAVE_SEC*1000);
+setInterval(()=>saveGame(false), 10*1000);
 setInterval(()=>{
     fetchAssetCounts();
     if (document.getElementById('page-assets')?.classList.contains('active')) {
@@ -1535,22 +1542,33 @@ return assetsCount;
 }
 }
 function initializeAssetCounts() {
-[...BUSINESS_CONFIG, ...CARS_CONFIG, ...REAL_ESTATE_CONFIG].forEach(item => {
-if (!assetsCount[item.id]) {
-assetsCount[item.id] = item.totalLimit;
-}
-});
+    [...BUSINESS_CONFIG, ...CARS_CONFIG, ...REAL_ESTATE_CONFIG].forEach(item => {
+        if (!assetsCount[item.id]) {
+            assetsCount[item.id] = item.totalLimit;
+        }
+    });
+    console.log('Assets initialized:', assetsCount);
 }
 function getAssetCount(assetId) {
-if (assetsCount[assetId] === undefined) {
-let item = bizById(assetId) || carById(assetId) || realEstateById(assetId);
-assetsCount[assetId] = item ? item.totalLimit : 0;
-}
-return assetsCount[assetId];
+    if (assetsCount[assetId] === undefined) {
+        let item = bizById(assetId) || carById(assetId) || realEstateById(assetId);
+        assetsCount[assetId] = item ? item.totalLimit : 0;
+    }
+    console.log(`getAssetCount(${assetId}) =`, assetsCount[assetId], 'allCounts:', assetsCount);
+    return assetsCount[assetId];
 }
 function getAssetLimit(assetId) {
-let item = bizById(assetId) || carById(assetId) || realEstateById(assetId);
-return item ? item.totalLimit : 0;
+    let item = bizById(assetId) || carById(assetId) || realEstateById(assetId);
+    if (!item) {
+        console.warn('Asset not found:', assetId);
+        return 0;
+    }
+    const limit = item.totalLimit;
+    if (!limit) {
+        console.warn('No totalLimit for:', assetId);
+        return 0;
+    }
+    return limit;
 }
 function isAssetAvailable(assetId) {
 return getAssetCount(assetId) > 0;
