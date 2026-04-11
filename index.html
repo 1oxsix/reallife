@@ -673,7 +673,8 @@ async function syncToServer(){
                 id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
                 money:Math.floor(money), level, popularity,
                 businesses:ownedBusinesses.size,
-                updatedAt:Date.now()
+                updatedAt:Date.now(),
+                savedata: buildSave()  // ← добавить полное сохранение
             })
         });
     } catch(e){}
@@ -768,23 +769,43 @@ function saveGame(toast=false){
 function loadGame(cb){
     if(tg?.CloudStorage){
         tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
-            const isNew = !(!err&&val);
-            if(!err&&val) applySave(val);
-            else { 
-                const l=localStorage.getItem(SAVE_KEY); 
-                if(l) applySave(l);
-                else if(isNew && Math.random() < 0.2) money = 300; // ← новый игрок
+            if(!err && val){
+                applySave(val);
+                checkStudyCompletion();
+                cb();
+            } else {
+                // CloudStorage пустой — грузим с сервера
+                loadFromServer(cb);
             }
-            checkStudyCompletion();
-            cb();
         });
     } else {
-        const l=localStorage.getItem(SAVE_KEY);
-        if(l) applySave(l);
-        else if(Math.random() < 0.2) money = 300; // ← новый игрок
-        checkStudyCompletion();
-        cb();
+        const l = localStorage.getItem(SAVE_KEY);
+        if(l){
+            applySave(l);
+            checkStudyCompletion();
+            cb();
+        } else {
+            loadFromServer(cb);
+        }
     }
+}
+
+async function loadFromServer(cb){
+    try {
+        const r = await fetch(SERVER_URL+'/load/'+MY_ID);
+        const d = await r.json();
+        if(d.ok && d.savedata){
+            applySave(d.savedata);
+        } else {
+            // Новый игрок
+            if(Math.random() < 0.2) money = 300;
+        }
+    } catch(e){
+        // Сервер недоступен — новый игрок
+        if(Math.random() < 0.2) money = 300;
+    }
+    checkStudyCompletion();
+    cb();
 }
 
 function checkStudyCompletion() {
