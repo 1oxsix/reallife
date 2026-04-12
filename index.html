@@ -467,7 +467,7 @@
             <div>
                 <div class="home-title">Жизнь — Симулятор</div>
                 <div class="home-sub">Учись, работай, открывай бизнесы.<br>Развивай своего персонажа!
-                <br>version 2.0</div>
+                <br>version 2.2</div>
             </div>
             <div class="home-btns">
                 <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Улучши навыки</div></div></button>
@@ -580,8 +580,8 @@ const SCHOOLS_CONFIG = [
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:5 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:5 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:2 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:2 },
     { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:2 },
     { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:2 },
 ];
@@ -759,45 +759,28 @@ function applySave(raw){
     } catch(e){ return false; }
 }
 
-function saveGame(toast=false){
-    const data=buildSave();
+//СОХРАНЕНИЕ И ЗАГРУЗКА
+
+async function saveGame(toast=false){
+    const data = buildSave();
     
-    // Сохраняем локально в localStorage ПЕРВЫМ ДЕЛОМ
-    try{localStorage.setItem(SAVE_KEY,data);}catch(e){}
+    // localStorage как резервная копия
+    try{ localStorage.setItem(SAVE_KEY, data); } catch(e){}
     
-    // Потом отправляем на сервер
-    if(tg?.CloudStorage){
-        tg.CloudStorage.setItem(SAVE_KEY,data,err=>{
-            if(err){console.warn('CloudStorage failed');}
-        });
-    }
-    
-    // И синхронизируем с сервером
-    syncToServer();
+    // Главное — сервер
+    await syncToServer();
     if(toast) showSaveToast();
 }
 
-function loadGame(cb){
-    if(tg?.CloudStorage){
-        tg.CloudStorage.getItem(SAVE_KEY,(err,val)=>{
-            if(!err && val){
-                applySave(val);
-                checkStudyCompletion();
-                cb();
-            } else {
-                // CloudStorage пустой — грузим с сервера
-                loadFromServer(cb);
-            }
-        });
-    } else {
+async function loadGame(cb){
+    try {
+        await loadFromServer(cb);
+    } catch(e){
+        // Сервер недоступен — берём из localStorage
         const l = localStorage.getItem(SAVE_KEY);
-        if(l){
-            applySave(l);
-            checkStudyCompletion();
-            cb();
-        } else {
-            loadFromServer(cb);
-        }
+        if(l){ applySave(l); }
+        checkStudyCompletion();
+        cb();
     }
 }
 
@@ -808,12 +791,16 @@ async function loadFromServer(cb){
         if(d.ok && d.savedata){
             applySave(d.savedata);
         } else {
-            // Новый игрок
-            if(Math.random() < 0.2) money = 300;
+            // Новый игрок — проверяем localStorage
+            const l = localStorage.getItem(SAVE_KEY);
+            if(l){ applySave(l); }
+            else if(Math.random() < 0.2) money = 300;
         }
     } catch(e){
-        // Сервер недоступен — новый игрок
-        if(Math.random() < 0.2) money = 300;
+        // Сервер недоступен — берём localStorage
+        const l = localStorage.getItem(SAVE_KEY);
+        if(l){ applySave(l); }
+        else if(Math.random() < 0.2) money = 300;
     }
     checkStudyCompletion();
     cb();
