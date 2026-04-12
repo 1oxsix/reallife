@@ -580,7 +580,7 @@ const SCHOOLS_CONFIG = [
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:2 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:2 },
     { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:2 },
     { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:2 },
     { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:2 },
@@ -636,6 +636,8 @@ let minigameActive=false;
 const jobById    = id => JOBS_CONFIG.find(j=>j.id===id);
 const schoolById = id => SCHOOLS_CONFIG.find(s=>s.id===id);
 const bizById    = id => BUSINESS_CONFIG.find(b=>b.id===id);
+const carById = id => CARS_CONFIG.find(c => c.id === id);
+const realEstateById = id => REAL_ESTATE_CONFIG.find(r => r.id === id);
 
 function formatMoney(n){
     n=Math.floor(n);
@@ -679,8 +681,8 @@ async function syncToServer(){
             body:JSON.stringify({
                 id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
                 money:Math.floor(money), level, popularity,
-                businesses:ownedBusinesses.size,
-                updatedAt:Date.now(),
+                businesses: Object.values(ownedBusinesses).reduce((sum, n) => sum + n, 0),
+                updatedAt: Math.floor(Date.now() / 1000),
                 savedata: buildSave()  // ← добавить полное сохранение
             })
         });
@@ -703,7 +705,7 @@ function buildSave(){
         currentJob, jobHireTime, studying, studyStart,
         completedSchools:[...completedSchools],
         lockedSchools:   [...lockedSchools],
-        ownedBusinesses: [...ownedBusinesses],
+        ownedBusinesses: ownedBusinesses,
         savedAt:    Date.now(),
         playerName: MY_NAME,
         playerId:   MY_ID
@@ -742,7 +744,9 @@ function applySave(raw){
         studyStart   = d.studyStart   || null;
         completedSchools = new Set(d.completedSchools || []);
         lockedSchools    = new Set(d.lockedSchools    || []);
-        ownedBusinesses  = new Set(d.ownedBusinesses  || []);
+        ownedBusinesses = (typeof d.ownedBusinesses === 'object' && !Array.isArray(d.ownedBusinesses))
+    ? d.ownedBusinesses 
+    : {};
 
         if(d.savedAt){
             const result = calcOfflineEarnings(d.savedAt);
@@ -837,7 +841,7 @@ function showSaveToast(){
 
 setInterval(()=>saveGame(false), 10*1000);
 setInterval(()=>{
-    fetchAssetCounts();
+    //fetchAssetCounts();
     if (document.getElementById('page-assets')?.classList.contains('active')) {
         renderAssetsContent();
     }
@@ -896,7 +900,7 @@ function updateHUD(){
 ═══════════════════════════  ══════════════════ */
 setInterval(()=>{
     // Бизнесы → сразу на счёт
-    if(ownedBusinesses.size>0){
+    if(Object.keys(ownedBusinesses).length>0){
         money+=getBizIncome();
         updateHUD();updateHomeBizSub();
         if(document.getElementById('page-assets')?.classList.contains('active'))renderAssetsContent();
@@ -1534,8 +1538,7 @@ function renderSchoolsList(){
 ══════════════════════════════════════════════ */
 let assetsTab = 'bizz';
 let assetsCount = {};
-const carById = id => CARS_CONFIG.find(c => c.id === id);
-const realEstateById = id => REAL_ESTATE_CONFIG.find(r => r.id === id);
+
 /* ══════════════════════════════════════════════
 🌐 СИНХРОНИЗАЦИЯ АКТИВОВ
 ══════════════════════════════════════════════ */
@@ -1622,7 +1625,8 @@ else if (assetsTab === 'realestate') renderRealEstateList(container);
 function renderBizList(container = null) {
 const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
 target.innerHTML = BUSINESS_CONFIG.map(b => {
-const owned = ownedBusinesses.has(b.id);
+const ownedCount = ownedBusinesses[b.id] || 0;
+const owned = ownedCount > 0;
 const levelOk = level >= b.requiredLevel;
 const popOk = popularity >= b.requiredPop;
 const moneyOk = money >= b.price;
@@ -1649,18 +1653,34 @@ return `
       </div>
       <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
         <div class="price-main">${owned ? '✅' : formatMoney(b.price)}</div>
-        <div class="price-sub">${owned ? 'Владеешь' : 'Цена'}</div>
+        <div class="price-sub">${owned ? `Владеешь: ${ownedCount}` : 'Цена'}</div>
       </div>
     </div>
     ${owned ? `
-    <div class="biz-income-row">
-      <div class="biz-income-label">💰 Доход в секунду</div>
-      <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
-    </div>
-    <button class="sell-biz-btn" onclick="sellBusiness('${b.id}')">📉 Продать за ${formatMoney(b.price * b.sellPercent)}</button>
-    ` : `
-    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyBusiness('${b.id}')">🛒 Купить ${formatMoney(b.price)}</button>
-    `}
+  <div class="biz-income-row">
+    <div class="biz-income-label">💰 Доход в секунду</div>
+    <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
+  </div>
+  <div style="display:flex; gap:8px; margin-top:4px;">
+    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
+      style="flex:1"
+      ${!canBuy ? 'disabled' : ''} 
+      onclick="buyBusiness('${b.id}')">
+      🛒 Купить ещё
+    </button>
+    <button class="sell-biz-btn" 
+      style="flex:1"
+      onclick="sellBusiness('${b.id}')">
+      📉 Продать за ${formatMoney(b.price * b.sellPercent)}
+    </button>
+  </div>
+` : `
+  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
+    ${!canBuy ? 'disabled' : ''} 
+    onclick="buyBusiness('${b.id}')">
+    🛒 Купить ${formatMoney(b.price)}
+  </button>
+`}
   </div>
   `;
   }).join('');
@@ -1668,7 +1688,7 @@ return `
   function renderCarsList(container = null) {
   const target = container || document.getElementById('assets-content');
   target.innerHTML = CARS_CONFIG.map(c => {
-  const owned = ownedBusinesses.has(c.id);
+  const owned = (ownedBusinesses[c.id] || 0) > 0;
   const levelOk = level >= c.requiredLevel;
   const popOk = popularity >= c.requiredPop;
   const moneyOk = money >= c.price;
@@ -1714,7 +1734,7 @@ return `
     function renderRealEstateList(container = null) {
     const target = container || document.getElementById('assets-content');
     target.innerHTML = REAL_ESTATE_CONFIG.map(r => {
-    const owned = ownedBusinesses.has(r.id);
+    const owned = (ownedBusinesses[r.id] || 0) > 0;
     const levelOk = level >= r.requiredLevel;
     const popOk = popularity >= r.requiredPop;
     const moneyOk = money >= r.price;
@@ -1757,60 +1777,99 @@ return `
       `;
       }).join('');
       }
-      async function buyAsset(id, type) {
+      // ── Купить актив (бизнес, машину, недвижимость) ──
+async function buyAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
     else item = bizById(id);
     
     if (!item || money < item.price) return;
-    if (!isAssetAvailable(id)) {
-        alert('❌ Нет в наличии!');
-        return;
+    
+    // Отправляем запрос на покупку на сервер
+    try {
+        const res = await fetch(SERVER_URL + '/asset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                assetId: id,
+                change: -1,  // +1 = покупка
+                playerId: MY_ID
+            })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success) {
+            // Сервер разрешил покупку
+            assetsCount = data.counts;
+            ownedBusinesses[id] = (ownedBusinesses[id] || 0) + 1;
+            money -= item.price;
+            popularity += item.rewardPop || 0;
+            
+            renderAssetsContent();
+            updateHUD();
+            updateHomeWorkBtn();
+            updateHomeBizSub();
+            saveGame(true);
+            console.log(`✅ Куплен ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
+        } else {
+            alert('❌ ' + (data.error === 'limit exceeded' ? 'Все активы куплены!' : 'Ошибка покупки'));
+        }
+    } catch(e) {
+        console.error('Buy error:', e);
+        alert('❌ Ошибка подключения');
     }
-    
-    // Локально уменьшаем счётчик (без ожидания сервера)
-    assetsCount[id] = (assetsCount[id] || item.totalLimit) - 1;
-    
-    // Отправляем на сервер в фоне (асинхронно)
-    updateAssetCount(id, -1).catch(e => {
-        console.warn('Server sync failed, но локально куплено');
-    });
-    
-    money -= item.price;
-    ownedBusinesses.add(item.id);
-    popularity += item.rewardPop || 0;
-    
-    renderAssetsContent();
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    saveGame(true);
 }
-    function sellAsset(id, type) {
+
+// ── Продать актив ──
+async function sellAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
     else item = bizById(id);
     
-    if (!item || !ownedBusinesses.has(item.id)) return;
+    if (!item) return;
     
-    // Локально увеличиваем счётчик
-    assetsCount[id] = (assetsCount[id] || 0) + 1;
+    // Проверяем, есть ли что продавать
+    if (!ownedBusinesses[id] || ownedBusinesses[id] <= 0) {
+        alert('❌ Нет активов на продажу!');
+        return;
+    }
     
-    // Отправляем на сервер в фоне
-    updateAssetCount(id, 1).catch(e => {
-        console.warn('Server sync failed, но локально продано');
-    });
-    
-    money += Math.floor(item.price * item.sellPercent);
-    ownedBusinesses.delete(item.id);
-    
-    renderAssetsContent();
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    saveGame(true);
+    // Отправляем запрос на продажу на сервер
+    try {
+        const res = await fetch(SERVER_URL + '/asset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                assetId: id,
+                change: 1,  // -1 = продажа
+                playerId: MY_ID
+            })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success) {
+            // Сервер разрешил продажу
+            assetsCount = data.counts;
+            ownedBusinesses[id] = (ownedBusinesses[id] || 0) - 1;
+            money += Math.floor(item.price * item.sellPercent);
+            
+            renderAssetsContent();
+            updateHUD();
+            updateHomeWorkBtn();
+            updateHomeBizSub();
+            saveGame(true);
+            console.log(`✅ Продан ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
+        } else {
+            alert('❌ Ошибка продажи');
+        }
+    } catch(e) {
+        console.error('Sell error:', e);
+        alert('❌ Ошибка подключения');
+    }
 }
       function sellBusiness(id) {
       sellAsset(id, 'bizz');
@@ -1915,8 +1974,19 @@ function updateHomeWorkBtn(){
     if(currentJob){btn.classList.remove('locked-btn');const reward=getJobReward();sub.textContent='🎮 '+formatMoney(reward)+' за игру';}
     else{btn.classList.add('locked-btn');sub.textContent='⚠️ Нет работы';}
 }
+function getBizIncome() { 
+  let t=0; 
+  Object.entries(ownedBusinesses).forEach(([id, count])=>{
+    const b=bizById(id);
+    if(b) t += b.incomePerSec * count;  // ← умножаем на количество!
+  }); 
+  return t; 
+}
+
 function updateHomeBizSub(){
-    const sub=document.getElementById('home-biz-sub'),cnt=ownedBusinesses.size,inc=getBizIncome();
+    const sub=document.getElementById('home-biz-sub'), 
+          cnt=Object.keys(ownedBusinesses).length, 
+          inc=getBizIncome();
     sub.textContent=cnt>0?'🏢 '+cnt+' бизнес(ов) · +$'+inc+'/сек':'Открой своё дело';
 }
 
