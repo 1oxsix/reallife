@@ -605,7 +605,17 @@ let tg = null;
 try { tg = window.Telegram?.WebApp||null; if(tg){tg.ready();tg.expand();} } catch(e){}
 
 const TG_USER  = tg?.initDataUnsafe?.user || null;
-const MY_ID    = TG_USER?.id    ? String(TG_USER.id) : 'local_'+Math.random().toString(36).slice(2);
+function getMyId() {
+    if (TG_USER?.id) return String(TG_USER.id);
+    // Для локального — берём из localStorage, если нет — создаём новый
+    let localId = localStorage.getItem('MY_LOCAL_ID');
+    if (!localId) {
+        localId = 'local_' + Math.random().toString(36).slice(2);
+        localStorage.setItem('MY_LOCAL_ID', localId);
+    }
+    return localId;
+}
+const MY_ID = getMyId();
 const MY_NAME  = TG_USER?.username || TG_USER?.first_name || 'Игрок';
 const MY_PHOTO = TG_USER?.photo_url || '';
 
