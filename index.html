@@ -566,18 +566,33 @@ const BUSINESS_CONFIG = [
     { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:5 },
     { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:5 },
     { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'zavod', name:'Небольшой завод', image:'zavod.png', description:'Небольшое производство за городом', price:100000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredPop:1000, rewardPop:0, totalLimit:1 },
+    { id:'cum', name:'ЦУМ', image:'cum.png', description:'ЦУМ', price:1000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredPop:2000, rewardPop:0, totalLimit:1 },
+    { id:'neft', name:'Нефтяная скважина', image:'neft.png', description:'Насосная станция нефти', price:10000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredPop:5000, rewardPop:0, totalLimit:1 },
 ];
 
 const CARS_CONFIG = [
-    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'velo', name:'Старый велосипед', image:'velo.PNG', carImage:'velo.PNG', description:'Ужасно ржавый, разваливается, но возит.', price:100, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:5 },
+    { id:'lada2107', name:'Старая жига', image:'lada2107.PNG', carImage:'lada2107.PNG', description:'Старая советская классика.', price:500, incomePerSec:0, sellPercent:0.4, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'lada2115', name:'LADA 2115', image:'lada2115.PNG', carImage:'lada2115.PNG', description:'Бодрая, свежая пятнашка.', price:1000, incomePerSec:0, sellPercent:0.5, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:5 },
+    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:2500, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'galant', name:'Mitsubishi Galant', image:'galant.PNG', carImage:'galant.PNG', description:'Не менее популярная Японская классика.', price:5000, incomePerSec:0, sellPercent:0.5, requiredLevel:5, requiredPop:180, rewardPop:0, totalLimit:5 },
+    { id:'solaris', name:'Hyndai Solaris', image:'solaris.PNG', carImage:'solaris.PNG', description:'Бюджетная иномарка.', price:7000, incomePerSec:0, sellPercent:0.5, requiredLevel:7, requiredPop:250, rewardPop:0, totalLimit:5 },
+    { id:'kawasaki', name:'Kawasaki', image:'kawasaki.PNG', carImage:'kawasaki.PNG', description:'Спортивный мотоцикл..', price:8000, incomePerSec:0, sellPercent:0.5, requiredLevel:8, requiredPop:300, rewardPop:0, totalLimit:5 },
+    { id:'haval', name:'Haval Julion', image:'haval.PNG', carImage:'haval.PNG', description:'Популярный китайский кроссовер.', price:10000, incomePerSec:0, sellPercent:0.6, requiredLevel:9, requiredPop:350, rewardPop:0, totalLimit:5 },
     { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota_big.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:0, totalLimit:5 },
+    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmw_big.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:5 },
     { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmw_big.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:5 },
 ];
 
 const REAL_ESTATE_CONFIG = [
-    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment1.PNG', background:'bg_apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:5 },
+    { id:'shalash', name:'Разбитый сарай', image:'shalash.png', background:'bg_shalash.jpg', description:'Мокро, холодно...', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:1, requiredPop:20, rewardPop:5, totalLimit:5 },
+    { id:'obshaga', name:'Общежитие', image:'obshaga.png', background:'bg_obshaga.jpg', description:'Шум, пьянки, драки...', price:500, incomePerSec:0, sellPercent:0.8, requiredLevel:2, requiredPop:80, rewardPop:5, totalLimit:5 },
+    { id:'kvartira', name:'1-комнатная квартира', image:'kvartira.PNG', background:'bg_kvartira.png', description:'Снимаю в аренду.', price:1000, incomePerSec:0, sellPercent:0.7, requiredLevel:4, requiredPop:150, rewardPop:5, totalLimit:5 },
+    { id:'dom', name:'Скромный дом', image:'dom.png', background:'bg_dom.jpg', description:'Скромный домик, но свой.', price:2500, incomePerSec:0, sellPercent:0.7, requiredLevel:5, requiredPop:260, rewardPop:0, totalLimit:5 },
     { id:'house', name:'Коттедж', image:'house.PNG', background:'bg_house.png', description:'Частный дом с участком.', price:100, incomePerSec:0, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:0, totalLimit:5 },
     { id:'tower', name:'Офисное здание', image:'tower.png', background:'bg_tower.jpg', description:'Многоэтажный комплекс.', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:0, totalLimit:5 },
+    
 ];
 
 /* ══════════════════════════════════════════════
