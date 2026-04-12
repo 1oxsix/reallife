@@ -43,7 +43,7 @@
         .home-scene { position:relative; width:100%; height:100%; overflow:hidden; background:url('bg_default.PNG') center/cover no-repeat; }
         .home-character { position:absolute; bottom:0; left:-7%; height:65%; z-index:2; object-fit:contain; }
         .home-estate { position:absolute; left:50%; top:40%; transform:translate(-50%, -50%); width:55%; z-index:1; object-fit:contain; }
-        .home-car { position:absolute; bottom:0; right:5%; height:50%; z-index:3; object-fit:contain; }
+        .home-car { position:absolute; bottom:5%; right:-30%; height:50%; z-index:3; object-fit:contain; }
 
         /* WORK */
         .work-inner { padding:16px; display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:20px; }
@@ -456,9 +456,8 @@
 
     <div class="page active" id="page-home">
     <div class="home-scene" id="home-scene">
-        <img class="home-character" src="character.PNG" alt="character" />
-        <img class="home-estate" id="home-estate-img" src="" alt="estate" style="display:none" />
-        <img class="home-car" id="home-car-img" src="" alt="car" style="display:none" />
+    <img class="home-character" src="character.PNG" alt="character" />
+    <img class="home-car" id="home-car-img" src="" alt="car" style="display:none" />
     </div>
     </div>
 
@@ -570,13 +569,13 @@ const BUSINESS_CONFIG = [
 ];
 
 const CARS_CONFIG = [
-    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada_big.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
     { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota_big.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:0, totalLimit:5 },
     { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmw_big.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:5 },
 ];
 
 const REAL_ESTATE_CONFIG = [
-    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment.PNG', background:'bg_apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:5 },
+    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment1.PNG', background:'bg_apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:5 },
     { id:'house', name:'Коттедж', image:'house.PNG', background:'bg_house.png', description:'Частный дом с участком.', price:100, incomePerSec:0, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:0, totalLimit:5 },
     { id:'tower', name:'Офисное здание', image:'tower.png', background:'bg_tower.jpg', description:'Многоэтажный комплекс.', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:0, totalLimit:5 },
 ];
@@ -616,7 +615,7 @@ const MAX_OFFLINE_SEC    = 24 * 60 * 60;
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
-let money=100000, popularity=1000, health=100, level=10;
+let money=0, popularity=0, health=100, level=0;
 let currentJob=null, jobHireTime=null;
 let studying=null, studyStart=null, studyTimer=null;
 let completedSchools=new Set(), lockedSchools=new Set(), ownedBusinesses=new Set();
@@ -1783,7 +1782,7 @@ async function buyAsset(id, type) {
         if(data.success) {
             // Сервер разрешил покупку
             assetsCount = data.counts;
-            ownedBusinesses[id] = (ownedBusinesses[id] || 0) + 1;
+            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) + 1;
             money -= item.price;
             popularity += item.rewardPop || 0;
             
@@ -1834,9 +1833,8 @@ async function sellAsset(id, type) {
         
         if(data.success) {
             // Сервер разрешил продажу
-            assetsCount = data.counts;
-            ownedBusinesses[id] = (ownedBusinesses[id] || 0) - 1;
-            money += Math.floor(item.price * item.sellPercent);
+             assetsCount = data.counts;
+            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) - 1;
             
             renderAssetsContent();
             updateHUD();
@@ -1953,6 +1951,7 @@ function switchPage(name){
 function updateNavWork(){document.getElementById('nav-work').classList.toggle('nav-locked',!currentJob);}
 function updateHomeWorkBtn(){
     const btn=document.getElementById('home-work-btn'),sub=document.getElementById('home-work-sub');
+    if(!btn || !sub) return;
     if(currentJob){btn.classList.remove('locked-btn');const reward=getJobReward();sub.textContent='🎮 '+formatMoney(reward)+' за игру';}
     else{btn.classList.add('locked-btn');sub.textContent='⚠️ Нет работы';}
 }
@@ -1966,18 +1965,17 @@ function getBizIncome() {
 }
 
 function updateHomeBizSub(){
-    const sub=document.getElementById('home-biz-sub'), 
-          cnt=Object.keys(ownedBusinesses).length, 
+    const sub=document.getElementById('home-biz-sub');
+    if(!sub) return;
+    const cnt=Object.keys(ownedBusinesses).length, 
           inc=getBizIncome();
     sub.textContent=cnt>0?'🏢 '+cnt+' бизнес(ов) · +$'+inc+'/сек':'Открой своё дело';
 }
 
 function updateHomeScene(){
     const scene = document.getElementById('home-scene');
-    const estateImg = document.getElementById('home-estate-img');
     const carImg = document.getElementById('home-car-img');
 
-    // Найти лучшую недвижимость (последнюю из конфига которая куплена)
     let bestEstate = null;
     for(let i = REAL_ESTATE_CONFIG.length - 1; i >= 0; i--){
         if(ownedBusinesses[REAL_ESTATE_CONFIG[i].id] > 0){
@@ -1986,7 +1984,6 @@ function updateHomeScene(){
         }
     }
 
-    // Найти лучшую машину (последнюю из конфига которая куплена)
     let bestCar = null;
     for(let i = CARS_CONFIG.length - 1; i >= 0; i--){
         if(ownedBusinesses[CARS_CONFIG[i].id] > 0){
@@ -1998,11 +1995,8 @@ function updateHomeScene(){
     // Обновить фон
     if(bestEstate){
         scene.style.backgroundImage = `url('${bestEstate.background}')`;
-        estateImg.src = bestEstate.image;
-        estateImg.style.display = 'block';
     } else {
         scene.style.backgroundImage = `url('bg_default.PNG')`;
-        estateImg.style.display = 'none';
     }
 
     // Обновить машину
