@@ -728,10 +728,10 @@ function calcOfflineEarnings(savedAt){
 
     let earned = 0;
 
-    // ТОЛЬКО ОТ БИЗНЕСОВ (работы не дают пассивный доход)
-    ownedBusinesses.forEach(id => {
+    // ТОЛЬКО ОТ БИЗНЕСОВ (машины и недвижимость не дают пассивный доход)
+    Object.entries(ownedBusinesses).forEach(([id, count]) => {
         const b = bizById(id);
-        if(b) earned += b.incomePerSec * cappedSec;
+        if(b) earned += b.incomePerSec * count * cappedSec;
     });
 
     return { earned: Math.floor(earned), secs: cappedSec };
@@ -1731,10 +1731,7 @@ return `
         </div>
       </div>
       ${owned ? `
-      <div class="biz-income-row">
-        <div class="biz-income-label">💰 Доход в секунду</div>
-        <div class="biz-income-value">+${formatMoney(c.incomePerSec)}</div>
-      </div>
+      
       <button class="sell-biz-btn" onclick="sellAsset('${c.id}', 'cars')">📉 Продать за ${formatMoney(c.price * c.sellPercent)}</button>
       ` : `
       <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${c.id}', 'cars')">🛒 Купить ${formatMoney(c.price)}</button>
@@ -1777,10 +1774,7 @@ return `
           </div>
         </div>
         ${owned ? `
-        <div class="biz-income-row">
-          <div class="biz-income-label">💰 Доход в секунду</div>
-          <div class="biz-income-value">+${formatMoney(r.incomePerSec)}</div>
-        </div>
+        
         <button class="sell-biz-btn" onclick="sellAsset('${r.id}', 'realestate')">📉 Продать за ${formatMoney(r.price * r.sellPercent)}</button>
         ` : `
         <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyAsset('${r.id}', 'realestate')">🛒 Купить ${formatMoney(r.price)}</button>
@@ -1989,12 +1983,12 @@ function updateHomeWorkBtn(){
     else{btn.classList.add('locked-btn');sub.textContent='⚠️ Нет работы';}
 }
 function getBizIncome() { 
-  let t=0; 
-  Object.entries(ownedBusinesses).forEach(([id, count])=>{
-    const b=bizById(id);
-    if(b) t += b.incomePerSec * count;  // ← умножаем на количество!
-  }); 
-  return t; 
+    let t=0; 
+    Object.entries(ownedBusinesses).forEach(([id, count])=>{
+        const b=bizById(id);
+        if(b) t += b.incomePerSec * count;
+    }); 
+    return t; 
 }
 
 function updateHomeBizSub(){
