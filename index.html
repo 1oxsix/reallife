@@ -40,17 +40,10 @@
         .page.active { display:block; }
 
         /* HOME */
-        .home-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px; min-height:100%; }
-        .home-emoji { font-size:64px; }
-        .home-title { font-size:24px; font-weight:bold; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.4); margin-bottom:6px; text-align:center; }
-        .home-sub { font-size:13px; color:rgba(255,255,255,0.65); line-height:1.6; text-align:center; }
-        .home-btns { width:100%; display:flex; flex-direction:column; gap:10px; }
-        .home-btn { width:100%; padding:13px 16px; background:rgba(255,255,255,0.13); border:2px solid rgba(255,255,255,0.25); border-radius:16px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:all 0.2s; }
-        .home-btn:active { background:rgba(255,255,255,0.2); }
-        .home-btn.locked-btn { background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.06); opacity:0.5; cursor:not-allowed; }
-        .home-btn-icon { font-size:30px; }
-        .home-btn-title { font-size:15px; font-weight:bold; color:#fff; }
-        .home-btn-sub { font-size:11px; color:rgba(255,255,255,0.6); margin-top:2px; }
+        .home-scene { position:relative; width:100%; height:100%; overflow:hidden; background:url('bg_default.PNG') center/cover no-repeat; }
+        .home-character { position:absolute; bottom:0; left:-7%; height:65%; z-index:2; object-fit:contain; }
+        .home-estate { position:absolute; left:50%; top:40%; transform:translate(-50%, -50%); width:55%; z-index:1; object-fit:contain; }
+        .home-car { position:absolute; bottom:0; right:5%; height:50%; z-index:3; object-fit:contain; }
 
         /* WORK */
         .work-inner { padding:16px; display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:20px; }
@@ -462,21 +455,11 @@
 <div class="pages-wrap">
 
     <div class="page active" id="page-home">
-        <div class="home-inner">
-            <div class="home-emoji">🌆</div>
-            <div>
-                <div class="home-title">Жизнь — Симулятор</div>
-                <div class="home-sub">Учись, работай, открывай бизнесы.<br>Развивай своего персонажа!
-                <br>version 2.2</div>
-            </div>
-            <div class="home-btns">
-                <button class="home-btn" onclick="switchPage('dev')"><span class="home-btn-icon">📚</span><div><div class="home-btn-title">Образование</div><div class="home-btn-sub">Улучши навыки</div></div></button>
-                <button class="home-btn" onclick="switchPage('jobs')"><span class="home-btn-icon">📋</span><div><div class="home-btn-title">Вакансии</div><div class="home-btn-sub">Найди работу</div></div></button>
-                <button class="home-btn locked-btn" id="home-work-btn" onclick="switchPage('work')"><span class="home-btn-icon">💼</span><div><div class="home-btn-title">Моя работа</div><div class="home-btn-sub" id="home-work-sub">⚠️ Нет работы</div></div></button>
-                <button class="home-btn" onclick="switchPage('assets')"><span class="home-btn-icon">💎</span><div><div class="home-btn-title">Активы</div><div class="home-btn-sub" id="home-biz-sub">3 активов</div></div></button>
-                <button class="home-btn" onclick="switchPage('lb')"><span class="home-btn-icon">🏆</span><div><div class="home-btn-title">Топ игроков</div><div class="home-btn-sub">Соревнуйся</div></div></button>
-            </div>
-        </div>
+    <div class="home-scene" id="home-scene">
+        <img class="home-character" src="character.PNG" alt="character" />
+        <img class="home-estate" id="home-estate-img" src="" alt="estate" style="display:none" />
+        <img class="home-car" id="home-car-img" src="" alt="car" style="display:none" />
+    </div>
     </div>
 
     <div class="page" id="page-jobs">
@@ -580,22 +563,22 @@ const SCHOOLS_CONFIG = [
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:2 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:2 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:2 },
-    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:2 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:5 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:5 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:5 },
+    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.png', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:5 },
 ];
 
 const CARS_CONFIG = [
-    { id:'lada', name:'Лада Гранта', image:'lada.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:1 },
-    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:0, totalLimit:1 },
-    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:1 },
+    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada_big.PNG', description:'Надёжная бюджетная машина.', price:100, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota_big.PNG', description:'Удобная семейная машина.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:5, requiredPop:200, rewardPop:0, totalLimit:5 },
+    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmw_big.PNG', description:'Спортивный автомобиль люкс класса.', price:100, incomePerSec:30, sellPercent:0.7, requiredLevel:8, requiredPop:500, rewardPop:0, totalLimit:5 },
 ];
 
 const REAL_ESTATE_CONFIG = [
-    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:1 },
-    { id:'house', name:'Коттедж', image:'house.PNG', description:'Частный дом с участком.', price:100, incomePerSec:0, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:0, totalLimit:1 },
-    { id:'tower', name:'Офисное здание', image:'tower.png', description:'Многоэтажный комплекс.', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:0, totalLimit:1 },
+    { id:'apartment', name:'Квартира 1-комнатная', image:'apartment.PNG', background:'bg_apartment.png', description:'Сдаётся в аренду.', price:100, incomePerSec:0, sellPercent:0.6, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:5 },
+    { id:'house', name:'Коттедж', image:'house.PNG', background:'bg_house.png', description:'Частный дом с участком.', price:100, incomePerSec:0, sellPercent:0.7, requiredLevel:7, requiredPop:400, rewardPop:0, totalLimit:5 },
+    { id:'tower', name:'Офисное здание', image:'tower.png', background:'bg_tower.jpg', description:'Многоэтажный комплекс.', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:1000, rewardPop:0, totalLimit:5 },
 ];
 
 /* ══════════════════════════════════════════════
@@ -1808,6 +1791,7 @@ async function buyAsset(id, type) {
             updateHUD();
             updateHomeWorkBtn();
             updateHomeBizSub();
+            updateHomeScene();
             saveGame(true);
             console.log(`✅ Куплен ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
         } else {
@@ -1858,6 +1842,7 @@ async function sellAsset(id, type) {
             updateHUD();
             updateHomeWorkBtn();
             updateHomeBizSub();
+            updateHomeScene();
             saveGame(true);
             console.log(`✅ Продан ${item.name}. Осталось: ${ownedBusinesses[id] || 0}`);
         } else {
@@ -1987,6 +1972,48 @@ function updateHomeBizSub(){
     sub.textContent=cnt>0?'🏢 '+cnt+' бизнес(ов) · +$'+inc+'/сек':'Открой своё дело';
 }
 
+function updateHomeScene(){
+    const scene = document.getElementById('home-scene');
+    const estateImg = document.getElementById('home-estate-img');
+    const carImg = document.getElementById('home-car-img');
+
+    // Найти лучшую недвижимость (последнюю из конфига которая куплена)
+    let bestEstate = null;
+    for(let i = REAL_ESTATE_CONFIG.length - 1; i >= 0; i--){
+        if(ownedBusinesses[REAL_ESTATE_CONFIG[i].id] > 0){
+            bestEstate = REAL_ESTATE_CONFIG[i];
+            break;
+        }
+    }
+
+    // Найти лучшую машину (последнюю из конфига которая куплена)
+    let bestCar = null;
+    for(let i = CARS_CONFIG.length - 1; i >= 0; i--){
+        if(ownedBusinesses[CARS_CONFIG[i].id] > 0){
+            bestCar = CARS_CONFIG[i];
+            break;
+        }
+    }
+
+    // Обновить фон
+    if(bestEstate){
+        scene.style.backgroundImage = `url('${bestEstate.background}')`;
+        estateImg.src = bestEstate.image;
+        estateImg.style.display = 'block';
+    } else {
+        scene.style.backgroundImage = `url('bg_default.PNG')`;
+        estateImg.style.display = 'none';
+    }
+
+    // Обновить машину
+    if(bestCar){
+        carImg.src = bestCar.carImage;
+        carImg.style.display = 'block';
+    } else {
+        carImg.style.display = 'none';
+    }
+}
+
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
@@ -1996,6 +2023,7 @@ loadGame(() => {
     updateHUD();
     updateHomeWorkBtn();
     updateHomeBizSub();
+    updateHomeScene();
     
     if (window._offlineResult) {
         showOfflinePopup(window._offlineResult.earned, window._offlineResult.secs);
