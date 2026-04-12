@@ -753,22 +753,42 @@ function applySave(raw){
 
 //СОХРАНЕНИЕ И ЗАГРУЗКА
 
+// Автосохранение каждые 10 секунд
+let _saveTimer = null;
+let _pendingSave = false;
+
+function scheduleSave(){
+    _pendingSave = true;
+}
+
+setInterval(async () => {
+    if(_pendingSave){
+        _pendingSave = false;
+        await syncToServer();
+    }
+}, 10000);
+
 async function saveGame(toast=false){
+    // Сохраняем локально мгновенно
     const data = buildSave();
-    
-    // localStorage как резервная копия
     try{ localStorage.setItem(SAVE_KEY, data); } catch(e){}
     
-    // Главное — сервер
-    await syncToServer();
-    if(toast) showSaveToast();
+    // Ставим флаг — сервер получит данные через 10 сек
+    scheduleSave();
+    
+    // Но если toast=true (важное действие) — сохраняем сразу
+    if(toast){
+        _pendingSave = false;
+        await syncToServer();
+        showSaveToast();
+    }
 }
 
 async function loadGame(cb){
     try {
         await loadFromServer(cb);
     } catch(e){
-        // Сервер недоступен — берём из localStorage
+        // Сервер недоступен — только тогда берём localStorage
         const l = localStorage.getItem(SAVE_KEY);
         if(l){ applySave(l); }
         checkStudyCompletion();
@@ -781,18 +801,16 @@ async function loadFromServer(cb){
         const r = await fetch(SERVER_URL+'/load/'+MY_ID);
         const d = await r.json();
         if(d.ok && d.savedata){
+            // Сервер главный — берём только его данные
             applySave(d.savedata);
         } else {
-            // Новый игрок — проверяем localStorage
-            const l = localStorage.getItem(SAVE_KEY);
-            if(l){ applySave(l); }
-            else if(Math.random() < 0.2) money = 300;
+            // Новый игрок
+            if(Math.random() < 0.2) money = 300;
         }
     } catch(e){
-        // Сервер недоступен — берём localStorage
+        // Сервер недоступен — берём localStorage как запасной вариант
         const l = localStorage.getItem(SAVE_KEY);
         if(l){ applySave(l); }
-        else if(Math.random() < 0.2) money = 300;
     }
     checkStudyCompletion();
     cb();
