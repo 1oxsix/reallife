@@ -500,6 +500,7 @@
         <div class="page-header">💎 Активы</div>
         <div class="assets-tabs">
             <button class="assets-tab active" id="tab-bizz" onclick="switchAssetsTab('bizz')">🏢 Бизнесы</button>
+            <button class="assets-tab" id="tab-investments" onclick="switchAssetsTab('investments')">📈 Инвестиции</button>
             <button class="assets-tab" id="tab-cars" onclick="switchAssetsTab('cars')">🚗 Автомобили</button>
             <button class="assets-tab" id="tab-realestate" onclick="switchAssetsTab('realestate')">🏠 Недвижимость</button>
         </div>
@@ -585,6 +586,13 @@ const CARS_CONFIG = [
    
 ];
 
+const INVESTMENTS_CONFIG = [
+    { id:'pear', name:'PEAR', image:'pear.PNG', description:'Вложи в акции iPear.', price:50, sellPercent:1, requiredLevel:1, totalLimit:50 },
+    { id:'sasung', name:'SASUNG', image:'sasung.PNG', description:'Вложи в акции Sasung.', price:50, sellPercent:1, requiredLevel:1, totalLimit:50 },
+    { id:'gold', name:'Золото', image:'gold.PNG', description:'Надёжный актив.', price:2000, sellPercent:1, requiredLevel:15, totalLimit:3 },
+    { id:'bct', name:'BCT', image:'bct.PNG', description:'Популярный актив.', price:8000, sellPercent:1, requiredLevel:15, totalLimit:3 },
+];
+
 const REAL_ESTATE_CONFIG = [
     { id:'shalash', name:'Разбитый сарай', image:'shalash.PNG', background:'bg_shalash.PNG', description:'Мокро, холодно...', price:100, incomePerSec:0, sellPercent:0.8, requiredLevel:1, requiredPop:20, rewardPop:5, totalLimit:5 },
     { id:'obshaga', name:'Общежитие', image:'obshaga.PNG', background:'bg_obshaga.PNG', description:'Шум, пьянки, драки...', price:500, incomePerSec:0, sellPercent:0.8, requiredLevel:2, requiredPop:80, rewardPop:5, totalLimit:5 },
@@ -636,6 +644,26 @@ let studying=null, studyStart=null, studyTimer=null;
 let completedSchools=new Set(), lockedSchools=new Set(), ownedBusinesses=new Set();
 let lbTab='global', lbCache={global:null,friends:null}, lbLoading=false;
 let minigameActive=false;
+
+// Рыночные цены инвестиций
+// Рыночные цены инвестиций (с сервера)
+let marketPrices = {};
+let marketTrends = {};
+
+async function fetchMarket(){
+    try {
+        const r = await fetch(SERVER_URL + '/market');
+        const d = await r.json();
+        marketPrices = d.prices || {};
+        marketTrends = d.trends || {};
+        if(assetsTab === 'investments') renderAssetsContent();
+    } catch(e) {
+        console.error('Market fetch error:', e);
+    }
+}
+
+// Получаем цены с сервера каждые 30 секунд
+setInterval(fetchMarket, 30000);
 
 /* ══════════════════════════════════════════════
    HELPERS
@@ -1633,7 +1661,70 @@ const container = document.getElementById('assets-content');
 if (assetsTab === 'bizz') renderBizList(container);
 else if (assetsTab === 'cars') renderCarsList(container);
 else if (assetsTab === 'realestate') renderRealEstateList(container);
+else if (assetsTab === 'investments') renderInvestmentsList(container);
 }
+
+function renderInvestmentsList(container = null) {
+    const target = container || document.getElementById('assets-content');
+    target.innerHTML = INVESTMENTS_CONFIG.map(inv => {
+        const ownedCount = ownedBusinesses[inv.id] || 0;
+        const owned = ownedCount > 0;
+        const levelOk = level >= inv.requiredLevel;
+        const currentPrice = marketPrices[inv.id] || inv.price;
+        const trend = marketTrends[inv.id] || 'up';
+        const moneyOk = money >= currentPrice;
+        const remaining = inv.totalLimit - (assetsCount[inv.id] || 0);
+        const countOk = remaining > 0;
+        const canBuy = levelOk && moneyOk && countOk;
+        const locked = !levelOk || !moneyOk || !countOk;
+        const basePriceDiff = Math.round(((currentPrice - inv.price) / inv.price) * 100);
+        const diffStr = basePriceDiff > 0 ? `📈 +${basePriceDiff}%` : basePriceDiff < 0 ? `📉 ${basePriceDiff}%` : `➡️ 0%`;
+        return `
+<div class="biz-card ${owned ? 'owned-biz' : ''} ${locked ? 'locked-biz' : ''}">
+  <div class="biz-top">
+    <div class="biz-icon">
+      <img src="${inv.image}" alt="${inv.name}" onerror="this.style.display='none'">
+    </div>
+    <div class="biz-info">
+      <div class="biz-name">${inv.name}</div>
+      <div class="biz-desc">${inv.description}</div>
+      <div class="biz-tags">
+        ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${inv.requiredLevel}</div>`}
+        ${moneyOk ? `<div class="biz-tag ok">✅ Деньги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(inv.price)}</div>`}
+        ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${inv.totalLimit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${inv.totalLimit}</div>`}
+      </div>
+    </div>
+    <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
+      <div class="price-main">${owned ? '✅' : formatMoney(currentPrice)}</div>
+        <div class="price-sub">${owned ? `Владеешь: ${ownedCount}` : diffStr}</div>
+    </div>
+  </div>
+  ${owned ? `
+  <div style="display:flex; gap:8px; margin-top:4px;">
+    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
+      style="flex:1"
+      ${!canBuy ? 'disabled' : ''} 
+      onclick="buyAsset('${inv.id}', 'investments')">
+      🛒 Купить ещё
+    </button>
+    <button class="sell-biz-btn" 
+      style="flex:1"
+      onclick="sellAsset('${inv.id}', 'investments')">
+      📉 Продать за ${formatMoney(currentPrice * inv.sellPercent)}
+    </button>
+  </div>
+  ` : `
+  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
+    ${!canBuy ? 'disabled' : ''} 
+    onclick="buyAsset('${inv.id}', 'investments')">
+    🛒 Купить ${formatMoney(currentPrice)}
+  </button>
+  `}
+</div>
+        `;
+    }).join('');
+}
+
 function renderBizList(container = null) {
 const target = container || document.getElementById('biz-list') || document.getElementById('assets-content');
 target.innerHTML = BUSINESS_CONFIG.map(b => {
@@ -1788,9 +1879,11 @@ async function buyAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
+    else if (type === 'investments') item = investById(id);
     else item = bizById(id);
     
-    if (!item || money < item.price) return;
+    const actualPrice = (type === 'investments') ? (marketPrices[id] || item.price) : item.price;
+    if (!item || money < actualPrice) return;
     
     // Отправляем запрос на покупку на сервер
     try {
@@ -1810,7 +1903,7 @@ async function buyAsset(id, type) {
             // Сервер разрешил покупку
             assetsCount = data.counts;
             ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) + 1;
-            money -= item.price;
+            money -= actualPrice;
             popularity += item.rewardPop || 0;
             
             renderAssetsContent();
@@ -1834,8 +1927,10 @@ async function sellAsset(id, type) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
+    else if (type === 'investments') item = investById(id);
     else item = bizById(id);
     
+    const actualPrice = (type === 'investments') ? (marketPrices[id] || item.price) : item.price;
     if (!item) return;
     
     // Проверяем, есть ли что продавать
@@ -1860,8 +1955,9 @@ async function sellAsset(id, type) {
         
         if(data.success) {
             // Сервер разрешил продажу
-             assetsCount = data.counts;
+            assetsCount = data.counts;
             ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) - 1;
+            money += Math.floor(actualPrice * item.sellPercent);
             
             renderAssetsContent();
             updateHUD();
@@ -2041,6 +2137,7 @@ function updateHomeScene(){
 loadGame(() => {
     initializeAssetCounts();
     fetchAssetCounts();
+    fetchMarket();
     updateHUD();
     updateHomeWorkBtn();
     updateHomeBizSub();
