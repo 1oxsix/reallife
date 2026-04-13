@@ -27,6 +27,7 @@
         .stat-chip { display:flex; align-items:center; gap:3px; background:rgba(0,0,0,0.35); border-radius:6px; padding:2px 6px; flex:1; min-width:0; overflow:hidden; }
         .stat-chip .icon { font-size:13px; flex-shrink:0; }
         .stat-chip .value { font-size:12px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hud-sub { font-size:10px; color:rgba(255,255,255,0.5); white-space:nowrap; margin-left:2px; }
         .money-value { color:#4cde80; }
         .popularity-value { color:#ffe066; }
         .health-row { display:flex; align-items:center; gap:5px; }
@@ -440,8 +441,8 @@
         <div class="level-box"><span class="level-label">lvl</span><span class="level-number" id="hud-level">1</span></div>
         <div class="stats">
             <div class="stats-row">
-                <div class="stat-chip"><span class="icon">💰</span><span class="value money-value" id="hud-money">$0</span></div>
-                <div class="stat-chip"><span class="icon">👥</span><span class="value popularity-value" id="hud-pop">0</span></div>
+                <div class="stat-chip"><span class="icon">💰</span><span class="value money-value" id="hud-money">$0</span><span class="hud-sub" id="hud-income"></span></div>
+                <div class="stat-chip"><span class="icon">👥</span><span class="value popularity-value" id="hud-pop">0</span><span class="hud-sub">Подписчиков</span></div>
             </div>
             <div class="health-row">
                 <span class="health-icon">❤️</span>
@@ -951,6 +952,9 @@ function updateHUD(){
     const hp=Math.max(0,Math.min(100,health));
     document.getElementById('hud-health-fill').style.width=hp+'%';
     document.getElementById('hud-health-pct').textContent=hp+'%';
+    const income = getBizIncome();
+    const incomeEl = document.getElementById('hud-income');
+    if(incomeEl) incomeEl.textContent = income > 0 ? '+'+formatMoney(income)+'/s' : '';
 }
 
 /* ══════════════════════════════════════════════
