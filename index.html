@@ -1673,7 +1673,7 @@ function renderInvestmentsList(container = null) {
         const currentPrice = marketPrices[inv.id] || inv.price;
         const trend = marketTrends[inv.id] || 'up';
         const moneyOk = money >= currentPrice;
-        const remaining = inv.totalLimit - (assetsCount[inv.id] || 0);
+        const remaining = assetsCount[inv.id] || 0;
         const countOk = remaining > 0;
         const canBuy = levelOk && moneyOk && countOk;
         const locked = !levelOk || !moneyOk || !countOk;
