@@ -551,25 +551,42 @@ const JOBS_CONFIG = [
 ];
 
 const SCHOOLS_CONFIG = [
-    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:20*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'private' },
-    { id:'private', name:'Частная школа', icon:'🏛️',  duration:60*1000, cost:300, rewardLvl:2, rewardPop:50, requiredLvl:0, blocksId:'public'  },
-    { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:120*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:1, blocksId:''  },
-    { id:'universitet', name:'Университет', icon:'🏛️',  duration:300*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:2, blocksId:'institut'  },
-    { id:'institut', name:'Институт', icon:'🏛️',  duration:300*1000, cost:1000, rewardLvl:2, rewardPop:100, requiredLvl:2, blocksId:'universitet'  },
-    { id:'mgu', name:'МГУ', icon:'🧠',  duration:1200*1000, cost:5000, rewardLvl:2, rewardPop:200, requiredLvl:3, blocksId:''  },
-    { id:'bizschool', name:'Школа Бизнеса', icon:'🏦',  duration:600*1000, cost:1500, rewardLvl:1, rewardPop:150, requiredLvl:3, blocksId:'artschool'  },
-    { id:'artschool', name:'Школа Искусств', icon:'🖼️',  duration:600*1000, cost:1500, rewardLvl:1, rewardPop:150, requiredLvl:3, blocksId:'bizschool'  },
-    { id:'itschool', name:'Школа Программирования', icon:'🧑‍💻',  duration:600*1000, cost:2500, rewardLvl:1, rewardPop:250, requiredLvl:5, blocksId:''  },
+    { id:'street',  name:'Уличное образование',      icon:'🏙️', duration:10*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'' }, //1
+    { id:'self_taught',  name:'Самоучка',      icon:'👀', duration:30*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:1, blocksId:'' }, //2
+    { id:'home_school',  name:'Домашнее обучение',      icon:'🏚️', duration:45*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:2, blocksId:'' }, //3
+    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:55*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:3, blocksId:'' }, //4
+    { id:'private', name:'Частная школа', icon:'💒',  duration:60*1000, cost:1000, rewardLvl:1, rewardPop:50, requiredLvl:4, blocksId:''  }, //5
+    { id:'college', name:'Колледж', icon:'🏣',  duration:70*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:5, blocksId:''  }, //6
+    { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:90*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:6, blocksId:''  }, //7
+    { id:'correspondence', name:'Заочное обучение', icon:'🛜',  duration:120*1000, cost:5000, rewardLvl:1, rewardPop:50, requiredLvl:7, blocksId:''  }, //7
+    { id:'universitet', name:'Университет', icon:'🏛️',  duration:150*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:8, blocksId:''  }, //8
+    { id:'institut', name:'Институт', icon:'🤓',  duration:200*1000, cost:5000, rewardLvl:1, rewardPop:100, requiredLvl:8, blocksId:''  }, //9
+    { id:'bachelor', name:'Бакалавриат', icon:'🧑‍🔬',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:9, blocksId:''  }, //9
+    { id:'master', name:'Магистратура', icon:'🧑‍🎓',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:10, blocksId:''  }, //9
+    { id:'mgu', name:'МГУ', icon:'🧠',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:200, requiredLvl:11, blocksId:''  }, //10
+    { id:'bizschool', name:'Школа Бизнеса', icon:'🏦',  duration:600*1000, cost:5000, rewardLvl:1, rewardPop:150, requiredLvl:12, blocksId:''  }, //11
+    { id:'artschool', name:'Школа Искусств', icon:'🖼️',  duration:600*1000, cost:8000, rewardLvl:1, rewardPop:150, requiredLvl:13, blocksId:''  }, //12
+    { id:'itschool', name:'Школа Программирования', icon:'🧑‍💻',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:14, blocksId:''  }, //13
+    { id:'law_school', name:'Юридическая школа', icon:'🧑‍💼',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:15, blocksId:''  }, //14
+    { id:'medical', name:'Медицинская школа', icon:'🏥',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:16, blocksId:''  }, //14
+    { id:'phd', name:'Аспирантура ', icon:'🧑‍🚀',  duration:1200*1000, cost:20000, rewardLvl:1, rewardPop:500, requiredLvl:17, blocksId:''  }, //14
+    { id:'professor', name:'Профессорское звание', icon:'🧑‍🏫',  duration:1200*1000, cost:30000, rewardLvl:1, rewardPop:800, requiredLvl:18, blocksId:''  }, //14
+    { id:'academy', name:'Академия наук', icon:'👨‍🔬',  duration:1200*1000, cost:50000, rewardLvl:1, rewardPop:1000, requiredLvl:19, blocksId:''  }, //14
+    { id:'nobel', name:'Лауреат Нобелевской премии', icon:'🎓',  duration:43200*1000, cost:200000, rewardLvl:1, rewardPop:2000, requiredLvl:20, blocksId:''  }, //14
+    { id:'fields_medal', name:'Медаль Филдса', icon:'👲',  duration:63200*1000, cost:1000000, rewardLvl:1, rewardPop:3000, requiredLvl:21, blocksId:''  }, //14
+    { id:'royal_academy', name:'Королевская академия наук', icon:'🫅',  duration:102800*1000, cost:5000000, rewardLvl:1, rewardPop:4000, requiredLvl:22, blocksId:''  }, //14
+    { id:'national_genius', name:'Национальный гений', icon:'🧙🏾‍♂️',  duration:302800*1000, cost:150000000, rewardLvl:1, rewardPop:15000, requiredLvl:23, blocksId:''  }, //14
+    { id:'world_genius', name:'Гений человечества', icon:'💯',  duration:604800*1000, cost:200000000, rewardLvl:1, rewardPop:20000, requiredLvl:24, blocksId:''  }, //14
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:1000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:10 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:10 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:10 },
-    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:10 },
-    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:100000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredPop:1000, rewardPop:0, totalLimit:1 },
-    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:1000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredPop:2000, rewardPop:0, totalLimit:1 },
-    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:10000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredPop:5000, rewardPop:0, totalLimit:1 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:100, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:5 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:5 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:5 },
+    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:5 },
+    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:1000000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredPop:1000, rewardPop:0, totalLimit:1 },
+    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:10000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredPop:2000, rewardPop:0, totalLimit:1 },
+    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:100000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredPop:5000, rewardPop:0, totalLimit:1 },
 ];
 
 const CARS_CONFIG = [
