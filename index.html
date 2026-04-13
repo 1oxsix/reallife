@@ -673,6 +673,7 @@ const schoolById = id => SCHOOLS_CONFIG.find(s=>s.id===id);
 const bizById    = id => BUSINESS_CONFIG.find(b=>b.id===id);
 const carById = id => CARS_CONFIG.find(c => c.id === id);
 const realEstateById = id => REAL_ESTATE_CONFIG.find(r => r.id === id);
+const investById = id => INVESTMENTS_CONFIG.find(i => i.id === id);
 
 function formatMoney(n){
     n=Math.floor(n);
@@ -1695,8 +1696,8 @@ function renderInvestmentsList(container = null) {
       </div>
     </div>
     <div class="biz-price-badge ${owned ? 'owned-badge' : (locked ? 'locked-badge-style' : '')}">
-      <div class="price-main">${owned ? '✅' : formatMoney(currentPrice)}</div>
-        <div class="price-sub">${owned ? `Владеешь: ${ownedCount}` : diffStr}</div>
+      <div class="price-main">${formatMoney(currentPrice)}</div>
+        <div class="price-sub">${owned ? `✅ Владеешь: ${ownedCount} · ${diffStr}` : diffStr}</div>
     </div>
   </div>
   ${owned ? `
