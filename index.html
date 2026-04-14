@@ -581,13 +581,13 @@ const SCHOOLS_CONFIG = [ //26
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:50000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredCar:'lada2107', rewardPop:0, totalLimit:100 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:200000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredCar:'lada', rewardPop:0, totalLimit:100 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:500000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredCar:'galant', rewardPop:30, totalLimit:100 },
-    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:1000000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredCar:'toyota', rewardPop:0, totalLimit:100 },
-    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:5000000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredCar:'cruiser', rewardPop:0, totalLimit:1 },
-    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:10000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredCar:'g63', rewardPop:0, totalLimit:1 },
-    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:100000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredCar:'urus', rewardPop:0, totalLimit:1 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:50000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredCars:['lada2107'], rewardPop:0, totalLimit:1000 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:200000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredCars:['lada'], rewardPop:0, totalLimit:1000 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:500000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredCars:['galant'], rewardPop:30, totalLimit:1000 },
+    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:1000000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredCars:['toyota'], rewardPop:0, totalLimit:1000 },
+    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:5000000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredCars:['cruiser'], rewardPop:0, totalLimit:100 },
+    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:10000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredCars:['g63'], rewardPop:0, totalLimit:100 },
+    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:100000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredCars:['urus', 'kamaz'], rewardPop:0, totalLimit:100 },
 ];
 
 const CARS_CONFIG = [
@@ -613,10 +613,10 @@ const CARS_CONFIG = [
 ];
 
 const INVESTMENTS_CONFIG = [
-    { id:'pear', name:'PEAR', image:'pear.PNG', description:'Вложи в акции iPear.', price:50, sellPercent:1, requiredLevel:1, totalLimit:500 },
-    { id:'sasung', name:'SASUNG', image:'sasung.PNG', description:'Вложи в акции Sasung.', price:50, sellPercent:1, requiredLevel:1, totalLimit:500 },
-    { id:'gold', name:'Золото', image:'gold.PNG', description:'Надёжный актив.', price:2000, sellPercent:1, requiredLevel:15, totalLimit:500 },
-    { id:'bct', name:'BCT', image:'bct.PNG', description:'Популярный актив.', price:8000, sellPercent:1, requiredLevel:15, totalLimit:500 },
+    { id:'pear', name:'PEAR', image:'pear.PNG', description:'Вложи в акции iPear.', price:50, sellPercent:1, requiredLevel:1, totalLimit:50000 },
+    { id:'sasung', name:'SASUNG', image:'sasung.PNG', description:'Вложи в акции Sasung.', price:50, sellPercent:1, requiredLevel:1, totalLimit:50000 },
+    { id:'gold', name:'Золото', image:'gold.PNG', description:'Надёжный актив.', price:2000, sellPercent:1, requiredLevel:15, totalLimit:50000 },
+    { id:'bct', name:'BCT', image:'bct.PNG', description:'Популярный актив.', price:8000, sellPercent:1, requiredLevel:15, totalLimit:50000 },
 ];
 
 const REAL_ESTATE_CONFIG = [
@@ -1779,8 +1779,9 @@ target.innerHTML = BUSINESS_CONFIG.map(b => {
 const ownedCount = ownedBusinesses[b.id] || 0;
 const owned = ownedCount > 0;
 const levelOk = level >= b.requiredLevel;
-const carOk = !b.requiredCar || (ownedBusinesses[b.requiredCar] > 0);
-const carItem = b.requiredCar ? CARS_CONFIG.find(c => c.id === b.requiredCar) : null;
+const requiredCars = b.requiredCars || [];
+const carOk = requiredCars.every(cid => ownedBusinesses[cid] > 0);
+const carItems = requiredCars.map(cid => CARS_CONFIG.find(c => c.id === cid)).filter(Boolean);
 const moneyOk = money >= b.price;
 const countOk = isAssetAvailable(b.id);
 const locked = !levelOk || !carOk || !moneyOk || !countOk;
@@ -1798,8 +1799,7 @@ return `
         <div class="biz-desc">${b.description}</div>
         <div class="biz-tags">
           ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
-          ${carItem ? (carOk ? `<div class="biz-tag ok">✅ ${carItem.name}</div>` : `<div class="biz-tag fail">❌ Нужен ${carItem.name}</div>`) : ''}
-          ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(b.price)}</div>`}
+          ${carItems.map(carItem => (ownedBusinesses[carItem.id] > 0) ? `<div class="biz-tag ok">✅ ${carItem.name}</div>` : `<div class="biz-tag fail">❌ Нужен ${carItem.name}</div>`).join('')}
           ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${limit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${limit}</div>`}
         </div>
       </div>
