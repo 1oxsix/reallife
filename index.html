@@ -2677,27 +2677,17 @@ function renderInvestmentsList(container = null) {
         <div class="price-sub">${owned ? `✅ Владеешь: ${ownedCount} · ${diffStr}` : diffStr}</div>
     </div>
   </div>
-  ${owned ? `
-  <div style="display:flex; gap:8px; margin-top:4px;">
-    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
-      style="flex:1"
-      ${!canBuy ? 'disabled' : ''} 
-      onclick="buyAsset('${inv.id}', 'investments')">
-      🛒 Купить ещё
-    </button>
-    <button class="sell-biz-btn" 
-      style="flex:1"
-      onclick="sellAsset('${inv.id}', 'investments')">
-      📉 Продать за ${formatMoney(currentPrice * inv.sellPercent)}
-    </button>
+    <div style="display:flex; gap:6px; margin-top:6px; align-items:center; justify-content:center;">
+    <button class="sell-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', -100)">-100</button>
+    <button class="sell-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', -10)">-10</button>
+    <div id="inv-qty-${inv.id}" style="min-width:40px; text-align:center; font-size:16px; font-weight:bold; color:#fff;">${invQtyMap[inv.id] || 1}</div>
+    <button class="buy-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', 10)">+10</button>
+    <button class="buy-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', 100)">+100</button>
   </div>
-  ` : `
-  <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
-    ${!canBuy ? 'disabled' : ''} 
-    onclick="buyAsset('${inv.id}', 'investments')">
-    🛒 Купить ${formatMoney(currentPrice)}
-  </button>
-  `}
+  <div style="display:flex; gap:8px; margin-top:6px;">
+    <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" style="flex:1;" ${!canBuy ? 'disabled' : ''} onclick="buyAssetQty('${inv.id}', 'investments')">🛒 Купить</button>
+    ${owned ? `<button class="sell-biz-btn" style="flex:1;" onclick="sellAssetQty('${inv.id}', 'investments')">📉 Продать</button>` : ''}
+  </div>
 </div>
         `;
     }).join('');
@@ -2854,7 +2844,7 @@ return `
       }).join('');
       }
       // ── Купить актив (бизнес, машину, недвижимость) ──
-async function buyAsset(id, type) {
+async function buyAsset(id, type, qty = 1) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
@@ -2862,7 +2852,8 @@ async function buyAsset(id, type) {
     else item = bizById(id);
     
     const actualPrice = (type === 'investments') ? (marketPrices[id] || item.price) : item.price;
-    if (!item || money < actualPrice) return;
+    const totalPrice = actualPrice * qty;
+    if (!item || money < totalPrice) return;
     
     // Отправляем запрос на покупку на сервер
     try {
@@ -2870,9 +2861,9 @@ async function buyAsset(id, type) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                assetId: id,
-                change: -1,  // +1 = покупка
-                playerId: MY_ID
+            assetId: id,
+            change: -qty,
+            playerId: MY_ID
             })
         });
         
@@ -2881,8 +2872,8 @@ async function buyAsset(id, type) {
         if(data.success) {
             // Сервер разрешил покупку
             assetsCount = data.counts;
-            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) + 1;
-            money -= actualPrice;
+            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) + qty;
+            money -= totalPrice;
             popularity += item.rewardPop || 0;
             
             renderAssetsContent();
@@ -2901,8 +2892,26 @@ async function buyAsset(id, type) {
     }
 }
 
+const invQtyMap = {};
+
+function changeInvQty(id, delta) {
+    invQtyMap[id] = Math.max(1, (invQtyMap[id] || 1) + delta);
+    const el = document.getElementById('inv-qty-' + id);
+    if (el) el.innerText = invQtyMap[id];
+}
+
+function buyAssetQty(id, type) {
+    const qty = invQtyMap[id] || 1;
+    buyAsset(id, type, qty);
+}
+
+function sellAssetQty(id, type) {
+    const qty = invQtyMap[id] || 1;
+    sellAsset(id, type, qty);
+}
+
 // ── Продать актив ──
-async function sellAsset(id, type) {
+async function sellAsset(id, type, qty = 1) {
     let item;
     if (type === 'cars') item = carById(id);
     else if (type === 'realestate') item = realEstateById(id);
@@ -2924,9 +2933,9 @@ async function sellAsset(id, type) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                assetId: id,
-                change: 1,  // -1 = продажа
-                playerId: MY_ID
+            assetId: id,
+            change: qty,
+            playerId: MY_ID
             })
         });
         
@@ -2935,8 +2944,8 @@ async function sellAsset(id, type) {
         if(data.success) {
             // Сервер разрешил продажу
             assetsCount = data.counts;
-            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) - 1;
-            money += Math.floor(actualPrice * item.sellPercent);
+            ownedBusinesses[id] = data.owned !== undefined ? data.owned : (ownedBusinesses[id] || 0) - qty;
+            money += Math.floor(actualPrice * item.sellPercent * qty);
             
             renderAssetsContent();
             updateHUD();
