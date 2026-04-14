@@ -543,12 +543,12 @@
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:50, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
-    { id:'loader', name:'Грузчик', icon:'👨‍🔧', description:'Заргрузка вагонов', income:70, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:10, minigameTarget:50 },
-    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:50, requiredLevel:2, requiredPop:50, minigameType:'jump' },
-    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:200, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
-    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:25, requiredLevel:5, requiredPop:140, minigameType:'math' },
-    { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:75, requiredLevel:5, requiredPop:140, minigameType:'jump' },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:500, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
+    { id:'loader', name:'Грузчик', icon:'👨‍🔧', description:'Заргрузка вагонов', income:700, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:10, minigameTarget:50 },
+    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:500, requiredLevel:2, requiredPop:50, minigameType:'jump' },
+    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:1000, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:500, requiredLevel:5, requiredPop:140, minigameType:'math' },
+    { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:750, requiredLevel:5, requiredPop:140, minigameType:'jump' },
 ];
 
 const SCHOOLS_CONFIG = [ //26
@@ -581,27 +581,27 @@ const SCHOOLS_CONFIG = [ //26
 ];
 
 const BUSINESS_CONFIG = [
-    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:2000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:100 },
-    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredPop:50, rewardPop:0, totalLimit:100 },
-    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredPop:0, rewardPop:30, totalLimit:100 },
-    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredPop:100, rewardPop:0, totalLimit:100 },
-    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:5000000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredPop:1000, rewardPop:0, totalLimit:1 },
-    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:10000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredPop:2000, rewardPop:0, totalLimit:1 },
-    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:100000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredPop:5000, rewardPop:0, totalLimit:1 },
+    { id:'kiosk', name:'Газетный киоск', image:'Kiosk.png', description:'Небольшой киоск у метро.', price:2000, incomePerSec:1, sellPercent:0.5, requiredLevel:1, requiredCar:'lada2107', rewardPop:0, totalLimit:100 },
+    { id:'shaurma', name:'Киоск с Шаурмой', image:'shaurma.PNG', description:'Киоск с шаурмой.', price:5000, incomePerSec:2, sellPercent:0.5, requiredLevel:2, requiredCar:'lada', rewardPop:0, totalLimit:100 },
+    { id:'apple', name:'Перепродажа техники Apple', image:'apple.PNG', description:'Скупаешь - чинишь - продаешь.', price:10000, incomePerSec:4, sellPercent:0.5, requiredLevel:3, requiredCar:'galant', rewardPop:30, totalLimit:100 },
+    { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:20000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredCar:'toyota', rewardPop:0, totalLimit:100 },
+    { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:5000000, incomePerSec:10, sellPercent:0.5, requiredLevel:15, requiredCar:'cruiser', rewardPop:0, totalLimit:1 },
+    { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:10000000, incomePerSec:20, sellPercent:0.5, requiredLevel:20, requiredCar:'g63', rewardPop:0, totalLimit:1 },
+    { id:'neft', name:'Нефтяная скважина', image:'neft.PNG', description:'Насосная станция нефти', price:100000000, incomePerSec:50, sellPercent:0.5, requiredLevel:25, requiredCar:'urus', rewardPop:0, totalLimit:1 },
 ];
 
 const CARS_CONFIG = [
-    { id:'velo', name:'Старый велосипед', image:'velo.PNG', carImage:'velo.PNG', description:'Ужасно ржавый, разваливается, но возит.', price:100, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
-    { id:'lada2107', name:'Старая жига', image:'lada2107.PNG', carImage:'lada2107.PNG', description:'Старая советская классика.', price:500, incomePerSec:0, sellPercent:0.4, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
-    { id:'lada2108', name:'ВАЗ 2108', image:'lada2108.PNG', carImage:'lada2108.PNG', description:'Бандитская классика.', price:1000, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
-    { id:'lada2115', name:'ВАЗ 2115', image:'lada2115.PNG', carImage:'lada2115.PNG', description:'Бодрая, свежая пятнашка.', price:1000, incomePerSec:0, sellPercent:0.5, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:50 },
-    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:2500, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
-    { id:'galant', name:'Mitsubishi Galant', image:'galant.PNG', carImage:'galant.PNG', description:'Не менее популярная Японская классика.', price:5000, incomePerSec:0, sellPercent:0.5, requiredLevel:5, requiredPop:180, rewardPop:0, totalLimit:50 },
-    { id:'solaris', name:'Hyndai Solaris', image:'solaris.PNG', carImage:'solaris.PNG', description:'Бюджетная иномарка.', price:7000, incomePerSec:0, sellPercent:0.5, requiredLevel:7, requiredPop:250, rewardPop:0, totalLimit:50 },
-    { id:'kawasaki', name:'Kawasaki', image:'kawasaki.PNG', carImage:'kawasaki.PNG', description:'Спортивный мотоцикл..', price:8000, incomePerSec:0, sellPercent:0.5, requiredLevel:8, requiredPop:300, rewardPop:0, totalLimit:50 },
-    { id:'haval', name:'Haval Julion', image:'haval.PNG', carImage:'haval.PNG', description:'Популярный китайский кроссовер.', price:10000, incomePerSec:0, sellPercent:0.6, requiredLevel:9, requiredPop:350, rewardPop:0, totalLimit:50 },
-    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota.PNG', description:'Удобная семейная машина.', price:20000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
-    { id:'jaecoo', name:'Jaecoo', image:'jaecoo.PNG', carImage:'jaecoo.PNG', description:'Люксовый китайский кроссовер', price:20000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'velo', name:'Старый велосипед', image:'velo.PNG', carImage:'velo.PNG', description:'Ужасно ржавый, разваливается, но возит.', price:500, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
+    { id:'lada2107', name:'Старая жига', image:'lada2107.PNG', carImage:'lada2107.PNG', description:'Старая советская классика.', price:10000, incomePerSec:0, sellPercent:0.4, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
+    { id:'lada2108', name:'ВАЗ 2108', image:'lada2108.PNG', carImage:'lada2108.PNG', description:'Бандитская классика.', price:50000, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
+    { id:'lada2115', name:'ВАЗ 2115', image:'lada2115.PNG', carImage:'lada2115.PNG', description:'Бодрая, свежая пятнашка.', price:10000, incomePerSec:0, sellPercent:0.5, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:50 },
+    { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:250000, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
+    { id:'galant', name:'Mitsubishi Galant', image:'galant.PNG', carImage:'galant.PNG', description:'Не менее популярная Японская классика.', price:500000, incomePerSec:0, sellPercent:0.5, requiredLevel:5, requiredPop:180, rewardPop:0, totalLimit:50 },
+    { id:'solaris', name:'Hyndai Solaris', image:'solaris.PNG', carImage:'solaris.PNG', description:'Бюджетная иномарка.', price:700000, incomePerSec:0, sellPercent:0.5, requiredLevel:7, requiredPop:250, rewardPop:0, totalLimit:50 },
+    { id:'kawasaki', name:'Kawasaki', image:'kawasaki.PNG', carImage:'kawasaki.PNG', description:'Спортивный мотоцикл..', price:800000, incomePerSec:0, sellPercent:0.5, requiredLevel:8, requiredPop:300, rewardPop:0, totalLimit:50 },
+    { id:'haval', name:'Haval Julion', image:'haval.PNG', carImage:'haval.PNG', description:'Популярный китайский кроссовер.', price:1000000, incomePerSec:0, sellPercent:0.6, requiredLevel:9, requiredPop:350, rewardPop:0, totalLimit:50 },
+    { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota.PNG', description:'Удобная семейная машина.', price:1400000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'jaecoo', name:'Jaecoo', image:'jaecoo.PNG', carImage:'jaecoo.PNG', description:'Люксовый китайский кроссовер', price:2000000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
     { id:'cruiser', name:'Toyota Land Cruiser 300', image:'cruiser.PNG', carImage:'cruise.PNG', description:'Классный, большой джип.', price:5000000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
     { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:8000000, incomePerSec:0, sellPercent:0.7, requiredLevel:12, requiredPop:500, rewardPop:0, totalLimit:50 },
     { id:'maybach', name:'Mercedes Maybach', image:'maybach.PNG', carImage:'maybach.PNG', description:'Автомобиль бизнес класса.', price:12000000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
@@ -1779,11 +1779,12 @@ target.innerHTML = BUSINESS_CONFIG.map(b => {
 const ownedCount = ownedBusinesses[b.id] || 0;
 const owned = ownedCount > 0;
 const levelOk = level >= b.requiredLevel;
-const popOk = popularity >= b.requiredPop;
+const carOk = !b.requiredCar || (ownedBusinesses[b.requiredCar] > 0);
+const carItem = b.requiredCar ? CARS_CONFIG.find(c => c.id === b.requiredCar) : null;
 const moneyOk = money >= b.price;
 const countOk = isAssetAvailable(b.id);
-const locked = !levelOk || !popOk || !moneyOk || !countOk;
-const canBuy = levelOk && popOk && moneyOk && countOk;
+const locked = !levelOk || !carOk || !moneyOk || !countOk;
+const canBuy = levelOk && carOk && moneyOk && countOk;
 const remaining = getAssetCount(b.id);
 const limit = getAssetLimit(b.id);
 return `
@@ -1797,7 +1798,7 @@ return `
         <div class="biz-desc">${b.description}</div>
         <div class="biz-tags">
           ${levelOk ? `<div class="biz-tag ok">✅ Уровень</div>` : `<div class="biz-tag fail">❌ Уровень ${b.requiredLevel}</div>`}
-          ${popOk ? `<div class="biz-tag ok">✅ Популярность</div>` : `<div class="biz-tag fail">❌ Популярность ${b.requiredPop}</div>`}
+          ${carItem ? (carOk ? `<div class="biz-tag ok">✅ ${carItem.name}</div>` : `<div class="biz-tag fail">❌ Нужен ${carItem.name}</div>`) : ''}
           ${moneyOk ? `<div class="biz-tag ok">✅ Денги</div>` : `<div class="biz-tag fail">❌ Нужно ${formatMoney(b.price)}</div>`}
           ${countOk ? `<div class="biz-tag ok">✅ Осталось ${remaining}/${limit}</div>` : `<div class="biz-tag fail">❌ Нет в наличии 0/${limit}</div>`}
         </div>
