@@ -551,33 +551,33 @@ const JOBS_CONFIG = [
     { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:75, requiredLevel:5, requiredPop:140, minigameType:'jump' },
 ];
 
-const SCHOOLS_CONFIG = [
-    { id:'street',  name:'Уличное образование',      icon:'🏙️', duration:10*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, blocksId:'' }, //1
-    { id:'self_taught',  name:'Самоучка',      icon:'👀', duration:30*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:1, blocksId:'' }, //2
-    { id:'home_school',  name:'Домашнее обучение',      icon:'🏚️', duration:45*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:2, blocksId:'' }, //3
-    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:55*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:3, blocksId:'' }, //4
-    { id:'private', name:'Частная школа', icon:'💒',  duration:60*1000, cost:1000, rewardLvl:1, rewardPop:50, requiredLvl:4, blocksId:''  }, //5
-    { id:'college', name:'Колледж', icon:'🏣',  duration:70*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:5, blocksId:''  }, //6
-    { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:90*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:6, blocksId:''  }, //7
-    { id:'correspondence', name:'Заочное обучение', icon:'🛜',  duration:120*1000, cost:5000, rewardLvl:1, rewardPop:50, requiredLvl:7, blocksId:''  }, //7
-    { id:'universitet', name:'Университет', icon:'🏛️',  duration:150*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:8, blocksId:''  }, //8
-    { id:'institut', name:'Институт', icon:'🤓',  duration:200*1000, cost:5000, rewardLvl:1, rewardPop:100, requiredLvl:8, blocksId:''  }, //9
-    { id:'bachelor', name:'Бакалавриат', icon:'🧑‍🔬',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:9, blocksId:''  }, //9
-    { id:'master', name:'Магистратура', icon:'🧑‍🎓',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:10, blocksId:''  }, //9
-    { id:'mgu', name:'МГУ', icon:'🧠',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:200, requiredLvl:11, blocksId:''  }, //10
-    { id:'bizschool', name:'Школа Бизнеса', icon:'🏦',  duration:600*1000, cost:5000, rewardLvl:1, rewardPop:150, requiredLvl:12, blocksId:''  }, //11
-    { id:'artschool', name:'Школа Искусств', icon:'🖼️',  duration:600*1000, cost:8000, rewardLvl:1, rewardPop:150, requiredLvl:13, blocksId:''  }, //12
-    { id:'itschool', name:'Школа Программирования', icon:'🧑‍💻',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:14, blocksId:''  }, //13
-    { id:'law_school', name:'Юридическая школа', icon:'🧑‍💼',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:15, blocksId:''  }, //14
-    { id:'medical', name:'Медицинская школа', icon:'🏥',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:16, blocksId:''  }, //14
-    { id:'phd', name:'Аспирантура ', icon:'🧑‍🚀',  duration:1200*1000, cost:20000, rewardLvl:1, rewardPop:500, requiredLvl:17, blocksId:''  }, //14
-    { id:'professor', name:'Профессорское звание', icon:'🧑‍🏫',  duration:1200*1000, cost:30000, rewardLvl:1, rewardPop:800, requiredLvl:18, blocksId:''  }, //14
-    { id:'academy', name:'Академия наук', icon:'👨‍🔬',  duration:1200*1000, cost:50000, rewardLvl:1, rewardPop:1000, requiredLvl:19, blocksId:''  }, //14
-    { id:'nobel', name:'Лауреат Нобелевской премии', icon:'🎓',  duration:43200*1000, cost:200000, rewardLvl:1, rewardPop:2000, requiredLvl:20, blocksId:''  }, //14
-    { id:'fields_medal', name:'Медаль Филдса', icon:'👲',  duration:63200*1000, cost:1000000, rewardLvl:1, rewardPop:3000, requiredLvl:21, blocksId:''  }, //14
-    { id:'royal_academy', name:'Королевская академия наук', icon:'🫅',  duration:102800*1000, cost:5000000, rewardLvl:1, rewardPop:4000, requiredLvl:22, blocksId:''  }, //14
-    { id:'national_genius', name:'Национальный гений', icon:'🧙🏾‍♂️',  duration:302800*1000, cost:150000000, rewardLvl:1, rewardPop:15000, requiredLvl:23, blocksId:''  }, //14
-    { id:'world_genius', name:'Гений человечества', icon:'💯',  duration:604800*1000, cost:200000000, rewardLvl:1, rewardPop:20000, requiredLvl:24, blocksId:''  }, //14
+const SCHOOLS_CONFIG = [ //26
+    { id:'street',  name:'Уличное образование',      icon:'🏙️', duration:10*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, requiredEstate:'' }, //1
+    { id:'self_taught',  name:'Самоучка',      icon:'👀', duration:30*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:1, requiredEstate:'shalash' }, //2
+    { id:'home_school',  name:'Домашнее обучение',      icon:'🏚️', duration:45*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:2, requiredEstate:'shalash' }, //3
+    { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:55*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:3, requiredEstate:'obshaga' }, //4
+    { id:'private', name:'Частная школа', icon:'💒',  duration:60*1000, cost:1000, rewardLvl:1, rewardPop:50, requiredLvl:4, requiredEstate:''  }, //5
+    { id:'college', name:'Колледж', icon:'🏣',  duration:70*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:5, requiredEstate:''  }, //6
+    { id:'teckhnikum', name:'Техникум', icon:'🚜',  duration:90*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:6, requiredEstate:'townhouse'  }, //7
+    { id:'correspondence', name:'Заочное обучение', icon:'🛜',  duration:120*1000, cost:5000, rewardLvl:1, rewardPop:50, requiredLvl:7, requiredEstate:'dom'  }, //7
+    { id:'universitet', name:'Университет', icon:'🏛️',  duration:150*1000, cost:0, rewardLvl:1, rewardPop:80, requiredLvl:8, requiredEstate:'3kvartira'  }, //8
+    { id:'institut', name:'Институт', icon:'🤓',  duration:200*1000, cost:5000, rewardLvl:1, rewardPop:100, requiredLvl:8, requiredEstate:'country_house'  }, //9
+    { id:'bachelor', name:'Бакалавриат', icon:'🧑‍🔬',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:9, requiredEstate:'duplex'  }, //9
+    { id:'master', name:'Магистратура', icon:'🧑‍🎓',  duration:220*1000, cost:2000, rewardLvl:1, rewardPop:100, requiredLvl:10, requiredEstate:'house'  }, //9
+    { id:'mgu', name:'МГУ', icon:'🧠',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:200, requiredLvl:11, requiredEstate:'house' }, //10
+    { id:'bizschool', name:'Школа Бизнеса', icon:'🏦',  duration:600*1000, cost:5000, rewardLvl:1, rewardPop:150, requiredLvl:12, requiredEstate:'house' }, //11
+    { id:'artschool', name:'Школа Искусств', icon:'🖼️',  duration:600*1000, cost:8000, rewardLvl:1, rewardPop:150, requiredLvl:13, requiredEstate:'luxury_apartment' }, //12
+    { id:'itschool', name:'Школа Программирования', icon:'🧑‍💻',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:14, requiredEstate:'luxury_apartment' }, //13
+    { id:'law_school', name:'Юридическая школа', icon:'🧑‍💼',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:15, requiredEstate:'luxury_apartment' }, //14
+    { id:'medical', name:'Медицинская школа', icon:'🏥',  duration:600*1000, cost:10000, rewardLvl:1, rewardPop:250, requiredLvl:16, requiredEstate:'villa' }, //14
+    { id:'phd', name:'Аспирантура ', icon:'🧑‍🚀',  duration:1200*1000, cost:20000, rewardLvl:1, rewardPop:500, requiredLvl:17, requiredEstate:'villa' }, //14
+    { id:'professor', name:'Профессорское звание', icon:'🧑‍🏫',  duration:1200*1000, cost:30000, rewardLvl:1, rewardPop:800, requiredLvl:18, requiredEstate:'manor'  }, //14
+    { id:'academy', name:'Академия наук', icon:'👨‍🔬',  duration:1200*1000, cost:50000, rewardLvl:1, rewardPop:1000, requiredLvl:19, requiredEstate:'manor'  }, //14
+    { id:'nobel', name:'Лауреат Нобелевской премии', icon:'🎓',  duration:43200*1000, cost:200000, rewardLvl:1, rewardPop:2000, requiredLvl:20, requiredEstate:'manor' }, //14
+    { id:'fields_medal', name:'Медаль Филдса', icon:'👲',  duration:63200*1000, cost:1000000, rewardLvl:1, rewardPop:3000, requiredLvl:21, requiredEstate:'castle'  }, //14
+    { id:'royal_academy', name:'Королевская академия наук', icon:'🫅',  duration:102800*1000, cost:5000000, rewardLvl:1, rewardPop:4000, requiredLvl:22, requiredEstate:'sky_palace' }, //14
+    { id:'national_genius', name:'Национальный гений', icon:'🧙🏾‍♂️',  duration:302800*1000, cost:150000000, rewardLvl:1, rewardPop:15000, requiredLvl:23, requiredEstate:'private_island'  }, //14
+    { id:'world_genius', name:'Гений человечества', icon:'💯',  duration:604800*1000, cost:200000000, rewardLvl:1, rewardPop:20000, requiredLvl:24, requiredEstate:'royal_palace' }, //14
 ];
 
 const BUSINESS_CONFIG = [
@@ -593,15 +593,23 @@ const BUSINESS_CONFIG = [
 const CARS_CONFIG = [
     { id:'velo', name:'Старый велосипед', image:'velo.PNG', carImage:'velo.PNG', description:'Ужасно ржавый, разваливается, но возит.', price:100, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
     { id:'lada2107', name:'Старая жига', image:'lada2107.PNG', carImage:'lada2107.PNG', description:'Старая советская классика.', price:500, incomePerSec:0, sellPercent:0.4, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
-    { id:'lada2115', name:'LADA 2115', image:'lada2115.PNG', carImage:'lada2115.PNG', description:'Бодрая, свежая пятнашка.', price:1000, incomePerSec:0, sellPercent:0.5, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:50 },
+    { id:'lada2108', name:'ВАЗ 2108', image:'lada2108.PNG', carImage:'lada2108.PNG', description:'Бандитская классика.', price:1000, incomePerSec:0, sellPercent:0.3, requiredLevel:1, requiredPop:20, rewardPop:0, totalLimit:50 },
+    { id:'lada2115', name:'ВАЗ 2115', image:'lada2115.PNG', carImage:'lada2115.PNG', description:'Бодрая, свежая пятнашка.', price:1000, incomePerSec:0, sellPercent:0.5, requiredLevel:4, requiredPop:150, rewardPop:0, totalLimit:50 },
     { id:'lada', name:'Лада Гранта', image:'lada.PNG', carImage:'lada.PNG', description:'Надёжная бюджетная машина.', price:2500, incomePerSec:0, sellPercent:0.5, requiredLevel:3, requiredPop:100, rewardPop:0, totalLimit:50 },
     { id:'galant', name:'Mitsubishi Galant', image:'galant.PNG', carImage:'galant.PNG', description:'Не менее популярная Японская классика.', price:5000, incomePerSec:0, sellPercent:0.5, requiredLevel:5, requiredPop:180, rewardPop:0, totalLimit:50 },
     { id:'solaris', name:'Hyndai Solaris', image:'solaris.PNG', carImage:'solaris.PNG', description:'Бюджетная иномарка.', price:7000, incomePerSec:0, sellPercent:0.5, requiredLevel:7, requiredPop:250, rewardPop:0, totalLimit:50 },
     { id:'kawasaki', name:'Kawasaki', image:'kawasaki.PNG', carImage:'kawasaki.PNG', description:'Спортивный мотоцикл..', price:8000, incomePerSec:0, sellPercent:0.5, requiredLevel:8, requiredPop:300, rewardPop:0, totalLimit:50 },
     { id:'haval', name:'Haval Julion', image:'haval.PNG', carImage:'haval.PNG', description:'Популярный китайский кроссовер.', price:10000, incomePerSec:0, sellPercent:0.6, requiredLevel:9, requiredPop:350, rewardPop:0, totalLimit:50 },
     { id:'toyota', name:'Toyota Camry', image:'toyota.PNG', carImage:'toyota.PNG', description:'Удобная семейная машина.', price:20000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
-    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:40000, incomePerSec:0, sellPercent:0.7, requiredLevel:12, requiredPop:500, rewardPop:0, totalLimit:50 },
-   
+    { id:'jaecoo', name:'Jaecoo', image:'jaecoo.PNG', carImage:'jaecoo.PNG', description:'Люксовый китайский кроссовер', price:20000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'cruiser', name:'Toyota Land Cruiser 300', image:'cruiser.PNG', carImage:'cruise.PNG', description:'Классный, большой джип.', price:5000000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'bmw', name:'BMW M5', image:'bmwm5.PNG', carImage:'bmwm5.PNG', description:'Спортивный автомобиль люкс класса.', price:8000000, incomePerSec:0, sellPercent:0.7, requiredLevel:12, requiredPop:500, rewardPop:0, totalLimit:50 },
+    { id:'maybach', name:'Mercedes Maybach', image:'maybach.PNG', carImage:'maybach.PNG', description:'Автомобиль бизнес класса.', price:12000000, incomePerSec:0, sellPercent:0.6, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'kamaz', name:'Камаз 3310', image:'kamaz.PNG', carImage:'kamaz.PNG', description:'Машина - Кормилица.', price:20000000, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'sls', name:'Mercedes SLS', image:'sls.PNG', carImage:'sls.PNG', description:'Быстрый и красивый спорткар.', price:26000000, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'g63', name:'Mercedes Benz G63', image:'g63.PNG', carImage:'g63.PNG', description:'Ну это же легенда.', price:30000000, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+    { id:'urus', name:'Lamborghini Urus', image:'urus.PNG', carImage:'urus.PNG', description:'Дорогая спортивная машина.', price:50000000, incomePerSec:0, sellPercent:0.8, requiredLevel:10, requiredPop:400, rewardPop:0, totalLimit:50 },
+
 ];
 
 const INVESTMENTS_CONFIG = [
@@ -627,7 +635,7 @@ const REAL_ESTATE_CONFIG = [
     { id:'villa', name:'Вилла', image:'villa.PNG', background:'bg_villa.PNG', description:'Роскошная вилла с бассейном и охраной.', price:10000000, incomePerSec:0, sellPercent:0.8, requiredLevel:17, requiredPop:1000, rewardPop:0, totalLimit:50 },
     { id:'manor', name:'Поместье', image:'manor.PNG', background:'bg_manor.PNG', description:'Большое поместье с парком и прислугой.', price:16000000, incomePerSec:0, sellPercent:0.8, requiredLevel:18, requiredPop:1000, rewardPop:0, totalLimit:50 },
     { id:'castle', name:'Замок', image:'castle.PNG', background:'bg_castle.PNG', description:'Настоящий средневековый замок в Европе.', price:20000000, incomePerSec:0, sellPercent:0.8, requiredLevel:20, requiredPop:1000, rewardPop:0, totalLimit:50 },
-    { id:'sky_palace"', name:'Небесный дворец', image:'sky_palace.PNG', background:'bg_sky_palace".PNG', description:'Целый этаж в самом высоком небоскрёбе мира.', price:35000000, incomePerSec:0, sellPercent:0.8, requiredLevel:22, requiredPop:1000, rewardPop:0, totalLimit:50 },
+    { id:'sky_palace', name:'Небесный дворец', image:'sky_palace.PNG', background:'bg_sky_palace.PNG', description:'Целый этаж в самом высоком небоскрёбе мира.', price:35000000, incomePerSec:0, sellPercent:0.8, requiredLevel:22, requiredPop:1000, rewardPop:0, totalLimit:50 },
     { id:'private_island', name:'Частный остров', image:'private_island.PNG', background:'bg_private_island.PNG', description:'Собственный остров в Тихом океане.', price:40000000, incomePerSec:0, sellPercent:0.8, requiredLevel:23, requiredPop:1000, rewardPop:0, totalLimit:50 },
     { id:'royal_palace', name:'Королевский дворец', image:'royal_palace.PNG', background:'bg_royal_palace.PNG', description:'Дворец с сотнями комнат, садами и охраной.', price:60000000, incomePerSec:0, sellPercent:0.8, requiredLevel:25, requiredPop:1000, rewardPop:0, totalLimit:50 },
 
@@ -1571,6 +1579,8 @@ function renderSchoolsList(){
         const lvlOk=level>=s.requiredLvl;
         const moneyOk=money>=s.cost;
         const isFree=s.cost===0;
+        const estateOk=!s.requiredEstate || (ownedBusinesses[s.requiredEstate] > 0);
+        const estateItem=s.requiredEstate ? REAL_ESTATE_CONFIG.find(r=>r.id===s.requiredEstate) : null;
         
         const card=document.createElement('div');card.className='school-card';
         if(isDone)card.classList.add('completed-school');else if(isLocked)card.classList.add('locked-school');else if(isSt)card.classList.add('active-school');else if(othSt)card.classList.add('other-studying');
@@ -1583,10 +1593,11 @@ function renderSchoolsList(){
         // ТРЕБОВАНИЯ в виде тегов - показываем только уровень
         const reqTags=[];
         if(s.requiredLvl>0)reqTags.push(`<span class="req-tag ${lvlOk?'ok':'fail'}">${lvlOk?'✅':'🔒'} ${s.requiredLvl} уровень</span>`);
+        if(estateItem)reqTags.push(`<span class="req-tag ${estateOk?'ok':'fail'}">${estateOk?'✅':'🔒'} ${estateItem.name}</span>`);
         
         // КНОПКА: только если все требования выполнены
         let btn='';
-        if(!isDone&&!isLocked&&!isSt&&!othSt&&lvlOk&&(isFree||moneyOk)){
+        if(!isDone&&!isLocked&&!isSt&&!othSt&&lvlOk&&estateOk&&(isFree||moneyOk)){
             const bc=isFree?'free-btn':'paid-btn';
             const bt=isFree?'📖 Поступить бесплатно':`🎓 Поступить за $${s.cost}`;
             btn=`<button class="enroll-btn ${bc}" onclick="enroll('${s.id}')">${bt}</button>`;
@@ -1594,10 +1605,11 @@ function renderSchoolsList(){
         
         // СВОДКА требований внизу - ТОЛЬКО если что-то не выполнено
         let summary='';
-        if(!isDone&&!isLocked&&(!lvlOk||(!isFree&&!moneyOk))){
+        if(!isDone&&!isLocked&&(!lvlOk||!estateOk||(!isFree&&!moneyOk))){
             const need=[];
             if(s.requiredLvl>0&&!lvlOk)need.push(`${s.requiredLvl} ур.`);
             if(!isFree&&!moneyOk)need.push(formatMoney(s.cost));
+            if(!estateOk&&estateItem)need.push(estateItem.name);
             if(need.length>0)summary=`<div class="notice-badge locked-notice">🔒 Нужно: ${need.join(', ')}</div>`;
         }
         
