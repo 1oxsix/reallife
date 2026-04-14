@@ -543,12 +543,17 @@
 const SERVER_URL = 'https://lifesim-server-production.up.railway.app';
 
 const JOBS_CONFIG = [
-    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:1000, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:5, minigameTarget:30 },
-    { id:'loader', name:'Грузчик', icon:'👨‍🔧', description:'Заргрузка вагонов', income:2000, requiredLevel:1, requiredPop:20, minigameType:'tap', minigameDuration:10, minigameTarget:50 },
-    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:1000, requiredLevel:2, requiredPop:50, minigameType:'jump' },
-    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:2500, requiredLevel:3, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
-    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:1800, requiredLevel:5, requiredPop:140, minigameType:'math' },
-    { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:1500, requiredLevel:5, requiredPop:140, minigameType:'jump' },
+    { id:'promoter', name:'Промоутер', icon:'📣', description:'Раздача листовок', income:1000, requiredLevel:1, requiredPop:20, minigameType:'2048', minigameDuration:5, minigameTarget:30 },
+    { id:'loader', name:'Грузчик', icon:'👨‍🔧', description:'Заргрузка вагонов', income:1000, requiredLevel:2, requiredPop:20, minigameType:'captcha', minigameDuration:10, minigameTarget:50 },
+    { id:'courier',  name:'Курьер',    icon:'🚴', description:'Доставка посылок',    income:1000, requiredLevel:3, requiredPop:50, minigameType:'jump' },
+    { id:'kladovshik',  name:'Оператор склада',   icon:'📦', description:'Сортировка посылок',  income:2000, requiredLevel:4, requiredPop:50, minigameType:'sort' },
+    { id:'taxist',  name:'Таксист',   icon:'🚕', description:'Перевозка клиентов',  income:1000, requiredLevel:5, requiredPop:50, minigameType:'race' },
+
+    { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:8500, requiredLevel:8, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:1800, requiredLevel:10, requiredPop:140, minigameType:'math' },
+    { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:1500, requiredLevel:15, requiredPop:500, minigameType:'jump' },
+    { id:'programmer',  name:'Программист',  icon:'🍸', description:'Разработка приложений',    income:1500, requiredLevel:20, requiredPop:1400, minigameType:'memory' },
+
 ];
 
 const SCHOOLS_CONFIG = [ //26
@@ -1007,6 +1012,16 @@ function startMinigame(){
         startMathGame(job);
     } else if(job.minigameType === 'jump') {
         startJumpGame(job);
+    } else if(job.minigameType === '2048') {
+        start2048Game(job);
+    } else if(job.minigameType === 'captcha') {
+        startCaptchaGame(job);
+    } else if(job.minigameType === 'race') {
+        startRaceGame(job);
+    } else if(job.minigameType === 'sort') {
+        startSortGame(job);
+    } else if(job.minigameType === 'memory') {
+        startMemoryGame(job);
     }
 }
 
@@ -1020,6 +1035,920 @@ function showMoneyPop(amount) {
     setTimeout(() => pop.remove(), 1100);
 }
 
+function startMemoryGame(job) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    const MULTIPLIER = 10;
+
+    const BUTTONS = [
+        { emoji:'🔥', color:'#ff4444' },
+        { emoji:'💧', color:'#4488ff' },
+        { emoji:'⚡', color:'#ffd200' },
+        { emoji:'🍀', color:'#44cc66' },
+        { emoji:'💎', color:'#cc44ff' },
+        { emoji:'🌙', color:'#ff8c00' },
+    ];
+
+    const ROUNDS = 5;
+    let round = 0;
+    let score = 0;
+    let sequence = [];
+    let playerInput = [];
+    let showing = false;
+    let gameOver = false;
+
+    function generateSequence() {
+        sequence.push(Math.floor(Math.random() * 4));
+    }
+
+    function showSequence() {
+        showing = true;
+        renderButtons(null);
+        let i = 0;
+        const interval = setInterval(() => {
+            if(i >= sequence.length) {
+                clearInterval(interval);
+                showing = false;
+                playerInput = [];
+                renderButtons(null);
+                return;
+            }
+            renderButtons(sequence[i]);
+            setTimeout(() => renderButtons(null), 500);
+            i++;
+        }, 800);
+    }
+
+    function renderButtons(activeIdx) {
+        const seqDots = sequence.map((_, i) => 
+            `<div style="width:10px;height:10px;border-radius:50%;background:${i < playerInput.length ? '#4cde80' : 'rgba(255,255,255,0.2)'}"></div>`
+        ).join('');
+
+        minigameCard.innerHTML = `
+            <div style="position:relative;padding:8px;">
+                <button onclick="closeMemory()" style="position:absolute;top:0;right:0;background:rgba(255,80,80,0.7);border:none;color:#fff;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">✖</button>
+                <div style="text-align:center;margin-bottom:12px;">
+                    <div style="font-size:13px;color:rgba(255,255,255,0.5);">Раунд ${round}/${ROUNDS} · Очки: ${score}</div>
+                    <div style="font-size:14px;color:#ffd200;margin-top:4px;">${showing ? '👀 Запоминай...' : '🎮 Повтори!'}</div>
+                    <div style="display:flex;justify-content:center;gap:6px;margin-top:8px;">${seqDots}</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px;">
+                    ${BUTTONS.map((b, i) => `
+                        <button onclick="memoryPress(${i})" style="
+                            padding:16px;font-size:28px;border:none;border-radius:16px;cursor:pointer;
+                            background:${activeIdx === i ? b.color : b.color + '44'};
+                            box-shadow:${activeIdx === i ? `0 0 20px ${b.color}` : 'none'};
+                            transition:all 0.15s;
+                            transform:${activeIdx === i ? 'scale(1.08)' : 'scale(1)'};
+                        ">${b.emoji}</button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function handlePress(idx) {
+        if(showing || gameOver) return;
+        playerInput.push(idx);
+
+        const pos = playerInput.length - 1;
+        if(playerInput[pos] !== sequence[pos]) {
+            // Ошибка
+            renderButtons(null);
+            minigameCard.innerHTML = `
+                <div style="text-align:center;padding:30px;">
+                    <div style="font-size:48px;">❌</div>
+                    <div style="font-size:18px;color:#ff6b6b;margin:8px 0;">Ошибка!</div>
+                    <div style="font-size:14px;color:rgba(255,255,255,0.5);">Очки: ${score}</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;">Правильно было: ${BUTTONS[sequence[pos]].emoji}</div>
+                </div>
+            `;
+            setTimeout(() => endGame(), 1500);
+            return;
+        }
+
+        renderButtons(idx);
+        setTimeout(() => renderButtons(null), 200);
+
+        if(playerInput.length === sequence.length) {
+            // Раунд пройден
+            score += sequence.length * 100;
+            round++;
+
+            if(round >= ROUNDS) {
+                setTimeout(() => endGame(), 300);
+                return;
+            }
+
+            setTimeout(() => {
+                generateSequence();
+                showSequence();
+            }, 600);
+        }
+    }
+
+    function endGame() {
+        gameOver = true;
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score / 700));
+        money += earned;
+        showMoneyPop(earned);
+        updateHUD();
+        saveGame(false);
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:40px;margin-bottom:8px;">${round >= ROUNDS ? '🎉' : '💔'}</div>
+                <div style="font-size:20px;color:${round >= ROUNDS ? '#4cde80' : '#ff6b6b'};margin-bottom:8px;">${round >= ROUNDS ? 'Все раунды пройдены!' : 'Игра окончена!'}</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Очки: ${score}</div>
+                <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">+${formatMoney(earned)}</div>
+                <button onclick="closeMemory()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;">✖ Закрыть</button>
+            </div>
+        `;
+    }
+
+    window.memoryPress = function(idx) { handlePress(idx); };
+    window.closeMemory = function() {
+        gameOver = true;
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+        minigameActive = false;
+    };
+
+    playBtn.style.display = 'none';
+    minigameCard.style.position = 'relative';
+
+    // Старт
+    generateSequence();
+    generateSequence();
+    generateSequence();
+    round = 1;
+    showSequence();
+}
+
+function startSortGame(job) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    const MULTIPLIER = 10;
+
+    const ROUNDS = 3;
+    const ITEMS_PER_ROUND = 3;
+
+    const CATEGORIES = [
+        { name:'📦', emoji:['👔','👖','🧢','👟','🧥'], color:'#4488ff', label:'Синие' },
+        { name:'📦', emoji:['🍎','🌹','🍓','🌶️','❤️'], color:'#ff4444', label:'Красные' },
+        { name:'📦', emoji:['🍀','🌿','🥦','🐸','🍃'], color:'#44cc66', label:'Зелёные' },
+    ];
+
+    const SHAPES = ['⬟','★','●','■','▲','♦'];
+
+    let round = 0;
+    let score = 0;
+    let lane = 1;
+    let items = [];
+    let currentItem = null;
+    let frameId = null;
+    let frameCount = 0;
+    let itemY = 0;
+    let gameOver = false;
+    let roundOver = false;
+    let correct = 0;
+    let wrong = 0;
+    let canvas, ctx;
+
+    const CANVAS_W = 280;
+    const CANVAS_H = 360;
+    const LANES_X = [60, 140, 220];
+    const CONTAINER_Y = CANVAS_H - 60;
+    const ITEM_SPEED_BASE = 2.5;
+
+    function getSpeed() { return ITEM_SPEED_BASE + round * 0.8; }
+
+    function nextItem() {
+        if(items.length === 0) { endRound(); return; }
+        currentItem = items.shift();
+        itemY = 0;
+        lane = 1;
+    }
+
+    function startRound() {
+        roundOver = false;
+        correct = 0;
+        wrong = 0;
+        // Генерируем список предметов
+        items = [];
+        for(let i = 0; i < ITEMS_PER_ROUND; i++) {
+            const cat = CATEGORIES[Math.floor(Math.random()*3)];
+            const emoji = cat.emoji[Math.floor(Math.random()*cat.emoji.length)];
+            items.push({ ...cat, currentEmoji: emoji });
+        }
+        items = items.sort(() => Math.random() - 0.5);
+        nextItem();
+        gameLoop();
+    }
+
+    function endRound() {
+        roundOver = true;
+        if(frameId) cancelAnimationFrame(frameId);
+
+        const roundScore = correct * 100 - wrong * 50;
+        score += Math.max(0, roundScore);
+        round++;
+
+        if(round >= ROUNDS) {
+            endGame();
+            return;
+        }
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:30px 20px;">
+                <div style="font-size:40px;margin-bottom:12px;">✅</div>
+                <div style="font-size:18px;font-weight:bold;color:#4cde80;margin-bottom:8px;">Раунд ${round} пройден!</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Верно: ${correct} · Ошибок: ${wrong}</div>
+                <div style="font-size:14px;color:#ffd200;margin-bottom:16px;">Очки: ${score}</div>
+                <button onclick="sortNextRound()" style="background:#4cde80;border:none;color:#1a1a2e;padding:10px 24px;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;">▶ Следующий раунд</button>
+            </div>
+        `;
+    }
+
+    function endGame() {
+        gameOver = true;
+        if(frameId) cancelAnimationFrame(frameId);
+        document.removeEventListener('keydown', keyHandler);
+
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score / 3600));
+        money += earned;
+        showMoneyPop(earned);
+        updateHUD();
+        saveGame(false);
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:40px;margin-bottom:8px;">🎉</div>
+                <div style="font-size:20px;color:#4cde80;margin-bottom:8px;">Все раунды пройдены!</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Итого очков: ${score}</div>
+                <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">+${formatMoney(earned)}</div>
+                <button onclick="closeSort()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;">✖ Закрыть</button>
+            </div>
+        `;
+    }
+
+    function gameLoop() {
+        if(gameOver || roundOver || !currentItem) return;
+        frameCount++;
+        itemY += getSpeed();
+
+        // Попал в контейнер
+        // Попал в контейнер
+        if(itemY >= CONTAINER_Y - 20) {
+            cancelAnimationFrame(frameId);
+            const container = CATEGORIES[lane];
+            if(container.color === currentItem.color) {
+                correct++;
+                score += 100;
+            } else {
+                wrong++;
+            }
+            draw(container.color === currentItem.color ? '✅' : '❌');
+            setTimeout(() => { 
+                if(!gameOver && !roundOver) { 
+                    nextItem();
+                    if(currentItem) frameId = requestAnimationFrame(gameLoop);
+                    else endRound();
+                } 
+            }, 500);
+            return;
+        }
+
+        draw();
+        frameId = requestAnimationFrame(gameLoop);
+    }
+
+    function showFeedback(success) {
+        if(gameOver || roundOver) return;
+        draw(success ? '✅' : '❌');
+    }
+
+    function draw(feedback) {
+        if(!ctx) return;
+
+        // Фон
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        // Заголовок
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(0, 0, CANVAS_W, 30);
+        ctx.fillStyle = '#ffd200';
+        ctx.font = 'bold 13px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Раунд ${round+1}/${ROUNDS} · Осталось: ${items.length+1} · ✅${correct} ❌${wrong}`, CANVAS_W/2, 20);
+
+        // Контейнеры
+        CATEGORIES.forEach((cat, i) => {
+            const x = LANES_X[i];
+            const isTarget = lane === i;
+            ctx.fillStyle = cat.color + (isTarget ? 'cc' : '44');
+            ctx.beginPath();
+            ctx.roundRect(x - 28, CONTAINER_Y, 56, 50, 8);
+            ctx.fill();
+            ctx.strokeStyle = isTarget ? '#fff' : cat.color;
+            ctx.lineWidth = isTarget ? 3 : 1;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText(cat.name, x, CONTAINER_Y + 32);
+        });
+
+        // Падающий предмет
+        // Падающий предмет
+        if(currentItem) {
+            const x = LANES_X[lane];
+            // Подсветка цветом
+            ctx.shadowColor = currentItem.color;
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = 'rgba(30,30,50,0.85)';
+            ctx.beginPath();
+            ctx.roundRect(x - 24, itemY, 48, 48, 8);
+            ctx.fill();
+            ctx.strokeStyle = currentItem.color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            // Эмодзи
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(currentItem.currentEmoji, x, itemY + 34);
+        }
+
+        
+
+        // Фидбек
+        if(feedback) {
+            ctx.font = 'bold 36px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(feedback, CANVAS_W/2, CANVAS_H/2);
+        }
+    }
+
+    function moveLeft()  { if(lane > 0) { lane--; } }
+    function moveRight() { if(lane < 2) { lane++; } }
+
+    const keyHandler = e => {
+        if(e.key === 'ArrowLeft')  { e.preventDefault(); moveLeft(); }
+        if(e.key === 'ArrowRight') { e.preventDefault(); moveRight(); }
+    };
+    document.addEventListener('keydown', keyHandler);
+
+    window.sortNextRound = function() {
+        minigameCard.style.position = 'relative';
+        minigameCard.innerHTML = `
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                <button onclick="closeSort()" style="position:absolute;top:0;right:0;background:rgba(255,80,80,0.7);border:none;color:#fff;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;z-index:10;">✖</button>
+                <canvas id="sort-canvas" width="${CANVAS_W}" height="${CANVAS_H}" style="border-radius:12px;display:block;"></canvas>
+                <div style="display:flex;gap:16px;width:100%;">
+                    <button onpointerdown="sortMoveLeft()" style="flex:1;padding:14px;background:rgba(255,255,255,0.12);border:none;color:#fff;border-radius:12px;font-size:22px;cursor:pointer;">◀</button>
+                    <button onpointerdown="sortMoveRight()" style="flex:1;padding:14px;background:rgba(255,255,255,0.12);border:none;color:#fff;border-radius:12px;font-size:22px;cursor:pointer;">▶</button>
+                </div>
+            </div>
+        `;
+        canvas = document.getElementById('sort-canvas');
+        ctx = canvas.getContext('2d');
+        startRound();
+    };
+
+    window.closeSort = function() {
+        gameOver = true;
+        if(frameId) cancelAnimationFrame(frameId);
+        document.removeEventListener('keydown', keyHandler);
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+        minigameActive = false;
+    };
+
+    window.sortMoveLeft  = function() { moveLeft(); };
+    window.sortMoveRight = function() { moveRight(); };
+
+    playBtn.style.display = 'none';
+    minigameCard.style.position = 'relative';
+    sortNextRound();
+}
+
+function startRaceGame(job) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    const MULTIPLIER = 1;
+
+    let lane = 1; // 0=левая, 1=центр, 2=правая
+    let score = 0;
+    let speed = 3;
+    let frameId = null;
+    let enemies = [];
+    let frameCount = 0;
+    let gameOver = false;
+    let canvas, ctx;
+
+    const CANVAS_W = 240;
+    const CANVAS_H = 380;
+    const LANES = [60, 120, 180]; // X позиции полос
+    const CAR_W = 36;
+    const CAR_H = 60;
+
+    function drawCar(x, y, color, stripeColor) {
+        // Кузов
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.roundRect(x - CAR_W/2, y - CAR_H/2, CAR_W, CAR_H, 6);
+        ctx.fill();
+        // Полосы
+        ctx.fillStyle = stripeColor;
+        ctx.fillRect(x - 4, y - CAR_H/2 + 8, 8, CAR_H - 16);
+        // Окна
+        ctx.fillStyle = 'rgba(150,220,255,0.7)';
+        ctx.fillRect(x - CAR_W/2 + 5, y - CAR_H/2 + 10, CAR_W - 10, 16);
+        ctx.fillRect(x - CAR_W/2 + 5, y + 4, CAR_W - 10, 14);
+        // Колёса
+        ctx.fillStyle = '#222';
+        ctx.fillRect(x - CAR_W/2 - 4, y - CAR_H/2 + 8, 8, 12);
+        ctx.fillRect(x + CAR_W/2 - 4, y - CAR_H/2 + 8, 8, 12);
+        ctx.fillRect(x - CAR_W/2 - 4, y + CAR_H/2 - 20, 8, 12);
+        ctx.fillRect(x + CAR_W/2 - 4, y + CAR_H/2 - 20, 8, 12);
+    }
+
+    function drawRoad(offset) {
+        // Фон трава
+        ctx.fillStyle = '#2d5a1b';
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+        // Дорога
+        ctx.fillStyle = '#555';
+        ctx.fillRect(30, 0, CANVAS_W - 60, CANVAS_H);
+
+        // Красно-белые бордюры
+        for(let y = -20 + (offset % 40); y < CANVAS_H; y += 40) {
+            ctx.fillStyle = '#ff3333';
+            ctx.fillRect(30, y, 10, 20);
+            ctx.fillRect(CANVAS_W - 40, y, 10, 20);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(30, y + 20, 10, 20);
+            ctx.fillRect(CANVAS_W - 40, y + 20, 10, 20);
+        }
+
+        // Разметка
+        ctx.strokeStyle = '#fff';
+        ctx.setLineDash([30, 20]);
+        ctx.lineWidth = 3;
+        ctx.lineDashOffset = -offset;
+        [90, 150].forEach(x => {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, CANVAS_H);
+            ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // Деревья
+        [[8, 50],[8, 150],[8, 250],[8, 350],
+         [CANVAS_W-18, 80],[CANVAS_W-18, 180],[CANVAS_W-18, 280]].forEach(([x,y]) => {
+            const ty = ((y + offset) % CANVAS_H);
+            ctx.fillStyle = '#1a3a0a';
+            ctx.beginPath();
+            ctx.arc(x, ty, 12, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#2d5a1b';
+            ctx.beginPath();
+            ctx.arc(x, ty, 9, 0, Math.PI*2);
+            ctx.fill();
+        });
+    }
+
+    const ENEMY_COLORS = [
+        ['#ff8c00','#222'],['#0088ff','#fff'],['#ff2222','#ff8'],
+        ['#aa00ff','#fff'],['#00ccaa','#222']
+    ];
+
+    function spawnEnemy() {
+        const l = Math.floor(Math.random()*3);
+        const [color, stripe] = ENEMY_COLORS[Math.floor(Math.random()*ENEMY_COLORS.length)];
+        enemies.push({ lane: l, y: -CAR_H, color, stripe });
+    }
+
+    function gameLoop() {
+        if(gameOver) return;
+        frameCount++;
+        score++;
+
+        // Ускорение
+        if(frameCount % 300 === 0) speed += 0.5;
+
+        // Спавн врагов
+        const spawnRate = Math.max(40, 90 - Math.floor(score/200)*5);
+        if(frameCount % spawnRate === 0) spawnEnemy();
+
+        // Двигаем врагов
+        enemies.forEach(e => e.y += speed);
+        enemies = enemies.filter(e => e.y < CANVAS_H + CAR_H);
+
+        // Проверка коллизии
+        const playerX = LANES[lane];
+        const playerY = CANVAS_H - 80;
+        for(const e of enemies) {
+            const ex = LANES[e.lane];
+            if(Math.abs(ex - playerX) < CAR_W - 4 && Math.abs(e.y - playerY) < CAR_H - 8) {
+                endGame(); return;
+            }
+        }
+
+        // Рисуем
+        const offset = (frameCount * speed) % CANVAS_H;
+        drawRoad(offset);
+
+        // Враги
+        enemies.forEach(e => drawCar(LANES[e.lane], e.y, e.color, e.stripe));
+
+        // Игрок
+        drawCar(playerX, playerY, '#00ff88', '#ffffff');
+
+        // Счёт
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(0, 0, CANVAS_W, 28);
+        ctx.fillStyle = '#ffd200';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('⭐ ' + score, CANVAS_W/2, 18);
+
+        frameId = requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+        gameOver = true;
+        if(frameId) cancelAnimationFrame(frameId);
+        document.removeEventListener('keydown', keyHandler);
+
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score/1000));
+        money += earned;
+        showMoneyPop(earned);
+        updateHUD();
+        saveGame(false);
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:48px;margin-bottom:8px;">💥</div>
+                <div style="font-size:20px;color:#ff6b6b;margin-bottom:8px;">Авария!</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Счёт: ${score}</div>
+                <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">+${formatMoney(earned)}</div>
+                <button onclick="closeRace()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;">✖ Закрыть</button>
+            </div>
+        `;
+    }
+
+    function moveLeft()  { if(lane > 0) lane--; }
+    function moveRight() { if(lane < 2) lane++; }
+
+    const keyHandler = e => {
+        if(e.key === 'ArrowLeft')  { e.preventDefault(); moveLeft(); }
+        if(e.key === 'ArrowRight') { e.preventDefault(); moveRight(); }
+    };
+    document.addEventListener('keydown', keyHandler);
+
+    window.closeRace = function() {
+        gameOver = true;
+        if(frameId) cancelAnimationFrame(frameId);
+        document.removeEventListener('keydown', keyHandler);
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+        minigameActive = false;
+    };
+
+    playBtn.style.display = 'none';
+    minigameCard.style.position = 'relative';
+
+    minigameCard.innerHTML = `
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <button onclick="closeRace()" style="position:absolute;top:0;right:0;background:rgba(255,80,80,0.7);border:none;color:#fff;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;z-index:10;">✖</button>
+            <canvas id="race-canvas" width="${CANVAS_W}" height="${CANVAS_H}" style="border-radius:12px;display:block;"></canvas>
+            <div style="display:flex;gap:16px;width:100%;">
+                <button onpointerdown="raceMoveLeft()" style="flex:1;padding:14px;background:rgba(255,255,255,0.12);border:none;color:#fff;border-radius:12px;font-size:22px;cursor:pointer;">◀</button>
+                <button onpointerdown="raceMoveRight()" style="flex:1;padding:14px;background:rgba(255,255,255,0.12);border:none;color:#fff;border-radius:12px;font-size:22px;cursor:pointer;">▶</button>
+            </div>
+        </div>
+    `;
+
+    window.raceMoveLeft  = function() { moveLeft(); };
+    window.raceMoveRight = function() { moveRight(); };
+
+    canvas = document.getElementById('race-canvas');
+    ctx = canvas.getContext('2d');
+    frameId = requestAnimationFrame(gameLoop);
+}
+
+function startCaptchaGame(job) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    const MULTIPLIER = 10;
+    const ROUNDS = 3;
+
+    let round = 0;
+    let score = 0;
+    let selected = [];
+    let currentCategory = null;
+    let currentItems = [];
+    let correctItems = [];
+    let gameOver = false;
+
+    const CATEGORIES = [
+        { name:'МАШИНЫ', emoji:['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒'] },
+        { name:'ЖИВОТНЫХ', emoji:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨'] },
+        { name:'ЕДУ', emoji:['🍎','🍊','🍋','🍇','🍓','🍔','🍕','🌮','🍜'] },
+        { name:'ТРАНСПОРТ', emoji:['✈️','🚀','🚁','⛵','🚂','🛸','🚤','🛩️','🚢'] },
+        { name:'ПРИРОДУ', emoji:['🌳','🌲','🌴','🌵','🌾','🌿','🍀','🌸','🌺'] },
+        { name:'СПОРТ', emoji:['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓'] },
+    ];
+
+    const DISTRACTORS = ['💎','💰','🎭','🎪','🎨','🏆','🎯','🎲','🎸','🎵','💡','🔑','📱','💻','🕐'];
+
+    function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+    function nextRound() {
+        if(round >= ROUNDS) { endGame(); return; }
+        round++;
+        selected = [];
+
+        // Выбираем случайную категорию
+        currentCategory = CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)];
+
+        // 4-5 правильных эмодзи
+        const correctCount = Math.floor(Math.random()*2)+4;
+        correctItems = shuffle(currentCategory.emoji).slice(0, correctCount);
+
+        // Остальные — дистракторы или из других категорий
+        const wrongCount = 9 - correctCount;
+        const otherEmoji = CATEGORIES.filter(c=>c.name!==currentCategory.name).flatMap(c=>c.emoji);
+        const wrongItems = shuffle([...otherEmoji, ...DISTRACTORS]).slice(0, wrongCount);
+
+        currentItems = shuffle([...correctItems, ...wrongItems]);
+        render();
+    }
+
+    function toggleSelect(idx) {
+        if(selected.includes(idx)) selected = selected.filter(i=>i!==idx);
+        else selected.push(idx);
+        render();
+    }
+
+    function confirm() {
+        const selectedEmoji = selected.map(i=>currentItems[i]);
+        const correct = correctItems.every(e=>selectedEmoji.includes(e)) && selectedEmoji.every(e=>correctItems.includes(e));
+
+        if(correct) {
+            score += 100;
+            showResult(true);
+        } else {
+            showResult(false);
+        }
+    }
+
+    function showResult(success) {
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:30px 20px;">
+                <div style="font-size:48px;margin-bottom:12px;">${success ? '✅' : '❌'}</div>
+                <div style="font-size:18px;font-weight:bold;color:${success?'#4cde80':'#ff6b6b'};margin-bottom:8px;">${success ? 'Правильно!' : 'Неверно!'}</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.5);">Раунд ${round}/${ROUNDS}</div>
+            </div>
+        `;
+        setTimeout(()=>{ if(!gameOver) nextRound(); }, 800);
+    }
+
+    function render() {
+        const gridHTML = currentItems.map((emoji, idx) => {
+            const isSel = selected.includes(idx);
+            return `
+                <div onclick="captchaSelect(${idx})" style="
+                    font-size:32px;text-align:center;padding:10px;border-radius:10px;cursor:pointer;
+                    background:${isSel?'rgba(76,222,128,0.3)':'rgba(255,255,255,0.07)'};
+                    border:2px solid ${isSel?'#4cde80':'transparent'};
+                    transition:all 0.15s;user-select:none;
+                ">${emoji}</div>
+            `;
+        }).join('');
+
+        minigameCard.innerHTML = `
+            <div style="position:relative;">
+                <button onclick="closeCaptcha()" style="position:absolute;top:0;right:-75px;background:rgba(255,80,80,0.7);border:none;color:#fff;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">✖ Закрыть</button>
+                <div style="text-align:center;margin-bottom:4px;">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);">Раунд ${round}/${ROUNDS} · Очки: ${score}</div>
+                    <div style="font-size:15px;font-weight:bold;color:#fff;margin:6px 0;">Выбери все</div>
+                    <div style="font-size:22px;font-weight:900;color:#ffd200;margin-bottom:10px;">${currentCategory.name}</div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+                    ${gridHTML}
+                </div>
+                <button onclick="captchaConfirm()" style="width:100%;padding:12px;background:#4cde80;border:none;border-radius:12px;color:#1a1a2e;font-size:15px;font-weight:bold;cursor:pointer;">
+                    ✔ Подтвердить
+                </button>
+            </div>
+        `;
+    }
+
+    function endGame() {
+        gameOver = true;
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score/375));
+        money += earned;
+        showMoneyPop(earned);
+        updateHUD();
+        saveGame(false);
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:20px;color:#4cde80;margin-bottom:8px;">🎉 Капча пройдена!</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Очки: ${score}</div>
+                <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">+${formatMoney(earned)}</div>
+                <button onclick="closeCaptcha()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;">✖ Закрыть</button>
+            </div>
+        `;
+    }
+
+    window.captchaSelect = function(idx) { toggleSelect(idx); };
+    window.captchaConfirm = function() { confirm(); };
+    window.closeCaptcha = function() {
+        if(!gameOver && score > 0) {
+            const earned = Math.floor(getJobReward() * MULTIPLIER * (score/1000));
+            money += earned;
+            showMoneyPop(earned);
+            updateHUD();
+            saveGame(false);
+        }
+        gameOver = true;
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+        minigameActive = false;
+    };
+
+    playBtn.style.display = 'none';
+    minigameCard.style.position = 'relative';
+    nextRound();
+}
+
+function start2048Game(job) {
+    const playBtn = document.getElementById('play-btn');
+    const minigameCard = document.querySelector('.minigame-card');
+    const originalHTML = minigameCard.innerHTML;
+    const MULTIPLIER = 10;
+
+    let board = Array(4).fill(null).map(() => Array(4).fill(0));
+    let score = 0;
+    let gameOver = false;
+
+    function restoreOriginal() {
+        minigameCard.innerHTML = originalHTML;
+        playBtn.style.display = 'block';
+        minigameActive = false;
+    }
+
+    function addRandom() {
+        const empty = [];
+        board.forEach((row, r) => row.forEach((val, c) => { if(!val) empty.push([r,c]); }));
+        if(!empty.length) return;
+        const [r,c] = empty[Math.floor(Math.random()*empty.length)];
+        board[r][c] = Math.random() < 0.9 ? 2 : 4;
+    }
+
+    function hasMovesLeft() {
+        for(let r=0;r<4;r++) for(let c=0;c<4;c++) {
+            if(!board[r][c]) return true;
+            if(c<3 && board[r][c]===board[r][c+1]) return true;
+            if(r<3 && board[r][c]===board[r+1][c]) return true;
+        }
+        return false;
+    }
+
+    function slide(row) {
+        let arr = row.filter(v=>v);
+        for(let i=0;i<arr.length-1;i++) {
+            if(arr[i]===arr[i+1]) { arr[i]*=2; score+=arr[i]; arr.splice(i+1,1); }
+        }
+        while(arr.length<4) arr.push(0);
+        return arr;
+    }
+
+    function move(dir) {
+        if(gameOver) return;
+        let moved = false;
+        let newBoard = board.map(r=>[...r]);
+        if(dir==='left') {
+            newBoard = newBoard.map(row=>{ const s=slide(row); if(s.join()!==row.join()) moved=true; return s; });
+        } else if(dir==='right') {
+            newBoard = newBoard.map(row=>{ const rev=slide([...row].reverse()).reverse(); if(rev.join()!==row.join()) moved=true; return rev; });
+        } else if(dir==='up') {
+            for(let c=0;c<4;c++) {
+                const col=newBoard.map(r=>r[c]);
+                const s=slide(col);
+                s.forEach((v,r)=>{ if(newBoard[r][c]!==v) moved=true; newBoard[r][c]=v; });
+            }
+        } else if(dir==='down') {
+            for(let c=0;c<4;c++) {
+                const col=newBoard.map(r=>r[c]).reverse();
+                const s=slide(col).reverse();
+                s.forEach((v,r)=>{ if(newBoard[r][c]!==v) moved=true; newBoard[r][c]=v; });
+            }
+        }
+        if(moved) { board=newBoard; addRandom(); render(); }
+        if(!hasMovesLeft()) endGame();
+    }
+
+    function getTileColor(val) {
+        const colors = {0:'#3a3a4a',2:'#eee4da',4:'#ede0c8',8:'#f2b179',16:'#f59563',32:'#f67c5f',64:'#f65e3b',128:'#edcf72',256:'#edcc61',512:'#edc850',1024:'#edc53f',2048:'#edc22e'};
+        return colors[val] || '#3c3a32';
+    }
+
+    function getTileTextColor(val) { return val<=4 ? '#776e65' : '#f9f6f2'; }
+
+    function render() {
+        const gridHTML = board.map(row=>
+            row.map(val=>`
+                <div style="
+                    background:${getTileColor(val)};
+                    color:${getTileTextColor(val)};
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:${val>=1024?'14px':val>=128?'18px':'22px'};
+                    font-weight:900;border-radius:6px;aspect-ratio:1/1;width:100%;
+                ">${val||''}</div>
+            `).join('')
+        ).join('');
+
+        minigameCard.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div class="minigame-label">🎮 2048</div>
+                <div style="color:#ffd200;font-weight:bold;">Очки: ${score}</div>
+            </div>
+            <button onclick="close2048()" style="position:absolute;top:125px;right:35px;background:rgba(255,80,80,0.7);border:none;color:#fff;padding:6px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:bold;">✖ Закрыть</button>
+            <div id="board-2048" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#5a5a7a;padding:6px;border-radius:8px;touch-action:none;width:100%;box-sizing:border-box;">
+                ${gridHTML}
+            </div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;margin-top:8px;">Свайпай или используй стрелки</div>
+        `;
+
+        // Свайп
+        const boardEl = document.getElementById('board-2048');
+        let startX, startY;
+        boardEl.addEventListener('touchstart', e=>{ startX=e.touches[0].clientX; startY=e.touches[0].clientY; }, {passive:true});
+        boardEl.addEventListener('touchend', e=>{
+            const dx=e.changedTouches[0].clientX-startX;
+            const dy=e.changedTouches[0].clientY-startY;
+            if(Math.abs(dx)>Math.abs(dy)) move(dx>0?'right':'left');
+            else move(dy>0?'down':'up');
+        }, {passive:true});
+    }
+
+    function endGame() {
+        gameOver = true;
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score/50));
+        money += earned;
+        showMoneyPop(earned);
+        updateHUD();
+        saveGame(false);
+
+        minigameCard.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:20px;color:#ff6b6b;margin-bottom:8px;">🎮 Игра окончена!</div>
+                <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:8px;">Очки: ${score}</div>
+                <div style="font-size:36px;font-weight:900;color:#4cde80;margin-bottom:16px;">+${formatMoney(earned)}</div>
+                <button onclick="close2048()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;">✖ Закрыть</button>
+            </div>
+        `;
+    }
+
+    window.close2048 = function() {
+        if(!gameOver && score > 0) {
+            const earned = Math.floor(getJobReward() * MULTIPLIER * (score/50));
+            money += earned;
+            showMoneyPop(earned);
+            updateHUD();
+            saveGame(false);
+        }
+        document.removeEventListener('keydown', window._2048KeyHandler);
+        restoreOriginal();
+        minigameActive = false;
+    };
+
+    // Клавиатура
+    window._2048KeyHandler = e => {
+        if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+            e.preventDefault();
+            move({ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'}[e.key]);
+        }
+    };
+    document.addEventListener('keydown', window._2048KeyHandler);
+
+    playBtn.style.display = 'none';
+    addRandom(); addRandom();
+    render();
+}
+
 function startTapGame(job) {
     let taps = 0;
     let timeLeft = job.minigameDuration || 5;
@@ -1030,6 +1959,7 @@ function startTapGame(job) {
     
     const playBtn = document.getElementById('play-btn');
     const minigameCard = document.querySelector('.minigame-card');
+    minigameCard.style.position = 'relative';
     const originalHTML = minigameCard.innerHTML;
     
     function restoreOriginal() {
