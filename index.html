@@ -2914,7 +2914,9 @@ function buyAssetQty(id, type) {
 }
 
 function sellAssetQty(id, type) {
-    const qty = invQtyMap[id] || 1;
+    const owned = ownedBusinesses[id] || 0;
+    if (owned <= 0) { alert('❌ Нет акций для продажи!'); return; }
+    const qty = Math.min(invQtyMap[id] || 1, owned);
     sellAsset(id, type, qty);
 }
 
