@@ -31,8 +31,9 @@
         .hud-sub { font-size:10px; color:rgba(255,255,255,0.5); white-space:nowrap; margin-left:2px; }
         .money-value { color:#4cde80; }
         .popularity-value { color:#ffe066; }
-        .health-row { display:flex; align-items:center; gap:5px; }
-        .health-icon { font-size:13px; flex-shrink:0; }
+        .info-row { display:flex; align-items:center; gap:6px; }
+        .info-chip { font-size:11px; color:rgba(255,255,255,0.7); background:rgba(0,0,0,0.3); border-radius:6px; padding:2px 7px; }
+        .info-chip span { color:#4cde80; font-weight:bold; }
         .progress-track { flex:1; height:12px; background:rgba(0,0,0,0.45); border-radius:6px; overflow:hidden; border:1.5px solid rgba(0,0,0,0.6); }
         .progress-fill { height:100%; border-radius:6px; transition:width 0.4s ease; background:linear-gradient(90deg,#ff4e4e 0%,#ff0000 100%); box-shadow:0 0 6px #ff000088; }
         .health-percent { font-size:10px; font-weight:bold; color:#ddd; min-width:26px; text-align:right; flex-shrink:0; }
@@ -446,11 +447,9 @@
                 <div class="stat-chip"><span class="icon">💰</span><span class="value money-value" id="hud-money">$0</span><span class="hud-sub" id="hud-income"></span></div>
                 <div class="stat-chip"><span class="icon">👥</span><span class="value popularity-value" id="hud-pop">0</span><span class="hud-sub">Подписчиков</span></div>
             </div>
-            <div class="health-row">
-                <span class="health-icon">❤️</span>
-                <div class="progress-track"><div class="progress-fill" id="hud-health-fill" style="width:100%"></div></div>
-                <span class="health-percent" id="hud-health-pct">100%</span>
-            </div>
+            <div class="info-row">
+    <div class="info-chip">🟢 Онлайн: <span id="hud-online">—</span></div>
+    </div>
         </div>
     </div>
 </div>
@@ -1018,13 +1017,20 @@ function updateHUD(){
     document.getElementById('hud-money').textContent=formatMoney(money);
     document.getElementById('hud-pop').textContent=formatPop(popularity);
     document.getElementById('hud-level').textContent=level;
-    const hp=Math.max(0,Math.min(100,health));
-    document.getElementById('hud-health-fill').style.width=hp+'%';
-    document.getElementById('hud-health-pct').textContent=hp+'%';
     const income = getBizIncome();
     const incomeEl = document.getElementById('hud-income');
     if(incomeEl) incomeEl.textContent = income > 0 ? '+'+formatMoney(income)+'/s' : '';
 }
+
+async function fetchOnline() {
+    try {
+        const r = await fetch(SERVER_URL + '/online');
+        const d = await r.json();
+        const el = document.getElementById('hud-online');
+        if (el && d.ok) el.textContent = d.online;
+    } catch(e) {}
+}
+
 
 /* ══════════════════════════════════════════════
    TICK — каждую секунду (только бизнесы)
@@ -3234,6 +3240,10 @@ function updateHomeScene(){
             delete window._offlineResult;
         }
     });
+
+    fetchOnline();
+    setInterval(fetchOnline, 60000); // обновляем каждую минуту
+
 })();
 </script>
 
