@@ -3031,7 +3031,7 @@ function renderLbList(list,c){
             <div class="lb-rank ${rankClass}">${rankIcon}</div>
             <div class="lb-avatar ${p.isMe?'me-avatar':''}">${p.photo?`<img src="${p.photo}" alt="">`:initials}</div>
             <div class="lb-user">
-                <div class="lb-username">${p.name}${p.isMe?' <span style="font-size:10px;color:#ffd200">(вы)</span>':''}</div>
+                <div class="lb-username">${p.name}${p.isMe?' <span style="font-size:10px;color:#ffd200">(вы)</span>':''}${p.platform==='vk'?' <span style="font-size:10px;font-weight:bold;color:#4a76a8">ВК</span>':p.platform==='tg'?' <span style="font-size:10px;font-weight:bold;color:#29b6f6">ТГ</span>':''}</div>
                 <div class="lb-userstats">Уровень ${p.level} · 👥${p.popularity}${p.businesses>0?' · 🏢'+p.businesses:''}</div>
             </div>
             <div class="lb-amount">${formatMoney(p.money)}</div>
