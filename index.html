@@ -561,7 +561,7 @@ const JOBS_CONFIG = [
 const SCHOOLS_CONFIG = [ //26
     { id:'street',  name:'Уличное образование',      icon:'🏙️', duration:10*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:0, requiredEstate:'' }, //1
     { id:'self_taught',  name:'Самоучка',      icon:'👀', duration:30*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:1, requiredEstate:'shalash' }, //2
-    { id:'home_school',  name:'Домашнее обучение',      icon:'🏚️', duration:45*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:2, requiredEstate:'shalash' }, //3
+    { id:'home_school',  name:'Домашнее обучение',      icon:'🏚️', duration:45*1000, cost:0,   rewardLvl:1, rewardPop:40, requiredLvl:2, requiredEstate:'shalash' }, //3
     { id:'public',  name:'МБОУ СОШ',      icon:'🏫', duration:55*1000, cost:0,   rewardLvl:1, rewardPop:20, requiredLvl:3, requiredEstate:'obshaga' }, //4
     { id:'private', name:'Частная школа', icon:'💒',  duration:60*1000, cost:1000, rewardLvl:1, rewardPop:50, requiredLvl:4, requiredEstate:''  }, //5
     { id:'college', name:'Колледж', icon:'🏣',  duration:70*1000, cost:0, rewardLvl:1, rewardPop:50, requiredLvl:5, requiredEstate:''  }, //6
@@ -2896,6 +2896,23 @@ return `
       `;
       }).join('');
       }
+
+function formatMoney(amount) {
+    if (amount >= 1_000_000_000) {
+        // Если 1.000.000.000 и выше -> 1B, 1.5B и т.д.
+        return (amount / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    } else if (amount >= 1_000_000) {
+        // Если 1.000.000 и выше -> 1M, 1.5M
+        return (amount / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    } else if (amount >= 1_000) {
+        // Опционально: если 1.000 и выше -> 1K
+        return (amount / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    
+    // Если меньше тысячи, возвращаем как есть (или с разделением разрядов)
+    return amount.toLocaleString('en-US'); 
+}
+
       // ── Купить актив (бизнес, машину, недвижимость) ──
 async function buyAsset(id, type, qty = 1) {
     let item;
