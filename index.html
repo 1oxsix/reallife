@@ -593,7 +593,7 @@ const BUSINESS_CONFIG = [
     { id:'sneaker', name:'Магазин кросовок', image:'sneaker.PNG', description:'Продажа палёных крос', price:1000000, incomePerSec:5, sellPercent:0.5, requiredLevel:5, requiredCars:['toyota'], rewardPop:0, totalLimit:1000 },
     { id:'autowash', name:'Мойка самообслуживания', image:'autowash.PNG', description:'Автомойка в городе.', price:2000000, incomePerSec:10, sellPercent:0.5, requiredLevel:10, requiredCars:['jaecoo'], rewardPop:0, totalLimit:1000 },
     { id:'autoservice', name:'Автосервис', image:'autoservice.PNG', description:'Ремонт иномарок.', price:4000000, incomePerSec:20, sellPercent:0.5, requiredLevel:10, requiredCars:['jaecoo'], rewardPop:0, totalLimit:1000 },
-    { id:'blogger', name:'Стример', image:'blogger.PNG', description:'Запускаю поток - набираю популярность.', price:5000000, incomePerSec:20, sellPercent:0.5, requiredLevel:15, requiredCars:[''], rewardPop:0, totalLimit:1000 },
+    { id:'blogger', name:'Стример', image:'blogger.PNG', description:'Запускаю поток - набираю популярность.', price:5000000, incomePerSec:20, popPerSec:20, sellPercent:0.5, requiredLevel:15, requiredCars:[''], rewardPop:0, totalLimit:1000 },
     { id:'zavod', name:'Небольшой завод', image:'zavod.PNG', description:'Небольшое производство за городом', price:10000000, incomePerSec:40, sellPercent:0.5, requiredLevel:15, requiredCars:['cruiser'], rewardPop:0, totalLimit:100 },
     { id:'cum', name:'ЦУМ', image:'cum.PNG', description:'ЦУМ', price:16000000, incomePerSec:20, sellPercent:0.5, requiredLevel:60, requiredCars:['g63'], rewardPop:0, totalLimit:100 },
     { id:'burgerking', name:'Burger King', image:'burgerking.PNG', description:'Открыть франшизу БК.', price:30000000, incomePerSec:200, sellPercent:0.6, requiredLevel:20, requiredCars:['g63'], rewardPop:0, totalLimit:100 },
@@ -998,6 +998,8 @@ setInterval(()=>{
     // Бизнесы → сразу на счёт
     if(Object.keys(ownedBusinesses).length>0){
         money+=getBizIncome();
+        const popIncome = getBizPopIncome();
+        if(popIncome > 0) popularity += popIncome;
         updateHUD();updateHomeBizSub();
         if(document.getElementById('page-assets')?.classList.contains('active'))renderAssetsContent();
     }
@@ -2739,10 +2741,16 @@ return `
       </div>
     </div>
     ${owned ? `
-  <div class="biz-income-row">
+ <div class="biz-income-row">
     <div class="biz-income-label">💰 Доход в секунду</div>
     <div class="biz-income-value">+${formatMoney(b.incomePerSec)}</div>
   </div>
+  ${b.popPerSec > 0 ? `
+  <div class="biz-income-row">
+    <div class="biz-income-label">👥 Подписчики в секунду</div>
+    <div class="biz-income-value" style="color:#a78bfa;">+${b.popPerSec}/с</div>
+  </div>
+  ` : ''}
   <div style="display:flex; gap:8px; margin-top:4px;">
     <button class="buy-biz-btn ${!canBuy ? 'disabled' : ''}" 
       style="flex:1"
@@ -3093,6 +3101,15 @@ function getBizIncome() {
         if(b) t += b.incomePerSec * count;
     }); 
     return t; 
+}
+
+function getBizPopIncome() {
+    let t=0;
+    Object.entries(ownedBusinesses).forEach(([id, count])=>{
+        const b=bizById(id);
+        if(b && b.popPerSec) t += b.popPerSec * count;
+    });
+    return t;
 }
 
 function updateHomeBizSub(){
