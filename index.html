@@ -1956,7 +1956,7 @@ function start2048Game(job) {
 
     function endGame() {
         gameOver = true;
-        const earned = Math.floor(getJobReward() * MULTIPLIER * (score/100));
+        const earned = Math.floor(getJobReward() * MULTIPLIER * (score/200));
         money += earned;
         showMoneyPop(earned);
         updateHUD();
@@ -1974,7 +1974,7 @@ function start2048Game(job) {
 
     window.close2048 = function() {
         if(!gameOver && score > 0) {
-            const earned = Math.floor(getJobReward() * MULTIPLIER * (score/100));
+            const earned = Math.floor(getJobReward() * MULTIPLIER * (score/200));
             money += earned;
             showMoneyPop(earned);
             updateHUD();
