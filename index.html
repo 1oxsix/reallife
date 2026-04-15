@@ -2932,10 +2932,14 @@ async function sellAsset(id, type, qty = 1) {
     if (!item) return;
     
     // Проверяем, есть ли что продавать
-    if (!ownedBusinesses[id] || ownedBusinesses[id] <= 0) {
-        alert('❌ Нет активов на продажу!');
-        return;
-    }
+    // Проверяем, есть ли что продавать
+const ownedCount = ownedBusinesses[id] || 0;
+if (ownedCount <= 0) {
+    alert('❌ Нет активов на продажу!');
+    return;
+}
+// Ограничиваем qty тем что реально есть
+qty = Math.min(qty, ownedCount);
     
     // Отправляем запрос на продажу на сервер
     try {
