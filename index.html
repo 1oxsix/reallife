@@ -760,12 +760,13 @@ async function syncToServer(){
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
-                id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
-                money:Math.floor(money), level, popularity,
-                businesses: Object.values(ownedBusinesses).reduce((sum, n) => sum + n, 0),
-                updatedAt: Math.floor(Date.now() / 1000),
-                savedata: buildSave()  // ← добавить полное сохранение
-            })
+    id:MY_ID, name:MY_NAME, photo:MY_PHOTO,
+    money:Math.floor(money), level, popularity,
+    businesses: Object.values(ownedBusinesses).reduce((sum, n) => sum + n, 0),
+    updatedAt: Math.floor(Date.now() / 1000),
+    savedata: buildSave(),
+    platform: window.Telegram?.WebApp?.initData ? 'tg' : (new URLSearchParams(location.search).get('vk_user_id') ? 'vk' : 'tg')
+    })
         });
     } catch(e){}
 }
