@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Жизнь - Симулятор</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
@@ -659,15 +660,33 @@ const REAL_ESTATE_CONFIG = [
 ];
 
 /* ══════════════════════════════════════════════
-   TELEGRAM
+   ПЛАТФОРМА (TELEGRAM + VK)
 ══════════════════════════════════════════════ */
 let tg = null;
 try { tg = window.Telegram?.WebApp||null; if(tg){tg.ready();tg.expand();} } catch(e){}
 
-const TG_USER  = tg?.initDataUnsafe?.user || null;
+const TG_USER = tg?.initDataUnsafe?.user || null;
+
+// Определяем платформу
+const IS_VK = !TG_USER && typeof vkBridge !== 'undefined';
+
+// VK данные — будут заполнены асинхронно
+let VK_USER = null;
+
+async function initVK() {
+    if (!IS_VK) return;
+    try {
+        vkBridge.send('VKWebAppInit');
+        const data = await vkBridge.send('VKWebAppGetUserInfo');
+        VK_USER = data;
+    } catch(e) {
+        console.warn('VK init error', e);
+    }
+}
+
 function getMyId() {
     if (TG_USER?.id) return String(TG_USER.id);
-    // Для локального — берём из localStorage, если нет — создаём новый
+    if (VK_USER?.id) return 'vk_' + String(VK_USER.id);
     let localId = localStorage.getItem('MY_LOCAL_ID');
     if (!localId) {
         localId = 'local_' + Math.random().toString(36).slice(2);
@@ -675,11 +694,23 @@ function getMyId() {
     }
     return localId;
 }
-const MY_ID = getMyId();
-const MY_NAME  = TG_USER?.username || TG_USER?.first_name || 'Игрок';
-const MY_PHOTO = TG_USER?.photo_url || '';
 
-document.getElementById('nickname').textContent = MY_NAME;
+function getMyName() {
+    if (TG_USER) return TG_USER.username || TG_USER.first_name || 'Игрок';
+    if (VK_USER) return VK_USER.first_name || 'Игрок';
+    return 'Игрок';
+}
+
+function getMyPhoto() {
+    if (TG_USER?.photo_url) return TG_USER.photo_url;
+    if (VK_USER?.photo_200) return VK_USER.photo_200;
+    return '';
+}
+
+// MY_ID, MY_NAME, MY_PHOTO будут установлены после initVK()
+let MY_ID = '';
+let MY_NAME = 'Игрок';
+let MY_PHOTO = '';
 
 /* ══════════════  ═══════════════════════════════
    CONSTANTS
@@ -775,7 +806,7 @@ async function syncToServer(){
     businesses: Object.values(ownedBusinesses).reduce((sum, n) => sum + n, 0),
     updatedAt: Math.floor(Date.now() / 1000),
     savedata: buildSave(),
-    platform: window.Telegram?.WebApp?.initData ? 'tg' : (new URLSearchParams(location.search).get('vk_user_id') ? 'vk' : 'tg')
+    platform: TG_USER ? 'tg' : (VK_USER ? 'vk' : 'local')
     })
         });
     } catch(e){}
@@ -3163,20 +3194,30 @@ function updateHomeScene(){
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
-loadGame(() => {
-    initializeAssetCounts();
-    fetchAssetCounts();
-    fetchMarket();
-    updateHUD();
-    updateHomeWorkBtn();
-    updateHomeBizSub();
-    updateHomeScene();
-    
-    if (window._offlineResult) {
-        showOfflinePopup(window._offlineResult.earned, window._offlineResult.secs);
-        delete window._offlineResult;
-    }
-});
+(async () => {
+    await initVK();
+
+    MY_ID    = getMyId();
+    MY_NAME  = getMyName();
+    MY_PHOTO = getMyPhoto();
+
+    document.getElementById('nickname').textContent = MY_NAME;
+
+    loadGame(() => {
+        initializeAssetCounts();
+        fetchAssetCounts();
+        fetchMarket();
+        updateHUD();
+        updateHomeWorkBtn();
+        updateHomeBizSub();
+        updateHomeScene();
+
+        if (window._offlineResult) {
+            showOfflinePopup(window._offlineResult.earned, window._offlineResult.secs);
+            delete window._offlineResult;
+        }
+    });
+})();
 </script>
 
 </body>
