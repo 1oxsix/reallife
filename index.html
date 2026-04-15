@@ -2677,10 +2677,13 @@ function renderInvestmentsList(container = null) {
         <div class="price-sub">${owned ? `✅ Владеешь: ${ownedCount} · ${diffStr}` : diffStr}</div>
     </div>
   </div>
-    <div style="display:flex; gap:6px; margin-top:6px; align-items:center; justify-content:center;">
+      <div style="display:flex; gap:6px; margin-top:6px; align-items:center; justify-content:center;">
     <button class="sell-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', -100)">-100</button>
     <button class="sell-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', -10)">-10</button>
-    <div id="inv-qty-${inv.id}" style="min-width:40px; text-align:center; font-size:16px; font-weight:bold; color:#fff;">${invQtyMap[inv.id] || 1}</div>
+    <div style="display:flex; flex-direction:column; align-items:center; min-width:60px;">
+      <div id="inv-qty-${inv.id}" style="text-align:center; font-size:16px; font-weight:bold; color:#fff;">${invQtyMap[inv.id] || 1}</div>
+      <div id="inv-total-${inv.id}" style="text-align:center; font-size:11px; color:rgba(255,255,255,0.5);">${formatMoney((invQtyMap[inv.id] || 1) * currentPrice)}</div>
+    </div>
     <button class="buy-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', 10)">+10</button>
     <button class="buy-biz-btn" style="padding:8px 10px; font-size:12px;" onclick="changeInvQty('${inv.id}', 100)">+100</button>
   </div>
@@ -2898,6 +2901,10 @@ function changeInvQty(id, delta) {
     invQtyMap[id] = Math.max(1, (invQtyMap[id] || 1) + delta);
     const el = document.getElementById('inv-qty-' + id);
     if (el) el.innerText = invQtyMap[id];
+    const inv = investById(id);
+    const currentPrice = marketPrices[id] || (inv ? inv.price : 0);
+    const totalEl = document.getElementById('inv-total-' + id);
+    if (totalEl) totalEl.innerText = formatMoney(invQtyMap[id] * currentPrice);
 }
 
 function buyAssetQty(id, type) {
