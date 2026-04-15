@@ -551,7 +551,7 @@ const JOBS_CONFIG = [
     { id:'taxist',  name:'Таксист',   icon:'🚕', description:'Перевозка клиентов',  income:1000, requiredLevel:5, requiredPop:50, minigameType:'race' },
 
     { id:'stroitel',  name:'Стройка',  icon:'👷', description:'Работа на стройке',    income:8500, requiredLevel:8, requiredPop:70, minigameType:'tap', minigameDuration:15, minigameTarget:70 },
-    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:1800, requiredLevel:10, requiredPop:140, minigameType:'math' },
+    { id:'shop',  name:'Продавец',  icon:'🛒', description:'Обслуживание клиентов',    income:5000, requiredLevel:10, requiredPop:140, minigameType:'math' },
     { id:'barmen',  name:'Бармен',  icon:'🍸', description:'Продажа коктейлей',    income:1500, requiredLevel:15, requiredPop:500, minigameType:'jump' },
     { id:'programmer',  name:'Программист',  icon:'🍸', description:'Разработка приложений',    income:1500, requiredLevel:20, requiredPop:1400, minigameType:'memory' },
 
@@ -1490,7 +1490,7 @@ function startRaceGame(job) {
     const playBtn = document.getElementById('play-btn');
     const minigameCard = document.querySelector('.minigame-card');
     const originalHTML = minigameCard.innerHTML;
-    const MULTIPLIER = 8;
+    const MULTIPLIER = 10;
 
     let lane = 1; // 0=левая, 1=центр, 2=правая
     let score = 0;
