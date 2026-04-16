@@ -485,7 +485,7 @@
             <div class="seniority-card">
                 <div class="seniority-header"><div class="seniority-title">📅 Стаж работы</div><div class="seniority-days-badge" id="seniority-badge">0 дней</div></div>
                 <div class="seniority-track"><div class="seniority-fill" id="seniority-fill"></div></div>
-                <div class="seniority-footer"><span>Сейчас: <span class="hl" id="seniority-mult-now">×1.00</span></span><span>Макс: <span class="hl">×3.00</span> (100 дней)</span></div>
+                <div class="seniority-footer"><span>Сейчас: <span class="hl" id="seniority-mult-now">×1.00</span></span><span>Макс: <span class="hl">×20</span> (30 дней)</span></div>
             </div>
         </div>
     </div>
@@ -785,7 +785,10 @@ function dayWord(n){
     const r=n%10; if(r===1)return'день'; if(r>=2&&r<=4)return'дня'; return'дней';
 }
 function getSeniorityDays(){ if(!jobHireTime)return 0; return Math.floor((Date.now()-jobHireTime)/MS_PER_DAY); }
-function getMultiplier()   { return 1+(Math.min(getSeniorityDays(),MAX_SENIORITY_DAYS)*2)/100; }
+function getMultiplier() {
+    const days = Math.min(getSeniorityDays(), 30);
+    return Math.max(1, Math.round((1 + (19 * days / 30)) * 100) / 100);
+}
 function getJobReward()    { if(!currentJob)return 0; return Math.floor(jobById(currentJob).income*getMultiplier()); }
 function getBizIncome()    { let t=0; ownedBusinesses.forEach(id=>{const b=bizById(id);if(b)t+=b.incomePerSec;}); return t; }
 function canHireJob(id)    { const j=jobById(id); return level>=j.requiredLevel&&popularity>=j.requiredPop; }
@@ -2418,7 +2421,7 @@ function updateWorkPageStatic(){
     const reward = getJobReward();
     const days = getSeniorityDays();
     const mult = getMultiplier();
-    const pct = Math.min(100, (days / MAX_SENIORITY_DAYS) * 100);
+    const pct = Math.min(100, (days / 30) * 100);
     
     document.getElementById('work-icon').textContent=job.icon;
     document.getElementById('work-name').textContent=job.name;
