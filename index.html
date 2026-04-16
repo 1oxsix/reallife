@@ -434,6 +434,32 @@
         .nav-btn.nav-locked .nav-icon  { opacity:0.3; }
         .nav-btn.nav-locked .nav-label { color:#444; }
         .nav-btn.nav-locked { cursor:not-allowed; }
+
+        /* DAILY BONUS */
+.daily-widget { position:absolute; top:10px; right:10px; z-index:10; width:58px; height:58px; background:linear-gradient(135deg,#2c2c2c,#1a1a1a); border:2px solid #4cde80; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; color:#fff; padding:0; }
+.daily-widget.claimed { border-color:#555; }
+.daily-widget-icon { font-size:24px; line-height:1; }
+.daily-widget-timer { font-size:9px; color:#4cde80; font-weight:700; text-align:center; line-height:1.2; }
+.daily-widget.claimed .daily-widget-timer { color:#aaa; }
+
+.daily-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center; }
+.daily-modal-overlay.open { display:flex; }
+.daily-modal { background:linear-gradient(180deg,#2c2c2c,#1a1a1a); border-radius:18px; padding:20px 16px; width:90%; max-width:360px; border:1.5px solid #333; }
+.daily-modal-title { font-size:18px; font-weight:800; text-align:center; color:#fff; margin-bottom:6px; }
+.daily-modal-streak { font-size:12px; color:#aaa; text-align:center; margin-bottom:16px; }
+.daily-days-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:16px; }
+.daily-day { display:flex; flex-direction:column; align-items:center; background:rgba(0,0,0,0.3); border-radius:10px; padding:8px 4px; border:1.5px solid #333; gap:4px; }
+.daily-day.claimed { border-color:#4cde80; background:rgba(76,222,128,0.1); }
+.daily-day.today { border-color:#ffe066; background:rgba(255,224,102,0.15); animation:pulse-day 1s infinite alternate; }
+.daily-day.locked { opacity:0.4; }
+@keyframes pulse-day { from{box-shadow:0 0 0 #ffe06600} to{box-shadow:0 0 8px #ffe066aa} }
+.daily-day-num { font-size:10px; color:#aaa; font-weight:600; }
+.daily-day-icon { font-size:20px; }
+.daily-day-reward { font-size:9px; color:#4cde80; font-weight:700; }
+.daily-claim-btn { width:100%; padding:12px; background:linear-gradient(135deg,#4cde80,#2d9e57); border:none; border-radius:12px; color:#000; font-size:15px; font-weight:800; cursor:pointer; margin-bottom:8px; }
+.daily-claim-btn:disabled { background:#333; color:#666; cursor:not-allowed; }
+.daily-close-btn { width:100%; padding:10px; background:transparent; border:1.5px solid #444; border-radius:12px; color:#aaa; font-size:13px; cursor:pointer; }
+
     </style>
 </head>
 <body>
@@ -458,10 +484,33 @@
 
     <div class="page active" id="page-home">
     <div class="home-scene" id="home-scene">
-    <img class="home-character" src="character.PNG" alt="character" />
-    <img class="home-car" id="home-car-img" src="" alt="car" style="display:none" />
+        <img class="home-character" src="character.PNG" alt="character" />
+        <img class="home-car" id="home-car-img" src="" alt="car" style="display:none" />
     </div>
+    <button class="daily-widget" id="daily-btn" onclick="openDailyBonus()">
+    <div class="daily-widget-icon">🎁</div>
+    <div class="daily-widget-timer" id="daily-btn-sub">Забрать!</div>
+    </button>
+            <span class="daily-btn-icon">🎁</span>
+            <div class="daily-btn-text">
+                <div class="daily-btn-title">Ежедневный бонус</div>
+                <div class="daily-btn-sub" id="daily-btn-sub">Нажми чтобы забрать!</div>
+            </div>
+            <span class="daily-btn-arrow">›</span>
+        </button>
     </div>
+</div>
+
+<!-- Модалка ежедневного бонуса -->
+<div class="daily-modal-overlay" id="daily-modal-overlay" onclick="closeDailyBonus()">
+    <div class="daily-modal" onclick="event.stopPropagation()">
+        <div class="daily-modal-title">🎁 Ежедневный бонус</div>
+        <div class="daily-modal-streak" id="daily-streak-text">День 1 из 10</div>
+        <div class="daily-days-grid" id="daily-days-grid"></div>
+        <button class="daily-claim-btn" id="daily-claim-btn" onclick="claimDailyBonus()">Забрать!</button>
+        <button class="daily-close-btn" onclick="closeDailyBonus()">Закрыть</button>
+    </div>
+</div>
 
     <div class="page" id="page-jobs">
         <div class="list-inner">
@@ -831,6 +880,7 @@ function buildSave(){
         completedSchools:[...completedSchools],
         lockedSchools:   [...lockedSchools],
         ownedBusinesses: ownedBusinesses,
+        dailyLastClaim, dailyStreak,
         savedAt:    Date.now(),
         playerName: MY_NAME,
         playerId:   MY_ID
@@ -872,6 +922,8 @@ function applySave(raw){
         ownedBusinesses = (typeof d.ownedBusinesses === 'object' && !Array.isArray(d.ownedBusinesses))
     ? d.ownedBusinesses 
     : {};
+        dailyLastClaim = d.dailyLastClaim || 0;
+        dailyStreak    = d.dailyStreak    || 0;
 
         if(d.savedAt){
             const result = calcOfflineEarnings(d.savedAt);
@@ -3228,6 +3280,107 @@ function updateHomeScene(){
 }
 
 /* ══════════════════════════════════════════════
+   DAILY BONUS
+══════════════════════════════════════════════ */
+const DAILY_REWARDS = [
+    { icon:'💰', reward: 10000 },
+    { icon:'💰', reward: 100000 },
+    { icon:'💰', reward: 250000 },
+    { icon:'⭐', reward: 500000 },
+    { icon:'💰', reward: 1000000 },
+    { icon:'💰', reward: 3000000 },
+    { icon:'⭐', reward: 5000000 },
+    { icon:'💰', reward: 10000000 },
+    { icon:'💎', reward: 15000000 },
+    { icon:'👑', reward: 20000000 },
+];
+
+let dailyLastClaim = 0;
+let dailyStreak = 0;
+
+function getDailyState(){
+    const saved = localStorage.getItem('daily_bonus_v1');
+    if(saved){
+        const d = JSON.parse(saved);
+        dailyLastClaim = d.lastClaim || 0;
+        dailyStreak = d.streak || 0;
+    }
+    const now = Date.now();
+    const hoursSince = (now - dailyLastClaim) / 3600000;
+    const canClaim = hoursSince >= 24;
+    const expired = hoursSince >= 48 && dailyLastClaim > 0;
+    if(expired) dailyStreak = 0;
+    return { canClaim, expired };
+}
+
+function saveDailyState(){
+    localStorage.setItem('daily_bonus_v1', JSON.stringify({
+        lastClaim: dailyLastClaim,
+        streak: dailyStreak
+    }));
+}
+
+function updateDailyBtn(){
+    const btn = document.getElementById('daily-btn');
+    const sub = document.getElementById('daily-btn-sub');
+    if(!btn || !sub) return;
+    const { canClaim } = getDailyState();
+    if(canClaim){
+        btn.classList.remove('claimed');
+        sub.textContent = 'День '+(Math.min(dailyStreak,9)+1);
+    } else {
+        btn.classList.add('claimed');
+        const diff = (dailyLastClaim + 86400000) - Date.now();
+        const h = Math.floor(diff/3600000);
+        const m = Math.floor((diff%3600000)/60000);
+        sub.textContent = h+'ч '+m+'м';
+    }
+}
+
+function openDailyBonus(){
+    getDailyState();
+    const grid = document.getElementById('daily-days-grid');
+    grid.innerHTML = '';
+    for(let i=0; i<10; i++){
+        const r = DAILY_REWARDS[i];
+        const div = document.createElement('div');
+        div.className = 'daily-day';
+        if(i < dailyStreak) div.classList.add('claimed');
+        else if(i === dailyStreak) div.classList.add('today');
+        else div.classList.add('locked');
+        div.innerHTML = `<div class="daily-day-num">День ${i+1}</div><div class="daily-day-icon">${r.icon}</div><div class="daily-day-reward">${formatMoney(r.reward)}</div>`;
+        grid.appendChild(div);
+    }
+    document.getElementById('daily-streak-text').textContent = 'День ' + (Math.min(dailyStreak,9)+1) + ' из 10';
+    const { canClaim } = getDailyState();
+    const btn = document.getElementById('daily-claim-btn');
+    btn.disabled = !canClaim;
+    btn.textContent = canClaim ? '🎁 Забрать ' + formatMoney(DAILY_REWARDS[Math.min(dailyStreak,9)].reward) + '!' : '✅ Уже забрал';
+    document.getElementById('daily-modal-overlay').classList.add('open');
+}
+
+function closeDailyBonus(){
+    document.getElementById('daily-modal-overlay').classList.remove('open');
+}
+
+function claimDailyBonus(){
+    const { canClaim } = getDailyState();
+    if(!canClaim) return;
+    const day = Math.min(dailyStreak, 9);
+    const reward = DAILY_REWARDS[day].reward;
+    money += reward;
+    dailyLastClaim = Date.now();
+    dailyStreak = dailyStreak >= 9 ? 0 : dailyStreak + 1;
+    saveDailyState();
+    updateHUD();
+    updateDailyBtn();
+    closeDailyBonus();
+    setTimeout(() => openDailyBonus(), 100);
+    saveGame(false);
+    alert('🎁 Вы получили ' + formatMoney(reward) + '!');
+}
+
+/* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
 (async () => {
@@ -3244,6 +3397,9 @@ function updateHomeScene(){
         fetchAssetCounts();
         fetchMarket();
         updateHUD();
+        getDailyState();
+        updateDailyBtn();
+        setInterval(updateDailyBtn, 60000);
         updateHomeWorkBtn();
         updateHomeBizSub();
         updateHomeScene();
