@@ -667,6 +667,11 @@ try { tg = window.Telegram?.WebApp||null; if(tg){tg.ready();tg.expand();} } catc
 const TG_USER = tg?.initDataUnsafe?.user || null;
 
 // Определяем платформу
+// VKWebAppInit вызываем МГНОВЕННО — до любых await
+if (typeof vkBridge !== 'undefined') {
+    try { vkBridge.send('VKWebAppInit'); } catch(e) {}
+}
+
 const IS_VK = !TG_USER && typeof vkBridge !== 'undefined';
 
 // VK данные — будут заполнены асинхронно
@@ -675,7 +680,6 @@ let VK_USER = null;
 async function initVK() {
     if (!IS_VK) return;
     try {
-        vkBridge.send('VKWebAppInit');
         const data = await vkBridge.send('VKWebAppGetUserInfo');
         VK_USER = data;
     } catch(e) {
@@ -931,7 +935,10 @@ async function loadGame(cb){
 
 async function loadFromServer(cb){
     try {
-        const r = await fetch(SERVER_URL+'/load/'+MY_ID);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const r = await fetch(SERVER_URL+'/load/'+MY_ID, { signal: controller.signal });
+        clearTimeout(timeout);
         const d = await r.json();
         if(d.ok && d.savedata){
             // Сервер главный — берём только его данные
